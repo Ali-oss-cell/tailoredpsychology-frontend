@@ -1,0 +1,31 @@
+---
+description: Enforce role-based access and route guard consistency
+globs: ["src/routes/**/*.tsx", "src/pages/**/*.tsx", "src/components/auth/**/*.tsx", "docs/role-matrix.md"]
+alwaysApply: true
+---
+
+# Roles
+
+- `patient`
+- `psychologist`
+- `practice_manager`
+- `admin`
+
+# Access Rules
+
+- Public routes do not require authentication.
+- Auth routes (`/login`, `/register`, reset flows) are guest-only.
+- Protected routes require explicit allowed roles.
+- Shared routes must explicitly list all allowed roles.
+- Do not assume manager/admin equivalence unless route config states both.
+
+# Default Deny
+
+- Any role not explicitly allowed for a protected route is denied.
+
+# Change Protocol
+
+When route access changes:
+1. Update route guard configuration in `src/routes/AppRoutes.tsx`.
+2. Update `docs/role-matrix.md`.
+3. Update `docs/routes-overview.md` if route mapping changed.

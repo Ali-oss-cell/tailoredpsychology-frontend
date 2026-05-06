@@ -1,0 +1,28 @@
+---
+description: Clink routing and page ownership rules
+globs: ["src/routes/**/*.tsx", "src/pages/**/*.tsx"]
+alwaysApply: true
+---
+
+# Routing Rules
+
+- Source of truth for route registration is `src/routes/AppRoutes.tsx`.
+- Every route must map to exactly one page component.
+- If a route is added/removed/renamed, update:
+  - `src/routes/AppRoutes.tsx`
+  - `docs/routes-overview.md`
+  - `docs/role-matrix.md` when access changes
+- Keep legacy redirects when they preserve bookmarked flows.
+- Unknown routes must fall back to the 404 route.
+
+# Protected Access
+
+- Use `ProtectedRoute` for role-gated screens.
+- Never rely on UI-only hiding for access control.
+- For shared routes, list all allowed roles explicitly in route config.
+
+# Wizard Rules
+
+- Booking/setup deep links must validate prior state.
+- Invalid step state must redirect to the first valid step.
+- Preserve query-driven step behavior for wizard flows.

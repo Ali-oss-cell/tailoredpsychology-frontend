@@ -1,23 +1,24 @@
 "use client"
 
 import * as React from "react"
-import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes"
+import { NextThemeProvider, useNextTheme } from "@space-man/react-theme-animation"
 
-function ThemeProvider({
-  children,
-  ...props
-}: React.ComponentProps<typeof NextThemesProvider>) {
+function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
-    <NextThemesProvider
+    <NextThemeProvider
       attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-      {...props}
+      colorThemes={["default"]}
+      defaultColorTheme="default"
+      defaultTheme="light"
+      disableAnimationOnInit
+      duration={420}
+      storageKey="theme"
+      colorStorageKey="clink-color-theme"
+      themes={["light", "dark"]}
     >
       <ThemeHotkey />
       {children}
-    </NextThemesProvider>
+    </NextThemeProvider>
   )
 }
 
@@ -35,7 +36,7 @@ function isTypingTarget(target: EventTarget | null) {
 }
 
 function ThemeHotkey() {
-  const { resolvedTheme, setTheme } = useTheme()
+  const { toggleTheme } = useNextTheme()
 
   React.useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -47,7 +48,8 @@ function ThemeHotkey() {
         return
       }
 
-      if (event.key.toLowerCase() !== "d") {
+      const key = event.key
+      if (typeof key !== "string" || key.toLowerCase() !== "d") {
         return
       }
 
@@ -55,7 +57,7 @@ function ThemeHotkey() {
         return
       }
 
-      setTheme(resolvedTheme === "dark" ? "light" : "dark")
+      void toggleTheme(true)
     }
 
     window.addEventListener("keydown", onKeyDown)
@@ -63,7 +65,7 @@ function ThemeHotkey() {
     return () => {
       window.removeEventListener("keydown", onKeyDown)
     }
-  }, [resolvedTheme, setTheme])
+  }, [toggleTheme])
 
   return null
 }

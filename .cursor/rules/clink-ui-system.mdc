@@ -1,0 +1,30 @@
+---
+description: Clink UI design system and shadcn usage standards
+globs: ["src/**/*.{tsx,ts,css}"]
+alwaysApply: true
+---
+
+# UI System Standards
+
+- Prefer shadcn/ui primitives before custom components.
+- Use shared shells per area:
+  - Public shell
+  - Patient shell
+  - Psychologist shell
+  - Manager/Admin shell
+- Keep spacing, typography, and colors token-based.
+- Use consistent page template:
+  1. Title and subtitle
+  2. Primary actions
+  3. Main content cards/sections
+  4. Secondary panels
+- Keep table interactions consistent (search/filter/empty/loading/error).
+- Keep form behavior consistent (inline validation and clear feedback).
+- Do not introduce one-off styling when a shared component exists.
+
+# Accessibility and UX Baseline
+
+- Maintain semantic heading structure.
+- Preserve keyboard and focus usability for all interactive controls.
+- Ensure good contrast for text and controls.
+- Keep RTL compatibility for shared layout/components.

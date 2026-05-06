@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Medicare Rebates - Clink Psychology Clinic</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed": "#cee7e8",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#d9e6da",
+                    "inverse-on-surface": "#f2f0f0",
+                    "inverse-surface": "#303030",
+                    "on-error": "#ffffff",
+                    "on-surface": "#1b1c1c",
+                    "outline-variant": "#c2c8c8",
+                    "inverse-primary": "#b3cbcc",
+                    "on-primary": "#ffffff",
+                    "surface-variant": "#e3e2e2",
+                    "surface-container-high": "#e9e8e7",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed": "#d9e6da",
+                    "on-secondary-container": "#5c675e",
+                    "surface-container-highest": "#e3e2e2",
+                    "on-tertiary-fixed": "#2b160d",
+                    "surface-tint": "#4c6264",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-container": "#4c3328",
+                    "error": "#ba1a1a",
+                    "on-tertiary": "#ffffff",
+                    "outline": "#727878",
+                    "on-secondary-fixed": "#141e17",
+                    "tertiary": "#75584b",
+                    "tertiary-fixed-dim": "#e4bfaf",
+                    "tertiary-container": "#be9b8c",
+                    "on-secondary-fixed-variant": "#3e4941",
+                    "surface-container": "#efeded",
+                    "on-surface-variant": "#424848",
+                    "primary-fixed-dim": "#b3cbcc",
+                    "on-tertiary-fixed-variant": "#5b4135",
+                    "surface-bright": "#faf9f8",
+                    "on-error-container": "#93000a",
+                    "on-primary-container": "#263d3e",
+                    "tertiary-fixed": "#ffdbcc",
+                    "on-primary-fixed": "#071f20",
+                    "secondary-fixed-dim": "#becabe",
+                    "on-background": "#1b1c1c",
+                    "secondary": "#566158",
+                    "primary": "#4c6264",
+                    "on-primary-fixed-variant": "#344b4c",
+                    "background": "#faf9f8",
+                    "primary-container": "#8fa7a8",
+                    "surface-container-low": "#f5f3f3",
+                    "surface-dim": "#dbdad9",
+                    "surface": "#faf9f8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "2rem",
+                    "md": "1.5rem",
+                    "margin": "32px",
+                    "xl": "4rem",
+                    "xs": "0.5rem",
+                    "base": "4px",
+                    "container-max": "1280px",
+                    "gutter": "24px",
+                    "sm": "1rem"
+            },
+            "fontFamily": {
+                "manrope": ["Manrope", "sans-serif"]
+            },
+            "fontSize": {
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "letterSpacing": "0",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "h1": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "h3": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.4",
+                                    "letterSpacing": "0",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "h2": [
+                            "36px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "letterSpacing": "0",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "caption": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.4",
+                                    "letterSpacing": "0.01em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "button": [
+                            "15px",
+                            {
+                                    "lineHeight": "1",
+                                    "letterSpacing": "0.02em",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom font for JSON styles if needed */
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased font-sans">
+<!-- TopAppBar -->
+<header class="bg-white/80 dark:bg-stone-900/80 backdrop-blur-md w-full sticky top-0 z-50 border-b border-[#2A3333]/10 dark:border-white/10">
+<div class="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto w-full">
+<!-- Brand Logo -->
+<a class="text-2xl font-bold tracking-tighter text-[#5FA8A6]" href="#">Clink</a>
+<!-- Navigation Links -->
+<nav class="hidden md:block">
+<ul class="flex space-x-8">
+<li>
+<a class="font-manrope font-medium text-sm tracking-tight text-stone-600 dark:text-stone-400 hover:text-[#3E7C7A] transition-colors duration-200" href="#">
+                            Find a Psych
+                        </a>
+</li>
+<li>
+<a class="font-manrope font-medium text-sm tracking-tight text-stone-600 dark:text-stone-400 hover:text-[#3E7C7A] transition-colors duration-200" href="#">
+                            Services
+                        </a>
+</li>
+<li>
+<a class="font-manrope font-medium text-sm tracking-tight text-stone-600 dark:text-stone-400 hover:text-[#3E7C7A] transition-colors duration-200" href="#">
+                            Fees
+                        </a>
+</li>
+<li>
+<!-- Active Item -->
+<a class="font-manrope font-medium text-sm tracking-tight text-[#5FA8A6] border-b-2 border-[#5FA8A6] pb-1 hover:text-[#3E7C7A] transition-colors duration-200" href="#">
+                            Medicare
+                        </a>
+</li>
+<li>
+<a class="font-manrope font-medium text-sm tracking-tight text-stone-600 dark:text-stone-400 hover:text-[#3E7C7A] transition-colors duration-200" href="#">
+                            Resources
+                        </a>
+</li>
+</ul>
+</nav>
+<!-- Actions -->
+<div class="flex items-center space-x-4">
+<a class="font-manrope font-medium text-sm tracking-tight text-stone-600 dark:text-stone-400 hover:text-[#3E7C7A] transition-colors duration-200" href="#">Login</a>
+<a class="bg-primary text-on-primary px-4 py-2 rounded-lg font-button text-button hover:bg-[#3E7C7A] transition-colors duration-200 active:scale-95" href="#">Get Matched</a>
+</div>
+</div>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="max-w-container-max mx-auto px-gutter py-xl">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-xl items-center">
+<div class="flex flex-col gap-md">
+<span class="text-primary font-caption text-caption uppercase tracking-wider">Financial Support</span>
+<h1 class="font-h1 text-h1 text-on-surface">Understanding Medicare Rebates</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+                        Psychological care should be accessible. The Australian Government provides Medicare rebates for psychological services under a Mental Health Care Plan to help cover the costs of your sessions.
+                    </p>
+<div class="mt-4">
+<a class="inline-flex items-center gap-xs bg-surface-container border border-outline-variant px-6 py-3 rounded-full text-on-surface hover:bg-surface-container-high transition-colors" href="#steps">
+<span>How it works</span>
+<span class="material-symbols-outlined text-sm" data-icon="arrow_downward">arrow_downward</span>
+</a>
+</div>
+</div>
+<div class="rounded-xl overflow-hidden aspect-video bg-surface-container shadow-sm border border-outline/10">
+<img alt="Clinical setting" class="w-full h-full object-cover" data-alt="bright modern psychology clinic waiting area with soft sage green armchairs, wooden floors, and soft natural light pouring through large windows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvBEMjP19KmNX9b_Q2pWAWLHT5Fx9_Zv_v5V3QHMaJ5Lphn96bGOxv1QYWpIGX_d7e07z83v3ie5LQUirF9j9OOZS_PT9nga6x47Trcmiu2qofgqh3QOeUBZkELoWYJ-TjpWFi9H9wamrm-_d9G49ooeAfyida_71hMw2CiHUfoqt5eTUXMLLi5U08IMMJ8PcVOOg2qpPBsYKNbdYgNqhIjr2UW1eFYMRhtFmd-in8n5dPehZdQhbm424ti84EkS09-WEjH6L7SA"/>
+</div>
+</div>
+</section>
+<!-- Eligibility Bento Grid -->
+<section class="bg-surface-container py-xl">
+<div class="max-w-container-max mx-auto px-gutter">
+<div class="mb-lg">
+<h2 class="font-h2 text-h2 text-on-surface">Are you eligible?</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 max-w-2xl">
+                        To claim a rebate, you must have a valid Mental Health Care Plan (MHCP) issued by a general practitioner (GP), psychiatrist, or paediatrician before your session.
+                    </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col gap-4">
+<div class="h-12 w-12 bg-primary-container rounded-lg flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined" data-icon="clinical_notes">clinical_notes</span>
+</div>
+<h3 class="font-h3 text-h3 text-on-surface">The MHCP</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                            A Mental Health Care Plan allows you to claim up to 10 individual psychological appointments per calendar year.
+                        </p>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col gap-4">
+<div class="h-12 w-12 bg-secondary-container rounded-lg flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+</div>
+<h3 class="font-h3 text-h3 text-on-surface">Rebate Amount</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                            The current Medicare rebate is <strong>$93.35</strong> for a Registered Psychologist and <strong>$137.05</strong> for a Clinical Psychologist per 50-minute session.
+                        </p>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col gap-4">
+<div class="h-12 w-12 bg-tertiary-container rounded-lg flex items-center justify-center text-on-tertiary-container">
+<span class="material-symbols-outlined" data-icon="event_repeat">event_repeat</span>
+</div>
+<h3 class="font-h3 text-h3 text-on-surface">Session Limits</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                            Sessions are usually referred in blocks (e.g., initially 6 sessions). You will need a review with your GP to access the remaining 4 sessions.
+                        </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Steps to Claim -->
+<section class="max-w-container-max mx-auto px-gutter py-xl" id="steps">
+<h2 class="font-h2 text-h2 text-on-surface mb-xl text-center">How to claim your rebate</h2>
+<div class="relative max-w-3xl mx-auto">
+<!-- Vertical Line -->
+<div class="absolute left-8 top-8 bottom-8 w-px bg-outline-variant hidden md:block"></div>
+<div class="flex flex-col gap-lg">
+<!-- Step 1 -->
+<div class="flex flex-col md:flex-row gap-md items-start relative">
+<div class="w-16 h-16 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-h3 text-h3 z-10 shrink-0 border-4 border-background">
+                            1
+                        </div>
+<div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant w-full shadow-sm">
+<h3 class="font-h3 text-h3 text-on-surface mb-2">Visit your GP</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                                Book a long consultation with your GP to discuss your mental health. Ask them to prepare a Mental Health Care Plan (MHCP) and provide a referral letter addressed to Clink Psychology Clinic.
+                            </p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col md:flex-row gap-md items-start relative">
+<div class="w-16 h-16 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center font-h3 text-h3 z-10 shrink-0 border-4 border-background">
+                            2
+                        </div>
+<div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant w-full shadow-sm">
+<h3 class="font-h3 text-h3 text-on-surface mb-2">Send us your referral</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                                Before your first appointment, email your MHCP and referral letter to our admin team. We need this on file to process your rebates automatically.
+                            </p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col md:flex-row gap-md items-start relative">
+<div class="w-16 h-16 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center font-h3 text-h3 z-10 shrink-0 border-4 border-background">
+                            3
+                        </div>
+<div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant w-full shadow-sm">
+<h3 class="font-h3 text-h3 text-on-surface mb-2">Attend and Pay</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                                Attend your session. Following the session, you will be charged the full consultation fee via your nominated payment method.
+                            </p>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="flex flex-col md:flex-row gap-md items-start relative">
+<div class="w-16 h-16 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-h3 text-h3 z-10 shrink-0 border-4 border-background">
+                            4
+                        </div>
+<div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant w-full shadow-sm">
+<h3 class="font-h3 text-h3 text-on-surface mb-2">Receive your rebate</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                                Our team will securely process the Medicare claim on your behalf on the same day. The rebate amount will usually appear in your bank account within 24-48 hours.
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Process Details Note -->
+<section class="max-w-container-max mx-auto px-gutter pb-xl">
+<div class="bg-primary-fixed-dim/20 rounded-xl p-lg border border-primary-fixed/30 flex gap-md items-start">
+<span class="material-symbols-outlined text-primary mt-1" data-icon="info">info</span>
+<div>
+<h4 class="font-h3 text-h3 text-on-surface mb-2">Important Process Details</h4>
+<ul class="list-disc pl-5 font-body-md text-body-md text-on-surface-variant space-y-2">
+<li>Medicare does not cover cancellation fees. If you late-cancel or miss an appointment, you cannot claim a rebate for that fee.</li>
+<li>You must ensure your Medicare details are up to date with Services Australia to receive automatic deposits.</li>
+<li>Couples therapy and some specific assessments are generally not eligible for Medicare rebates under a standard MHCP.</li>
+</ul>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-stone-50 dark:bg-stone-950 w-full border-t border-[#2A3333]/10 mt-auto">
+<div class="py-12 px-8 flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto gap-8">
+<div class="flex flex-col items-center md:items-start gap-4">
+<span class="font-bold text-[#5FA8A6] text-xl">Clink</span>
+<span class="font-manrope text-xs text-stone-400">© 2024 Clink Psychology Clinic. All rights reserved.</span>
+</div>
+<ul class="flex flex-wrap justify-center gap-6">
+<li><a class="font-manrope text-xs uppercase tracking-widest text-stone-400 hover:text-[#5FA8A6] opacity-80 hover:opacity-100 transition-all" href="#">Privacy Policy</a></li>
+<li><a class="font-manrope text-xs uppercase tracking-widest text-stone-400 hover:text-[#5FA8A6] opacity-80 hover:opacity-100 transition-all" href="#">Terms of Service</a></li>
+<li><a class="font-manrope text-xs uppercase tracking-widest text-stone-400 hover:text-[#5FA8A6] opacity-80 hover:opacity-100 transition-all" href="#">Crisis Support</a></li>
+<li><a class="font-manrope text-xs uppercase tracking-widest text-stone-400 hover:text-[#5FA8A6] opacity-80 hover:opacity-100 transition-all" href="#">Careers</a></li>
+</ul>
+</div>
+</footer>
+</body></html>

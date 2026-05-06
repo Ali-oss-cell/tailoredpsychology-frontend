@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clink | Psychology Clinic</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#cee7e8",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#d9e6da",
+                        "inverse-on-surface": "#f2f0f0",
+                        "inverse-surface": "#303030",
+                        "on-error": "#ffffff",
+                        "on-surface": "#1b1c1c",
+                        "outline-variant": "#c2c8c8",
+                        "inverse-primary": "#b3cbcc",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e3e2e2",
+                        "surface-container-high": "#e9e8e7",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed": "#d9e6da",
+                        "on-secondary-container": "#5c675e",
+                        "surface-container-highest": "#e3e2e2",
+                        "on-tertiary-fixed": "#2b160d",
+                        "surface-tint": "#4c6264",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#4c3328",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#727878",
+                        "on-secondary-fixed": "#141e17",
+                        "tertiary": "#75584b",
+                        "tertiary-fixed-dim": "#e4bfaf",
+                        "tertiary-container": "#be9b8c",
+                        "on-secondary-fixed-variant": "#3e4941",
+                        "surface-container": "#efeded",
+                        "on-surface-variant": "#424848",
+                        "primary-fixed-dim": "#b3cbcc",
+                        "on-tertiary-fixed-variant": "#5b4135",
+                        "surface-bright": "#faf9f8",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#263d3e",
+                        "tertiary-fixed": "#ffdbcc",
+                        "on-primary-fixed": "#071f20",
+                        "secondary-fixed-dim": "#becabe",
+                        "on-background": "#1b1c1c",
+                        "secondary": "#566158",
+                        "primary": "#4c6264",
+                        "on-primary-fixed-variant": "#344b4c",
+                        "background": "#faf9f8",
+                        "primary-container": "#8fa7a8",
+                        "surface-container-low": "#f5f3f3",
+                        "surface-dim": "#dbdad9",
+                        "surface": "#faf9f8"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "2rem",
+                        "md": "1.5rem",
+                        "margin": "32px",
+                        "xl": "4rem",
+                        "xs": "0.5rem",
+                        "base": "4px",
+                        "container-max": "1280px",
+                        "gutter": "24px",
+                        "sm": "1rem"
+                    },
+                    "fontFamily": {
+                        "manrope": ['Manrope', 'sans-serif']
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                        "h1": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "h3": ["24px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600"}],
+                        "h2": ["36px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                        "caption": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "button": ["15px", {"lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-manrope selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-white/80 dark:bg-stone-900/80 backdrop-blur-md docked full-width top-0 sticky z-50 border-b border-[#2A3333]/10 dark:border-white/10 flat no-shadows">
+<div class="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto w-full">
+<div class="text-2xl font-bold tracking-tighter text-[#5FA8A6]">
+                Clink
+            </div>
+<nav class="hidden md:flex gap-6">
+<a class="font-manrope font-medium text-sm tracking-tight text-stone-600 dark:text-stone-400 hover:text-[#3E7C7A] transition-colors duration-200 Active: scale-95 transition-transform" href="#">Find a Psych</a>
+<a class="font-manrope font-medium text-sm tracking-tight text-[#5FA8A6] border-b-2 border-[#5FA8A6] pb-1 hover:text-[#3E7C7A] transition-colors duration-200 Active: scale-95 transition-transform" href="#">Services</a>
+<a class="font-manrope font-medium text-sm tracking-tight text-stone-600 dark:text-stone-400 hover:text-[#3E7C7A] transition-colors duration-200 Active: scale-95 transition-transform" href="#">Fees</a>
+<a class="font-manrope font-medium text-sm tracking-tight text-stone-600 dark:text-stone-400 hover:text-[#3E7C7A] transition-colors duration-200 Active: scale-95 transition-transform" href="#">Medicare</a>
+<a class="font-manrope font-medium text-sm tracking-tight text-stone-600 dark:text-stone-400 hover:text-[#3E7C7A] transition-colors duration-200 Active: scale-95 transition-transform" href="#">Resources</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="font-button text-button text-primary hover:text-primary-container transition-colors duration-200 hidden md:block">Login</button>
+<button class="font-button text-button bg-[#5FA8A6] hover:bg-[#3E7C7A] text-white px-6 py-3 rounded-full transition-all duration-200 transform hover:scale-95 shadow-sm">Get Matched</button>
+</div>
+</div>
+</header>
+<main class="flex-grow">
+<!-- Hero Section -->
+<section class="relative pt-32 pb-24 overflow-hidden">
+<div class="absolute inset-0 bg-surface-container-low -z-10"></div>
+<!-- Decorative organic shapes -->
+<div class="absolute top-0 right-0 w-[800px] h-[800px] bg-primary-fixed/30 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/3 -z-10"></div>
+<div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary-fixed/30 rounded-full blur-3xl opacity-50 translate-y-1/3 -translate-x-1/4 -z-10"></div>
+<div class="max-w-7xl mx-auto px-8 grid lg:grid-cols-2 gap-16 items-center">
+<div class="space-y-8">
+<div class="inline-flex items-center gap-2 px-4 py-2 bg-surface-container rounded-full text-sm font-medium text-primary">
+<span class="material-symbols-outlined text-base">verified</span>
+                        Available for new patients
+                    </div>
+<h1 class="font-h1 text-h1 text-on-surface">
+                        Quality care for your <span class="text-primary-container">mental wellbeing</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg">
+                        Clink provides compassionate, evidence-based psychological support tailored to your unique journey. Connect with clinical psychologists who understand.
+                    </p>
+<div class="flex flex-col sm:flex-row gap-4 pt-4">
+<button class="font-button text-button bg-[#5FA8A6] hover:bg-[#3E7C7A] text-white px-8 py-4 rounded-full transition-all duration-200 transform hover:scale-95 shadow-sm inline-flex items-center justify-center gap-2">
+                            Get Matched
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+<button class="font-button text-button border border-[#5FA8A6] text-[#5FA8A6] hover:bg-surface-container px-8 py-4 rounded-full transition-all duration-200 transform hover:scale-95 inline-flex items-center justify-center">
+                            View Services
+                        </button>
+</div>
+<div class="pt-8 border-t border-outline-variant/30 flex items-center gap-8">
+<div>
+<div class="font-h3 text-h3 text-on-surface">4.9/5</div>
+<div class="font-caption text-caption text-on-surface-variant">Patient Satisfaction</div>
+</div>
+<div>
+<div class="font-h3 text-h3 text-on-surface">15+</div>
+<div class="font-caption text-caption text-on-surface-variant">Clinical Psychologists</div>
+</div>
+<div>
+<div class="font-h3 text-h3 text-on-surface">100%</div>
+<div class="font-caption text-caption text-on-surface-variant">Confidential</div>
+</div>
+</div>
+</div>
+<div class="relative h-[600px] rounded-2xl overflow-hidden shadow-[0_24px_48px_-12px_rgba(95,168,166,0.15)] bg-surface-container">
+<img alt="Therapist speaking warmly with a patient in a light-filled modern clinic" class="w-full h-full object-cover" data-alt="Therapist speaking warmly with a patient in a light-filled modern clinic with organic decor and large windows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAacmQUB2QV9eO_cFInBuJdlcuSNO-pjMJkTs7rovlNf8KvMoDVx4gpdTzHAB1C3zn34UDjlMZccHUg65z_JXf_3UucAkgv454bGIVvlzefE4S3bGO9G9kAcsLL__Z7CyBieHvgtPwVwgm2x4ge3JJx5PSpNrAUinJDBU0i7BrAWLo09MgYiFagcPWFEy4ZpPtIyO58Ykt1zDY5XQmQCYSYqDOc1Ycj60JdQsuKaCG77Qnqdz_y9LYsM6OqwgBQCc4-jv1wCjhjQ"/>
+</div>
+</div>
+</section>
+<!-- Services Grid -->
+<section class="py-24 bg-surface">
+<div class="max-w-7xl mx-auto px-8">
+<div class="text-center max-w-2xl mx-auto mb-16">
+<h2 class="font-h2 text-h2 text-on-surface mb-4">How we can support you</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Comprehensive psychological services designed to foster resilience, growth, and healing in a safe environment.</p>
+</div>
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest p-8 rounded-[1.5rem] shadow-[0_8px_24px_-8px_rgba(95,168,166,0.08)] hover:shadow-[0_16px_32px_-8px_rgba(95,168,166,0.12)] transition-shadow duration-300 flex flex-col h-full border border-[#2A3333]/5">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container mb-6">
+<span class="material-symbols-outlined" data-icon="psychology" data-weight="fill" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<h3 class="font-h3 text-h3 text-on-surface mb-3">Individual Therapy</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 flex-grow">One-on-one sessions addressing anxiety, depression, trauma, and personal growth using evidence-based modalities like CBT and EMDR.</p>
+<a class="font-button text-button text-primary hover:text-primary-container inline-flex items-center gap-1 transition-colors" href="#">
+                            Learn more <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest p-8 rounded-[1.5rem] shadow-[0_8px_24px_-8px_rgba(95,168,166,0.08)] hover:shadow-[0_16px_32px_-8px_rgba(95,168,166,0.12)] transition-shadow duration-300 flex flex-col h-full border border-[#2A3333]/5">
+<div class="w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary mb-6">
+<span class="material-symbols-outlined" data-icon="group" data-weight="fill" style="font-variation-settings: 'FILL' 1;">group</span>
+</div>
+<h3 class="font-h3 text-h3 text-on-surface mb-3">Couples Counseling</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 flex-grow">Navigate relationship challenges, improve communication, and rebuild connection in a neutral, supportive space.</p>
+<a class="font-button text-button text-primary hover:text-primary-container inline-flex items-center gap-1 transition-colors" href="#">
+                            Learn more <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest p-8 rounded-[1.5rem] shadow-[0_8px_24px_-8px_rgba(95,168,166,0.08)] hover:shadow-[0_16px_32px_-8px_rgba(95,168,166,0.12)] transition-shadow duration-300 flex flex-col h-full border border-[#2A3333]/5">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center text-tertiary mb-6">
+<span class="material-symbols-outlined" data-icon="family_history" data-weight="fill" style="font-variation-settings: 'FILL' 1;">family_history</span>
+</div>
+<h3 class="font-h3 text-h3 text-on-surface mb-3">Child &amp; Adolescent</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 flex-grow">Specialized support for younger minds dealing with behavioral issues, school anxiety, and developmental transitions.</p>
+<a class="font-button text-button text-primary hover:text-primary-container inline-flex items-center gap-1 transition-colors" href="#">
+                            Learn more <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Explainer Section: Telehealth & Medicare -->
+<section class="py-24 bg-surface-container-low">
+<div class="max-w-7xl mx-auto px-8">
+<div class="bg-primary rounded-[2rem] p-12 lg:p-16 text-on-primary overflow-hidden relative">
+<!-- Background texture -->
+<div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;"></div>
+<div class="relative z-10 grid lg:grid-cols-2 gap-16 items-center">
+<div class="space-y-8">
+<h2 class="font-h2 text-h2">Accessible care, wherever you are.</h2>
+<p class="font-body-lg text-body-lg text-primary-fixed-dim">
+                                We believe mental healthcare should fit seamlessly into your life. That's why we offer flexible options to suit your needs.
+                            </p>
+<div class="space-y-6">
+<div class="flex gap-4">
+<div class="mt-1">
+<span class="material-symbols-outlined text-primary-fixed">devices</span>
+</div>
+<div>
+<h4 class="font-h3 text-h3 text-lg mb-1">Secure Telehealth</h4>
+<p class="font-body-md text-body-md text-primary-fixed-dim">Attend sessions from the comfort of home via our encrypted, easy-to-use video platform.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="mt-1">
+<span class="material-symbols-outlined text-primary-fixed">health_and_safety</span>
+</div>
+<div>
+<h4 class="font-h3 text-h3 text-lg mb-1">Medicare Rebates</h4>
+<p class="font-body-md text-body-md text-primary-fixed-dim">Eligible for Medicare rebates with a valid Mental Health Care Plan from your GP. We process claims on the spot.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Illustration/Bento visual -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-white/10 rounded-2xl p-6 backdrop-blur-sm border border-white/20 aspect-square flex flex-col justify-center items-center text-center">
+<span class="material-symbols-outlined text-4xl mb-4 text-primary-fixed">video_camera_front</span>
+<div class="font-h3 text-h3 text-lg">Online</div>
+<div class="font-caption text-caption text-primary-fixed-dim">Australia-wide</div>
+</div>
+<div class="bg-white/10 rounded-2xl p-6 backdrop-blur-sm border border-white/20 aspect-square flex flex-col justify-center items-center text-center translate-y-8">
+<span class="material-symbols-outlined text-4xl mb-4 text-primary-fixed">location_on</span>
+<div class="font-h3 text-h3 text-lg">In-Clinic</div>
+<div class="font-caption text-caption text-primary-fixed-dim">Melbourne CBD</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-stone-50 dark:bg-stone-950 text-[#8FA7A8] font-manrope text-xs uppercase tracking-widest w-full border-t mt-auto border-t border-[#2A3333]/10 flat">
+<div class="py-12 px-8 flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto gap-8">
+<div class="font-bold text-[#5FA8A6] text-xl normal-case">
+                Clink
+            </div>
+<div class="flex flex-wrap justify-center gap-6">
+<a class="text-stone-400 hover:text-[#5FA8A6] opacity-80 hover:opacity-100 transition-all" href="#">Privacy Policy</a>
+<a class="text-stone-400 hover:text-[#5FA8A6] opacity-80 hover:opacity-100 transition-all" href="#">Terms of Service</a>
+<a class="text-stone-400 hover:text-[#5FA8A6] opacity-80 hover:opacity-100 transition-all" href="#">Crisis Support</a>
+<a class="text-stone-400 hover:text-[#5FA8A6] opacity-80 hover:opacity-100 transition-all" href="#">Careers</a>
+</div>
+<div class="text-stone-400 opacity-80">
+                © 2024 Clink Psychology Clinic. All rights reserved.
+            </div>
+</div>
+</footer>
+</body></html>

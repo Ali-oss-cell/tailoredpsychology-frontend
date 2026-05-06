@@ -1,19 +1,51 @@
-import { Button } from "@/components/ui/button"
+import { PublicFooter } from "@/components/layout/public-footer"
+import { PublicHeader } from "@/components/layout/public-header"
+import { CtaStrip } from "@/components/marketing/cta-strip"
+import { FaqSection } from "@/components/marketing/faq-section"
+import { HeroSection } from "@/components/marketing/hero-section"
+import { HomeClinicTeamBand } from "@/components/marketing/home-clinic-team-band"
+import { HomeMomentsRow } from "@/components/marketing/home-moments-row"
+import { HomeProcessSection } from "@/components/marketing/home-process-section"
+import { HomepageObserver } from "@/components/marketing/homepage-observer"
+import { ServicesPreview } from "@/components/marketing/services-preview"
+import { SplitFeatureSection } from "@/components/marketing/split-feature-section"
+import { TelehealthRebatesBand } from "@/components/marketing/telehealth-rebates-band"
+import { TrustStats } from "@/components/marketing/trust-stats"
+import { homepageContent } from "@/content/homepage"
 
-export default function Page() {
+export default function HomePage() {
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
-      </div>
+    <div className="min-h-screen bg-background">
+      <HomepageObserver />
+      <PublicHeader />
+      <main>
+        <HeroSection {...homepageContent.hero} />
+        <TrustStats stats={homepageContent.trustStats} />
+        <SplitFeatureSection {...homepageContent.wellbeingIntro} />
+        <SplitFeatureSection {...homepageContent.guidedCare} />
+        <ServicesPreview
+          title={homepageContent.servicesPreview.title}
+          description={homepageContent.servicesPreview.description}
+          services={homepageContent.servicesPreview.items}
+        />
+        <SplitFeatureSection {...homepageContent.trustConnection} />
+        <HomeProcessSection {...homepageContent.carePath} />
+        <TelehealthRebatesBand
+          title={homepageContent.telehealthBand.title}
+          description={homepageContent.telehealthBand.description}
+          items={homepageContent.telehealthBand.items}
+        />
+        <SplitFeatureSection {...homepageContent.teamSnapshot} />
+        <HomeMomentsRow
+          title={homepageContent.moments.title}
+          description={homepageContent.moments.description}
+          moments={homepageContent.moments.items}
+        />
+        <HomeClinicTeamBand {...homepageContent.clinicalBand} />
+        <FaqSection title={homepageContent.faq.title} items={homepageContent.faq.items} />
+        <CtaStrip {...homepageContent.ctaStrip} />
+      </main>
+      <PublicFooter />
     </div>
   )
 }

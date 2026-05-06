@@ -1,0 +1,83 @@
+"use client"
+
+import * as React from "react"
+
+import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { getOpsPatientDataRequests, submitOpsPatientDataRequestAction, type PatientDataRequest } from "@/src/privacy-requests/api"
+
+const ACTIONS: Array<"assign" | "start_review" | "fulfill" | "reject"> = ["assign", "start_review", "fulfill", "reject"]
+
+export function PatientDataRequestsQueueCard({ title = "Patient data requests queue" }: { title?: string }) {
+  const [rows, setRows] = React.useState<PatientDataRequest[]>([])
+  const [loading, setLoading] = React.useState(true)
+  const [error, setError] = React.useState<string | null>(null)
+  const [actingId, setActingId] = React.useState<string | null>(null)
+
+  React.useEffect(() => {
+    void (async () => {
+      try {
+        setRows(await getOpsPatientDataRequests())
+      } catch {
+        setError("We couldn't load requests. Try again.")
+      } finally {
+        setLoading(false)
+      }
+    })()
+  }, [])
+
+  const runAction = async (requestId: string, action: "assign" | "start_review" | "fulfill" | "reject") => {
+    try {
+      setActingId(requestId)
+      const updated = await submitOpsPatientDataRequestAction(requestId, {
+        action,
+        notes: action === "fulfill" ? "Request fulfilled by governance team." : undefined,
+        reason: action === "reject" ? "Insufficient details provided." : undefined,
+      })
+      setRows((prev) => prev.map((item) => (item.requestId === updated.requestId ? updated : item)))
+      setError(null)
+    } catch {
+      setError("Action failed. Please retry.")
+    } finally {
+      setActingId(null)
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {loading ? <DashboardStateBlock variant="loading" message="Loading data..." /> : null}
+        {!loading && error ? <DashboardStateBlock variant="error" message={error} /> : null}
+        {!loading && !error && rows.length === 0 ? <DashboardStateBlock variant="empty" message="No requests in queue." /> : null}
+        {rows.map((row) => (
+          <article key={row.requestId} className="space-y-2 rounded-md border border-border/70 p-3 text-xs">
+            <div className="flex items-center justify-between">
+              <p className="font-medium">{row.requestId}</p>
+              <p className="text-muted-foreground">{row.status}</p>
+            </div>
+            <p className="text-muted-foreground">
+              patient: {row.patientId} • type: {row.requestType} • due: {new Date(row.slaDueAt).toLocaleString()}
+            </p>
+            <p>{row.details}</p>
+            <div className="flex flex-wrap gap-2">
+              {ACTIONS.map((action) => (
+                <button
+                  key={action}
+                  type="button"
+                  disabled={actingId === row.requestId}
+                  className="rounded border border-border px-2 py-1 hover:bg-muted disabled:opacity-60"
+                  onClick={() => void runAction(row.requestId, action)}
+                >
+                  {action}
+                </button>
+              ))}
+            </div>
+          </article>
+        ))}
+      </CardContent>
+    </Card>
+  )
+}
