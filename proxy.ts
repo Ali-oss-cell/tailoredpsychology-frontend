@@ -32,7 +32,9 @@ function isGuestOnlyPath(pathname: string): boolean {
 
 function getRedirectResponse(request: NextRequest, role: Role, fallback?: string): NextResponse {
   const redirectTarget = fallback ?? getDefaultRouteForRole(role)
-  const url = new URL(redirectTarget, request.url)
+  const url = request.nextUrl.clone()
+  url.pathname = redirectTarget
+  url.search = ""
   return NextResponse.redirect(url)
 }
 
@@ -54,7 +56,9 @@ export function proxy(request: NextRequest) {
   }
 
   if (role === "guest") {
-    const loginUrl = new URL("/login", request.url)
+    const loginUrl = request.nextUrl.clone()
+    loginUrl.pathname = "/login"
+    loginUrl.search = ""
     loginUrl.searchParams.set("redirect", pathname)
     return NextResponse.redirect(loginUrl)
   }
