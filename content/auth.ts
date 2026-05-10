@@ -1,7 +1,7 @@
 export const authContent = {
   login: {
     title: "Welcome back",
-    description: "Sign in to your Clink account securely.",
+    description: "Sign in to your Tailored Psychology account securely.",
     sideTitle: "Continue your care journey with confidence.",
     sideDescription:
       "Secure access to appointments, care notes, resources, and billing in one calm, consistent workspace.",

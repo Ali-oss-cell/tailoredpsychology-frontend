@@ -41,9 +41,9 @@ export default async function ConditionPage({ params }: ConditionPageProps) {
         </section>
 
         <section className="rounded-md border border-border/70 p-4">
-          <h2 className="text-lg font-semibold">How Clink supports this pathway</h2>
+          <h2 className="text-lg font-semibold">How Tailored Psychology supports this pathway</h2>
           <ul className="mt-2 list-disc space-y-2 pl-5 text-sm text-muted-foreground">
-            {content.clinkApproach.map((item) => (
+            {content.tailoredApproach.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>

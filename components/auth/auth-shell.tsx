@@ -34,7 +34,7 @@ export function AuthShell({
           ) : null}
           <div className="absolute inset-0 bg-gradient-to-b from-surface-2/40 via-surface-2/70 to-surface-1/95" />
           <div className="relative z-10 flex h-full flex-col justify-between p-10">
-            <Link href="/" className="inline-flex items-center" aria-label="Clink home">
+            <Link href="/" className="inline-flex items-center" aria-label="Tailored Psychology home">
               <ClinkLogo alt="" className="size-11" />
             </Link>
             <div className="max-w-md space-y-4">

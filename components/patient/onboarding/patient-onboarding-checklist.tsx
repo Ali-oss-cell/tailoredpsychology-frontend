@@ -86,7 +86,7 @@ export function PatientOnboardingChecklist() {
     return () => window.clearTimeout(id)
   }, [refreshStatus])
 
-  const greeting = displayName ? `Welcome, ${firstName(displayName)}` : "Welcome to Clink"
+  const greeting = displayName ? `Welcome, ${firstName(displayName)}` : "Welcome to Tailored Psychology"
 
   return (
     <section className="mx-auto max-w-5xl space-y-8 pb-8">

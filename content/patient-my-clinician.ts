@@ -2,7 +2,7 @@ export const patientMyClinicianContent = {
   header: {
     title: "My clinician",
     description:
-      "Psychologists you have seen or booked through Clink—the same people appear in your session list, reminders, and pre-session check-in.",
+      "Psychologists you have seen or booked through Tailored Psychology—the same people appear in your session list, reminders, and pre-session check-in.",
   },
   emergencyNotice:
     "Messaging in the portal is not for emergencies. Non-urgent questions are reviewed in business hours; if you are in immediate danger, call 000 or your local crisis line.",

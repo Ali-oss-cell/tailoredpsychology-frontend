@@ -16,7 +16,7 @@ export function PublicFooter() {
     <footer className="border-t border-border/70 bg-background">
       <PageContainer className="flex flex-col gap-5 py-10 md:flex-row md:items-center md:justify-between">
         <div>
-          <Link href="/" className="mb-2 inline-flex" aria-label="Clink home">
+          <Link href="/" className="mb-2 inline-flex" aria-label="Tailored Psychology home">
             <ClinkLogo alt="" className="size-10" />
           </Link>
           <p className="text-muted-foreground text-sm">

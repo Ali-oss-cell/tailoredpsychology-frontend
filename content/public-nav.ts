@@ -7,7 +7,7 @@ export type PublicNavItem = {
 
 export const PUBLIC_NAV_ITEMS: readonly PublicNavItem[] = [
   { href: "/services", label: "Services" },
-  { href: "/why-clink", label: "Why Clink" },
+  { href: "/why-clink", label: "Why Tailored Psychology" },
   { href: "/pricing", label: "Pricing" },
   { href: "/trust", label: "Trust" },
   { href: "/conditions", label: "Conditions" },

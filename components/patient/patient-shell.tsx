@@ -136,7 +136,7 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
           >
             <div className="flex h-16 items-center justify-between px-4 md:px-6">
               <div className="flex items-center gap-3">
-                <Link href="/patient/dashboard" className="lg:hidden" aria-label="Clink Patient home">
+                <Link href="/patient/dashboard" className="lg:hidden" aria-label="Tailored Psychology Patient home">
                   <ClinkLogo alt="" className="size-8" />
                 </Link>
                 <input

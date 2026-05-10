@@ -23,7 +23,7 @@ export function ClinkSidebarBrand({ dashboardHref, portalLabel }: ClinkSidebarBr
           "inline-flex focus-visible:ring-ring rounded-md focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
           collapsed && "mx-auto justify-center",
         )}
-        aria-label={`Clink ${portalLabel} home`}
+        aria-label={`Tailored Psychology ${portalLabel} home`}
       >
         <ClinkLogo
           alt=""

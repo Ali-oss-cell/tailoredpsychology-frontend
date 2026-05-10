@@ -2,7 +2,7 @@ import type { PublicDetailPageContent } from "@/content/pages/types"
 
 export const aboutPageContent: PublicDetailPageContent = {
   hero: {
-    eyebrow: "About Clink",
+    eyebrow: "About Tailored Psychology",
     title: "Psychology with intention and warmth",
     description:
       "We are a modern psychology clinic focused on evidence-based care, clear communication, and long-term wellbeing outcomes.",
@@ -44,13 +44,13 @@ export const aboutPageContent: PublicDetailPageContent = {
     title: "Identity built for clarity and calm",
     body: "Our visual language mirrors how we practice: straightforward, warm, and focused on you—not noise.",
     imageSrc: "/assets/logo-tailored-png.png",
-    imageAlt: "Clink tailored wordmark on a clean background.",
+    imageAlt: "Tailored Psychology wordmark on a clean background.",
   },
   faq: {
     title: "Common questions",
     items: [
       {
-        question: "Who can book with Clink?",
+        question: "Who can book with Tailored Psychology?",
         answer:
           "We support adults, couples, and younger clients through role-appropriate intake and matching pathways.",
       },

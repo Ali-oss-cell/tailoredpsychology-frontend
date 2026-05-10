@@ -1,4 +1,4 @@
-export const termsOfServiceEntityName = "Clink Health Pty Ltd"
+export const termsOfServiceEntityName = "Tailored Psychology Pty Ltd"
 
 export const termsOfServiceEffectiveDate = "4 May 2026"
 
@@ -13,7 +13,7 @@ export const termsOfServiceSections: TermsSection[] = [
     id: "acceptance",
     title: "1. Acceptance",
     paragraphs: [
-      `These Terms of Service ("Terms") govern your use of Clink services operated by ${termsOfServiceEntityName}. By creating an account or using the Services, you agree to these Terms.`,
+      `These Terms of Service ("Terms") govern your use of Tailored Psychology services operated by ${termsOfServiceEntityName}. By creating an account or using the Services, you agree to these Terms.`,
       "If you do not agree, do not use the Services.",
     ],
   },
@@ -21,7 +21,7 @@ export const termsOfServiceSections: TermsSection[] = [
     id: "scope",
     title: "2. Service scope",
     paragraphs: [
-      "Clink provides software workflows for booking, telehealth session access, records handling, and related communication.",
+      "Tailored Psychology provides software workflows for booking, telehealth session access, records handling, and related communication.",
       "Clinical care is delivered by qualified practitioners and organisations using the platform; platform availability does not replace emergency services.",
     ],
   },

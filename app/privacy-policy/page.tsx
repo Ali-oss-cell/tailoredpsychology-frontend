@@ -19,7 +19,7 @@ export default function PrivacyPolicyPage() {
                 Privacy Policy (Australia)
               </h1>
               <p className="text-muted-foreground mt-3 text-sm leading-relaxed md:text-base">
-                How we handle personal information—including health information—in connection with Clink.
+                How we handle personal information—including health information—in connection with Tailored Psychology.
               </p>
             </div>
           </div>

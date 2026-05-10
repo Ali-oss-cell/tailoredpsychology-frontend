@@ -3,7 +3,7 @@
  * DRAFT text for the public `/privacy-policy` page.
  * This file now uses a concrete entity name; legal sign-off is tracked separately.
  */
-export const ENTITY_NAME = "Clink Health Pty Ltd"
+export const ENTITY_NAME = "Tailored Psychology Pty Ltd"
 
 export type PrivacyPolicySection = {
   id: string
@@ -19,7 +19,7 @@ export const privacyPolicySections: PrivacyPolicySection[] = [
     id: "about",
     title: "Who we are",
     paragraphs: [
-      `This privacy policy describes how ${ENTITY_NAME} (“we”, “us”, “our”) collects, holds, uses, and discloses personal information when you use the Clink websites and applications (the “Services”).`,
+      `This privacy policy describes how ${ENTITY_NAME} (“we”, “us”, “our”) collects, holds, uses, and discloses personal information when you use the Tailored Psychology websites and applications (the “Services”).`,
       "We take privacy seriously. This document is written to align with common expectations under the Privacy Act 1988 (Cth) and the Australian Privacy Principles (APPs), and with health-sector handling norms. It is not a substitute for legal advice for your specific circumstances.",
     ],
   },
@@ -91,7 +91,7 @@ export const privacyPolicySections: PrivacyPolicySection[] = [
     id: "rights",
     title: "Access, correction, and complaints",
     paragraphs: [
-      "You may request access to, or correction of, the personal information we hold about you. In the Clink patient portal, privacy-related requests may be submitted through the data requests flow where enabled.",
+      "You may request access to, or correction of, the personal information we hold about you. In the Tailored Psychology patient portal, privacy-related requests may be submitted through the data requests flow where enabled.",
       "If you are not satisfied with our response, you may complain to the Office of the Australian Information Commissioner (OAIC). See the OAIC website for current contact details and guidance.",
     ],
     bullets: ["OAIC: https://www.oaic.gov.au/"],
@@ -128,7 +128,7 @@ export const privacyPolicySections: PrivacyPolicySection[] = [
     id: "contact",
     title: "Contact",
     paragraphs: [
-      "For privacy questions, use the public Clink contact channel at `/contact`. If your organisation publishes a dedicated privacy officer contact, keep that contact detail aligned between this policy and the contact page.",
+      "For privacy questions, use the public Tailored Psychology contact channel at `/contact`. If your organisation publishes a dedicated privacy officer contact, keep that contact detail aligned between this policy and the contact page.",
     ],
   },
 ]

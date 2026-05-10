@@ -90,7 +90,7 @@ export function PsychologistShell({
           <header className="bg-background/95 border-border/70 sticky top-0 z-20 border-b backdrop-blur">
             <div className="flex h-16 items-center justify-between px-4 md:px-6">
               <div className="flex items-center gap-3">
-                <Link href="/psychologist/dashboard" className="lg:hidden" aria-label="Clink Psychologist home">
+                <Link href="/psychologist/dashboard" className="lg:hidden" aria-label="Tailored Psychology Psychologist home">
                   <ClinkLogo alt="" className="size-8" />
                 </Link>
                 <input

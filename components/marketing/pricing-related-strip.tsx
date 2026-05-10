@@ -7,7 +7,7 @@ import { PageSection } from "@/components/layout/page-section"
 const LINKS = [
   { href: "/medicare-rebates?source=pricing", label: "Medicare rebates guide" },
   { href: "/trust?source=pricing", label: "Trust & safety" },
-  { href: "/why-clink?source=pricing", label: "Why Clink" },
+  { href: "/why-clink?source=pricing", label: "Why Tailored Psychology" },
 ] as const
 
 export function PricingRelatedStrip() {

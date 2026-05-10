@@ -52,7 +52,7 @@ export const APP_ROUTES: AppRoute[] = [
     allowGuests: true,
     allowedRoles: ["guest", "patient", "psychologist", "practice_manager", "admin"],
     requiredPermissions: ["marketing.read"],
-    navLabel: "Why Clink",
+    navLabel: "Why Tailored Psychology",
     navGroup: "main",
   },
   {

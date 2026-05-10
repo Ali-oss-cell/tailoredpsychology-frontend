@@ -13,7 +13,7 @@ export const publicPagesContent: Record<string, PublicPageContent> = {
     eyebrow: "Our Practice",
     title: "Psychology with intention",
     description:
-      "Clink combines evidence-based care with a deeply human therapeutic experience.",
+      "Tailored Psychology combines evidence-based care with a deeply human therapeutic experience.",
     infoTitle: "How we work",
     infoBody:
       "We focus on continuity, clarity, and measurable progress while adapting treatment plans to each person and life context.",
@@ -28,7 +28,7 @@ export const publicPagesContent: Record<string, PublicPageContent> = {
     eyebrow: "Service Model",
     title: "Services built around your needs",
     description:
-      "From one-on-one therapy to structured care plans, Clink supports every stage of the journey.",
+      "From one-on-one therapy to structured care plans, Tailored Psychology supports every stage of the journey.",
     infoTitle: "Formats we offer",
     infoBody:
       "In-clinic and telehealth sessions are supported by consistent documentation, referrals, and billing workflows.",

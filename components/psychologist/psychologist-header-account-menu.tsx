@@ -168,7 +168,7 @@ export function PsychologistHeaderAccountMenu() {
             Help
           </DropdownMenu.Label>
           <DropdownMenu.Item asChild className={itemClass}>
-            <a href="mailto:support@clink.test?subject=Clink%20psychologist%20portal">
+            <a href="mailto:support@clink.test?subject=Tailored%20Psychology%20psychologist%20portal">
               <Question size={16} className="shrink-0 opacity-80" aria-hidden />
               Email support
             </a>

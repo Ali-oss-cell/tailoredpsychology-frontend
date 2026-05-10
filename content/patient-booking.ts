@@ -65,7 +65,7 @@ export const bookingTypeOptions = [
   {
     value: "initial",
     label: "Initial appointment",
-    description: "First booking with Clink. Includes complete intake and Medicare/referral context.",
+    description: "First booking with Tailored Psychology. Includes complete intake and Medicare/referral context.",
   },
   {
     value: "follow_up",

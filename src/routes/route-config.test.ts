@@ -1,4 +1,4 @@
-import { APP_ROUTES } from "@/src/routes/route-config"
+import { APP_ROUTES } from "./route-config"
 
 describe("route config referrals access", () => {
   it("includes manager referrals route with referrals.verify permission", () => {

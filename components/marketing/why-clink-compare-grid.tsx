@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 
 export type WhyClinkCompareItem = {
   heading: string
-  clink: string
+  brand: string
   standard: string
 }
 
@@ -23,7 +23,7 @@ export function WhyClinkCompareGrid({ items }: WhyClinkCompareGridProps) {
             Capability comparison
           </h2>
           <p className="text-muted-foreground text-sm leading-relaxed md:text-base">
-            Each row contrasts how Clink is designed to operate versus common limitations in category-level telehealth
+            Each row contrasts how Tailored Psychology is designed to operate versus common limitations in category-level telehealth
             offerings—hover a card on desktop to lift the frame slightly.
           </p>
         </div>
@@ -44,8 +44,8 @@ export function WhyClinkCompareGrid({ items }: WhyClinkCompareGridProps) {
                     <CheckCircle size={22} weight="duotone" aria-hidden />
                   </span>
                   <div>
-                    <p className="text-primary text-xs font-semibold uppercase tracking-wide">Clink</p>
-                    <p className="text-foreground mt-1 text-sm leading-relaxed">{item.clink}</p>
+                    <p className="text-primary text-xs font-semibold uppercase tracking-wide">Tailored Psychology</p>
+                    <p className="text-foreground mt-1 text-sm leading-relaxed">{item.brand}</p>
                   </div>
                 </div>
                 <div className="bg-muted/50 flex gap-3 rounded-xl border border-border/60 p-3 md:p-4">

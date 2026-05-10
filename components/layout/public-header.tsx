@@ -16,7 +16,7 @@ export function PublicHeader() {
         <Link
           className="inline-flex shrink-0 translate-y-px items-center text-primary"
           href="/"
-          aria-label="Clink home"
+          aria-label="Tailored Psychology home"
         >
           <ClinkLogo alt="" className="size-9 sm:size-10" />
         </Link>

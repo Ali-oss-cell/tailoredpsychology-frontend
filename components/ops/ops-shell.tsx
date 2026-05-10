@@ -154,7 +154,7 @@ export function OpsShell({ children, activeRoute }: OpsShellProps) {
         <SidebarInset>
           <header className="bg-background/95 border-border/70 sticky top-0 z-20 border-b backdrop-blur">
             <div className="flex h-16 items-center justify-between px-4 md:px-6">
-              <Link href={opsDashboardHref} className="flex items-center gap-2 lg:hidden" aria-label="Clink Operations home">
+              <Link href={opsDashboardHref} className="flex items-center gap-2 lg:hidden" aria-label="Tailored Psychology Operations home">
                 <ClinkLogo alt="" className="size-8" />
                 <span className="text-muted-foreground text-sm font-semibold tracking-tight">Ops</span>
               </Link>

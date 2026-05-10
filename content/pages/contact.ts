@@ -26,7 +26,7 @@ export const contactPageContent: PublicDetailPageContent = {
       {
         title: "General enquiries",
         description:
-          "Questions about services, session formats, availability, and getting started at Clink.",
+          "Questions about services, session formats, availability, and getting started at Tailored Psychology.",
       },
       {
         title: "Referral support",

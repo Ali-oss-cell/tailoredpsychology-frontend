@@ -102,7 +102,7 @@ export const homepageContent: HomePageContent = {
     title: "Quality care for your",
     titleAccent: "mental wellbeing",
     description:
-      "Clink provides compassionate, evidence-based psychological support tailored to your journey. Connect with psychologists who understand your context and goals.",
+      "Tailored Psychology provides compassionate, evidence-based psychological support tailored to your journey. Connect with psychologists who understand your context and goals.",
     imageSrc: "/assets/hero-consultation-CPVmFEx5.webp",
     imageAlt: "A psychologist and client talking together in a bright, comfortable consultation space.",
     primaryAction: { href: "/get-matched", label: "Get Matched" },
@@ -213,7 +213,7 @@ export const homepageContent: HomePageContent = {
       "Our clinicians bring diverse specialties and stay current with research-backed methods—so you benefit from both individual attention and a connected practice culture.",
     imageSrc: "/assets/home-benefits-team-PZcsa_1m.jpg",
     imageAlt: "Clinical team collaborating in a professional healthcare setting.",
-    action: { href: "/why-clink", label: "Why Clink" },
+    action: { href: "/why-clink", label: "Why Tailored Psychology" },
   },
   moments: {
     title: "Care in the moments that shape your week",
@@ -256,7 +256,7 @@ export const homepageContent: HomePageContent = {
     title: "Common questions",
     items: [
       {
-        question: "How do I know if Clink is right for me?",
+        question: "How do I know if Tailored Psychology is right for me?",
         answer:
           "Start with a short matching flow or a call with our team. We will ask about your goals, availability, and preferences, then suggest clinicians who fit—there is no pressure to book until you feel ready.",
       },

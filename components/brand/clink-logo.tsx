@@ -2,7 +2,7 @@ import Image from "next/image"
 
 import { cn } from "@/lib/utils"
 
-/** Square Clink mark — all surfaces use this asset for consistency. */
+/** Square brand mark — all surfaces use this asset for consistency. */
 export const CLINK_LOGO_ICON_SRC = "/assets/logo-icon.png" as const
 
 type ClinkLogoProps = {
@@ -16,7 +16,7 @@ export function ClinkLogo({ className, priority, alt }: ClinkLogoProps) {
   return (
     <Image
       src={CLINK_LOGO_ICON_SRC}
-      alt={alt ?? "Clink"}
+      alt={alt ?? "Tailored Psychology"}
       width={48}
       height={48}
       className={cn("object-contain", className)}
