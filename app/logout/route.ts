@@ -46,5 +46,13 @@ export async function GET(request: Request) {
     })
   }
 
+  const parentDomain = process.env.COOKIE_DOMAIN?.trim()
+  if (parentDomain && parentDomain.length > 0) {
+    response.cookies.set({
+      ...common,
+      domain: parentDomain.startsWith(".") ? parentDomain : `.${parentDomain}`,
+    })
+  }
+
   return response
 }

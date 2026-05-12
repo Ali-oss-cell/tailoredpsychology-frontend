@@ -1,6 +1,7 @@
 import {
   clearBackendAccessTokenInSessionStorage,
   getBackendAccessTokenFromSessionStorage,
+  getBackendRoleFromSessionStorage,
   isBackendAccessTokenExpired,
   setBackendAccessTokenInSessionStorage,
 } from "@/src/auth/backend-session"
@@ -108,8 +109,11 @@ export async function ensureBackendAccessToken(): Promise<string> {
     clearBackendAccessTokenInSessionStorage()
   }
 
-  const role = readCookie("clink_role")
-  const creds = role ? DEMO_ROLE_CREDENTIALS[role] : null
+  const cookieRole = readCookie("clink_role")
+  const storedRole = getBackendRoleFromSessionStorage()
+  const role = cookieRole ?? storedRole
+  const creds =
+    role && role in DEMO_ROLE_CREDENTIALS ? DEMO_ROLE_CREDENTIALS[role as keyof typeof DEMO_ROLE_CREDENTIALS] : null
   if (!creds) {
     throw new Error("No supported authenticated role found for booking API")
   }
@@ -121,6 +125,7 @@ export async function ensureBackendAccessToken(): Promise<string> {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(creds),
+    credentials: "include",
     cache: "no-store",
   })
 

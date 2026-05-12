@@ -19,6 +19,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr"
 import { useNextTheme } from "@space-man/react-theme-animation"
 
+import { LogoutLink } from "@/components/auth/logout-link"
 import { getCurrentUser } from "@/src/auth/current-user"
 import { cn } from "@/lib/utils"
 
@@ -216,10 +217,10 @@ export function PsychologistHeaderAccountMenu() {
           <DropdownMenu.Separator className="bg-border/80 -mx-1 my-1 h-px" />
 
           <DropdownMenu.Item asChild className={itemClass}>
-            <Link href="/logout" className="text-destructive focus:text-destructive">
+            <LogoutLink className="text-destructive focus:text-destructive">
               <SignOut size={16} className="shrink-0 opacity-80" aria-hidden />
               Sign out
-            </Link>
+            </LogoutLink>
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>

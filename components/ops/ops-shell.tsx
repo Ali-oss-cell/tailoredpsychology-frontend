@@ -17,6 +17,7 @@ import {
   UsersThree,
 } from "@phosphor-icons/react/dist/ssr"
 
+import { LogoutLink } from "@/components/auth/logout-link"
 import { ClinkLogo } from "@/components/brand/clink-logo"
 import { ClinkSidebarBrand } from "@/components/brand/clink-sidebar-brand"
 import { NotificationBell } from "@/components/notifications/notification-bell"
@@ -143,10 +144,10 @@ export function OpsShell({ children, activeRoute }: OpsShellProps) {
               <span className="group-data-[state=collapsed]/sidebar:hidden">Compliance Mode (coming soon)</span>
             </Button>
             <Button asChild variant="ghost" className="w-full justify-start gap-2">
-              <Link href="/logout">
+              <LogoutLink>
                 <SignOut size={16} />
                 <span className="group-data-[state=collapsed]/sidebar:hidden">Logout</span>
-              </Link>
+              </LogoutLink>
             </Button>
           </SidebarFooter>
         </Sidebar>

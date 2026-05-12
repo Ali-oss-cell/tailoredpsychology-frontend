@@ -21,8 +21,8 @@ describe("tutorialsEnabled", () => {
     expect(tutorialsEnabled()).toBe(true)
   })
 
-  it("matches NODE_ENV when the var is unset", () => {
+  it("defaults on when the var is unset", () => {
     Reflect.deleteProperty(process.env, "NEXT_PUBLIC_TUTORIALS")
-    expect(tutorialsEnabled()).toBe(process.env.NODE_ENV === "development")
+    expect(tutorialsEnabled()).toBe(true)
   })
 })

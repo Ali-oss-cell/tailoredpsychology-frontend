@@ -1,7 +1,7 @@
 "use client"
 
 import type { Role } from "@/src/auth/access-control"
-import { setBackendAccessTokenInSessionStorage } from "@/src/auth/backend-session"
+import { setBackendAccessTokenInSessionStorage, setBackendRoleInSessionStorage } from "@/src/auth/backend-session"
 import { parseHttpErrorMessage } from "@/src/auth/parse-http-error-message"
 
 const DEFAULT_API_BASE = "http://localhost:3001/api"
@@ -43,6 +43,7 @@ export async function loginWithBackend(params: { email: string; password: string
   }
   const session = (await response.json()) as AuthSession
   setBackendAccessTokenInSessionStorage(session.accessToken)
+  setBackendRoleInSessionStorage(session.user.role)
   return session
 }
 
@@ -64,5 +65,6 @@ export async function registerWithBackend(params: {
   }
   const session = (await response.json()) as AuthSession
   setBackendAccessTokenInSessionStorage(session.accessToken)
+  setBackendRoleInSessionStorage(session.user.role)
   return session
 }

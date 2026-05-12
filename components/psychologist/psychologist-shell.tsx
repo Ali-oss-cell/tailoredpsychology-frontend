@@ -4,6 +4,7 @@ import type * as React from "react"
 import Link from "next/link"
 import { CalendarDots, House, NotePencil, SignOut, UsersThree, UserCircleGear, VideoCamera } from "@phosphor-icons/react/dist/ssr"
 
+import { LogoutLink } from "@/components/auth/logout-link"
 import { ClinkLogo } from "@/components/brand/clink-logo"
 import { ClinkSidebarBrand } from "@/components/brand/clink-sidebar-brand"
 import { NotificationBell } from "@/components/notifications/notification-bell"
@@ -78,10 +79,10 @@ export function PsychologistShell({
           <SidebarFooter className="space-y-2 border-t border-border/60 pt-4">
             <PsychologistJoinNextSession />
             <Button asChild variant="ghost" className="w-full justify-start gap-2">
-              <Link href="/logout">
+              <LogoutLink>
                 <SignOut size={16} />
                 <span className="group-data-[state=collapsed]/sidebar:hidden">Logout</span>
-              </Link>
+              </LogoutLink>
             </Button>
           </SidebarFooter>
         </Sidebar>
