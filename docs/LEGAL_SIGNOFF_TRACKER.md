@@ -29,7 +29,7 @@ Purpose: track owner and sign-off state for public legal pages before release.
 
 ## Release checklist
 
-- [x] Privacy policy has concrete entity name in content (`Clink Health Pty Ltd`).
+- [x] Privacy policy has concrete entity name in content (`Tailored Psychology Pty Ltd`).
 - [x] Terms of Service route exists (`/terms-of-service`).
 - [x] Register page links to Terms and Privacy pages.
 - [x] Public footer links include Terms and Privacy pages.

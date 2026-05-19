@@ -22,12 +22,13 @@ Purpose: unblock `smoke:wave4` on staging with real role accounts and capture ev
 
 ## 3) Run commands
 
-API + web smoke:
+API + web smoke (includes Wave 20 CORS, join token, invoice PDF):
 
 ```bash
 API_BASE="https://<staging-api-host>/api" \
 WEB_BASE="https://<staging-web-host>" \
-npm run smoke:wave4
+CORS_ORIGIN="https://<staging-web-host>" \
+npm run smoke:wave20
 ```
 
 API + web smoke with auto-doc update:

@@ -12,7 +12,11 @@
     "test:watch": "jest --watch",
     "test:ci": "jest --runInBand",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "smoke:wave4": "node scripts/wave4-runtime-smoke.mjs",
+    "smoke:wave4:update": "UPDATE_DOC=1 node scripts/wave4-runtime-smoke.mjs",
+    "smoke:wave20": "node scripts/wave4-runtime-smoke.mjs",
+    "smoke:wave20:update": "UPDATE_DOC=1 node scripts/wave4-runtime-smoke.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",

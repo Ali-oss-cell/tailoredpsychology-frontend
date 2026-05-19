@@ -1,6 +1,6 @@
 # Product, compliance, privacy, and gap analysis (Australia-oriented)
 
-**Audience:** Product, engineering, clinical leads, operations, and legal/compliance reviewers preparing Clink for credible launch and ongoing governance.
+**Audience:** Product, engineering, clinical leads, operations, and legal/compliance reviewers preparing Tailored Psychology for credible launch and ongoing governance.
 
 **Important — not legal advice**
 

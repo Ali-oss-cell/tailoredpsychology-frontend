@@ -2,7 +2,7 @@
 
 This document captures a **structured deep check** against how *this* repository defines “core” — without implying every E2E path was executed against a live API/DB in one pass. Use it for onboarding, release readiness, and reconciling **spec vs code**.
 
-**See also:** [`PRODUCT_COMPLIANCE_PRIVACY_AND_GAPS.md`](./PRODUCT_COMPLIANCE_PRIVACY_AND_GAPS.md) (AU law map, privacy policy, broader gaps), [`WAVE19_PLATFORM_COMPETITIVE_GAP_AUDIT.md`](./WAVE19_PLATFORM_COMPETITIVE_GAP_AUDIT.md) (competitive positioning, gap IDs, Phases A–C), [`routes-overview.md`](./routes-overview.md) (route inventory).
+**See also:** [`PRODUCT_COMPLIANCE_PRIVACY_AND_GAPS.md`](./PRODUCT_COMPLIANCE_PRIVACY_AND_GAPS.md) (AU law map, privacy policy, broader gaps), [`WAVE19_PLATFORM_COMPETITIVE_GAP_AUDIT.md`](./WAVE19_PLATFORM_COMPETITIVE_GAP_AUDIT.md) (competitive positioning, gap IDs, Phases A–C), [`WAVE20_LAUNCH_CLOSURE_AND_STAGING.md`](./WAVE20_LAUNCH_CLOSURE_AND_STAGING.md) (staging smoke, A6/N8), [`routes-overview.md`](./routes-overview.md) (route inventory).
 
 ---
 
@@ -147,7 +147,7 @@ Use this to **sequence work**: finish **§7.1** before widening scope into **§7
 - [ ] **P4** — Consent model v2 per legal (version, withdraw, minor flows).
 - [ ] **P5** — Metrics definitions + first dashboard slice.
 - [ ] **P6** — Tutorial and public-page backlog from Wave 16–18 as product prioritises.
-- [ ] **P7** — Asset audit complete; optional raster refresh per `IMAGE_CREDITS.md`.
+- [x] **P7** — Asset audit complete; optional raster refresh per `IMAGE_CREDITS.md`. *(Wave 19: fixed homepage clinic/team paths to `.svg`.)*
 - [ ] **P8** — Intake field matrix (pronouns, risk, etc.) phased per clinical sign-off.
 
 ### 7.3 One-line rule

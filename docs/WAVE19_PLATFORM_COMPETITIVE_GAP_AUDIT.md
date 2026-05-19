@@ -24,6 +24,7 @@
 | [`BOOKING_AND_PROFILE_PRODUCTION_READINESS.md`](./BOOKING_AND_PROFILE_PRODUCTION_READINESS.md) | Booking/referral/Medicare honesty. |
 | [`WAVE17_PATIENT_PORTAL_READINESS_DOWNLOADS_AND_JOIN.md`](./WAVE17_PATIENT_PORTAL_READINESS_DOWNLOADS_AND_JOIN.md) | Join/readiness/download honesty (BR-301/302 deferral). |
 | [`routes-overview.md`](./routes-overview.md) | Canonical route inventory. |
+| [`WAVE20_LAUNCH_CLOSURE_AND_STAGING.md`](./WAVE20_LAUNCH_CLOSURE_AND_STAGING.md) | Phase A staging smoke, CORS/join/PDF probes. |
 
 ---
 
