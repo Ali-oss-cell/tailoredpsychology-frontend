@@ -2,7 +2,7 @@
 
 This document captures a **structured deep check** against how *this* repository defines “core” — without implying every E2E path was executed against a live API/DB in one pass. Use it for onboarding, release readiness, and reconciling **spec vs code**.
 
-**See also:** [`PRODUCT_COMPLIANCE_PRIVACY_AND_GAPS.md`](./PRODUCT_COMPLIANCE_PRIVACY_AND_GAPS.md) (AU law map, privacy policy, broader gaps), [`routes-overview.md`](./routes-overview.md) (route inventory).
+**See also:** [`PRODUCT_COMPLIANCE_PRIVACY_AND_GAPS.md`](./PRODUCT_COMPLIANCE_PRIVACY_AND_GAPS.md) (AU law map, privacy policy, broader gaps), [`WAVE19_PLATFORM_COMPETITIVE_GAP_AUDIT.md`](./WAVE19_PLATFORM_COMPETITIVE_GAP_AUDIT.md) (competitive positioning, gap IDs, Phases A–C), [`routes-overview.md`](./routes-overview.md) (route inventory).
 
 ---
 
@@ -141,7 +141,7 @@ Use this to **sequence work**: finish **§7.1** before widening scope into **§7
 
 **Suggested checkboxes (nice to have)**
 
-- [ ] **P1** — Reconcile `WAVE7_REQUIREMENTS_CHECKLIST.md` BR-60x (and others) to code/API contract; mark Done / Partial with references.
+- [x] **P1** — Reconcile `WAVE7_REQUIREMENTS_CHECKLIST.md` BR-60x (and others) to code/API contract; mark Done / Partial with references. *(Wave 19: §G APIs + §D telehealth + partial §E.)*
 - [ ] **P2** — Unified status timeline for patient portal (design + API if needed).
 - [ ] **P3** — Audit event coverage expanded per Wave 13 / governance plan.
 - [ ] **P4** — Consent model v2 per legal (version, withdraw, minor flows).
@@ -168,7 +168,7 @@ Work **top to bottom** unless legal/security blocks reordering.
 5. **N3** — **Honesty audit** (pricing, Medicare, invoices, join) — quick pass before any external demo.
 6. **N6 + N7** — **Security / retention / NDB** runbook with legal (link engineering retention doc to approved policy).
 7. **P1** — **Wave 7 ↔ code reconciliation** (stops false “missing core” noise).
-8. **§3 D** — **Public asset audit** (`homepage.ts` and grep `"/assets/"` → `public/`).
+8. **§3 D** — **Public asset audit** (`homepage.ts` and grep `"/assets/"` → `public/`). *(Wave 19: homepage `.jpg` → committed `.svg` paths.)*
 9. **P7** — **Marketing polish** after assets are clean.
 10. **P2–P6, P8** — Pick **one** nice-to-have theme per sprint (timeline, audit depth, consent v2, metrics, tutorials, intake fields) based on pilot customer.
 
@@ -188,3 +188,4 @@ Work **top to bottom** unless legal/security blocks reordering.
 | 2026-05-06 | Wave 5 progress: Track B honesty audit completed (`WAVE5_HONESTY_AUDIT.md`) and Track C governance runbook drafted with owners/process (`SECURITY_RETENTION_NDB_RUNBOOK.md`). |
 | 2026-05-06 | Wave 5 progress: Track A session hardening implemented (backend-set HttpOnly role cookie, frontend cookie writes removed) and local smoke evidence refreshed. |
 | 2026-05-06 | Wave 5 progress: Track D staging prep checklist added (`WAVE5_STAGING_SMOKE_PREP_CHECKLIST.md`) pending real staging role credentials. |
+| 2026-05-09 | Wave 19 added: competitive gap audit and phased roadmap (`WAVE19_PLATFORM_COMPETITIVE_GAP_AUDIT.md`). |

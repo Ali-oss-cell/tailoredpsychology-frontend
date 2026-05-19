@@ -14,6 +14,7 @@ This document summarises **engineering-visible gaps**, **common Australian legal
 |----------|---------|
 | [`WAVE7_REQUIREMENTS_CHECKLIST.md`](./WAVE7_REQUIREMENTS_CHECKLIST.md) | BR-### business requirements (many rows still “Not started” — reconcile against code before treating as live status). |
 | [`CORE_PLATFORM_DEEP_CHECK.md`](./CORE_PLATFORM_DEEP_CHECK.md) | Lenses for “what is core”, high-confidence shipped areas, gaps (doc drift, telehealth spec, assets, demo auth), and a reconciliation process. |
+| [`WAVE19_PLATFORM_COMPETITIVE_GAP_AUDIT.md`](./WAVE19_PLATFORM_COMPETITIVE_GAP_AUDIT.md) | vs Halaxy/PMS/telehealth competitors; gap IDs (PG/CO/TH/GV/IN); Phases A–C checklists. |
 | [`WAVE13_COMPLIANCE_AND_CLINICAL_GOVERNANCE_PLAN.md`](./WAVE13_COMPLIANCE_AND_CLINICAL_GOVERNANCE_PLAN.md) | Governance hardening scope (consent, notes, legal hold, NDB, privacy requests). |
 | [`BOOKING_AND_PROFILE_PRODUCTION_READINESS.md`](./BOOKING_AND_PROFILE_PRODUCTION_READINESS.md) | Booking, referrals, clinician profile wiring; AU regulatory **pointers** (not advice). |
 | [`backend/docs/RETENTION_AND_DELETION_POLICY_AU.md`](../../backend/docs/RETENTION_AND_DELETION_POLICY_AU.md) | Engineering baseline for retention / soft delete / legal hold (must align with legal sign-off). |

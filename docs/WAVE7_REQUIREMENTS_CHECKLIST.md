@@ -111,9 +111,9 @@ Invalid transitions must return contract error (`409 Conflict`) with machine-rea
 |---|---|---|---|---|---|---|
 | BR-301 | Session location confirmation before telehealth join | Clinical/Frontend | P0 | `currentSessionLocation`, `confirmedAt` | Mandatory check before join action | Deferred (Wave 17 alignment decision, 2026-05-04) |
 | BR-302 | Device-readiness preflight requirement | Product/Frontend | P1 | `micCheck`, `cameraCheck`, `networkCheck` | Preflight UX and outcomes documented | Deferred (Wave 17 alignment decision, 2026-05-04) |
-| BR-303 | Pre-session chat opens at T-30 minutes | Product/Backend | P0 | `chatWindowStatus`, `opensAt`, `appointmentStartAt` | Chat remains locked before T-30 and opens automatically at T-30 | Not started |
-| BR-304 | Pre-session chat auto-close policy | Product/Backend | P0 | `closedReason`, `closedAt` | Auto-close when session joined/cancelled/no-show timeout | Not started |
-| BR-305 | Chat visibility permissions | Security/Ops | P1 | `participantRole`, `appointmentId` | Only patient + assigned clinician (+ approved escalation roles) can access | Not started |
+| BR-303 | Pre-session chat opens at T-30 minutes | Product/Backend | P0 | `chatWindowStatus`, `opensAt`, `appointmentStartAt` | Chat remains locked before T-30 and opens automatically at T-30 | Done (`appointments.service.ts` `chatWindowOpenAt` = start − 30m; `computeWindowStatus`) |
+| BR-304 | Pre-session chat auto-close policy | Product/Backend | P0 | `closedReason`, `closedAt` | Auto-close when session joined/cancelled/no-show timeout | Partial (`computeWindowStatus` closes on completed/cancelled/no_show and after `chatWindowCloseAt`) |
+| BR-305 | Chat visibility permissions | Security/Ops | P1 | `participantRole`, `appointmentId` | Only patient + assigned clinician (+ approved escalation roles) can access | Partial (JWT + appointment-scoped chat join; ops escalation TBD) |
 
 ---
 
@@ -124,8 +124,8 @@ Invalid transitions must return contract error (`409 Conflict`) with machine-rea
 | BR-401 | Canonical entities defined for intake/booking/referrals | Backend | P0 | Core domain APIs | Entity dictionary approved and versioned | Data governance | Not started |
 | BR-402 | Append-only event log for sensitive transitions | Backend/Security | P0 | Event service | All sensitive lifecycle transitions produce immutable events | Audit readiness | Not started |
 | BR-403 | Field-level audit for sensitive edits | Backend | P1 | `PATCH` endpoints | Actor, old value, new value, reason logged | Compliance traceability | Not started |
-| BR-404 | Referral document secure storage policy | Security/Backend | P0 | Document upload API | Storage class, access policy, and retention documented | PHI handling | Not started |
-| BR-405 | Consent versioning and withdrawal support | Product/Security | P0 | `POST /consents`, `POST /consents/withdraw` | Versioned records and withdrawal workflow defined | Legal defensibility | Not started |
+| BR-404 | Referral document secure storage policy | Security/Backend | P0 | Document upload API | Storage class, access policy, and retention documented | PHI handling | Partial (`POST /documents/referrals`, `referral_documents` table; policy doc in `RETENTION_AND_DELETION_POLICY_AU.md`) |
+| BR-405 | Consent versioning and withdrawal support | Product/Security | P0 | `POST /consents`, `POST /consents/withdraw` | Versioned records and withdrawal workflow defined | Legal defensibility | Partial (`auth/consents/accept`, `auth/consents/withdraw`, `patient_consents` in DB) |
 | BR-406 | Data retention and soft-delete policy | Security/Backend | P1 | Data lifecycle jobs | Retention windows and deletion behavior documented | Privacy and records law alignment | Not started |
 
 ---
@@ -147,14 +147,14 @@ Invalid transitions must return contract error (`409 Conflict`) with machine-rea
 
 | ID | Endpoint | Owner | Priority | Purpose | Acceptance criteria | Status |
 |---|---|---|---|---|---|---|
-| BR-601 | `GET /clinicians/availability` | Backend | P0 | Dynamic schedule source | Supports date range, clinician filter, slot status | Not started |
-| BR-602 | `POST /booking-requests` | Backend | P0 | Persist booking request and lifecycle start | Validation and response contract approved | Not started |
-| BR-603 | `POST /documents/referrals` | Backend | P0 | Secure referral upload and metadata creation | Upload result includes document ID/status | Not started |
+| BR-601 | `GET /clinicians/availability` | Backend | P0 | Dynamic schedule source | Supports date range, clinician filter, slot status | Done (`appointments.controller.ts` `GET clinicians/availability`) |
+| BR-602 | `POST /booking-requests` | Backend | P0 | Persist booking request and lifecycle start | Validation and response contract approved | Done (`POST booking-requests`, Prisma + in-memory) |
+| BR-603 | `POST /documents/referrals` | Backend | P0 | Secure referral upload and metadata creation | Upload result includes document ID/status | Done (`resources.controller.ts` `POST documents/referrals`) |
 | BR-604 | `GET /patients/:id/intake-latest` | Backend | P1 | Follow-up prefill source | Returns latest intake snapshot + version | Not started |
 | BR-605 | `POST /patients/:id/intake-delta` | Backend | P1 | Save update-only changes | Delta model and merge policy documented | Not started |
 | BR-606 | `GET /patients/:id/medicare-status` | Backend | P1 | Show entitlement/rebate readiness | Returns counters and status flags | Not started |
-| BR-607 | `POST /consents` | Backend | P0 | Store consent version records | Contract includes policy version and timestamp | Not started |
-| BR-608 | `GET /booking-requests/:id/status` | Backend | P1 | Patient-visible progress tracking | Returns state + last updated + next action | Not started |
+| BR-607 | `POST /consents` | Backend | P0 | Store consent version records | Contract includes policy version and timestamp | Partial (`POST auth/consents/accept` + `patient_consents`; path differs from spec) |
+| BR-608 | `GET /booking-requests/:id/status` | Backend | P1 | Patient-visible progress tracking | Returns state + last updated + next action | Partial (status via booking request APIs — verify contract in `appointments.controller.ts`) |
 
 ---
 

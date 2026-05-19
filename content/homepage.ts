@@ -242,12 +242,12 @@ export const homepageContent: HomePageContent = {
     description:
       "Whether you prefer a dedicated therapy room or coordinated teamwork behind the scenes, the environment is built to feel steady—not rushed.",
     clinic: {
-      src: "/assets/clinic-room.jpg",
+      src: "/assets/clinic-room.svg",
       alt: "Calm in-clinic therapy room with natural light.",
       caption: "In-clinic spaces designed to feel grounded and private.",
     },
     team: {
-      src: "/assets/team-discussion.jpg",
+      src: "/assets/team-discussion.svg",
       alt: "Clinical team discussing care plans together.",
       caption: "Clinicians align on approaches so your care stays coherent.",
     },

@@ -19,12 +19,12 @@ This document tracks patient-facing actions: what is wired, what is still a gap,
 
 These are not “dead buttons” on the patient shell, but follow-ups for a full product:
 
-| Area | Gap | Suggested owner |
-|------|-----|-----------------|
-| Billing | Replace invoice download stub with stored PDFs (or generated PDFs) and durable invoice records | Backend + Frontend |
-| Account / profile | Optional fields (phone, address, emergency contact) beyond display name | Both |
-| Psychologist workspace | Replace demo `user_psychologist_001` → `clinician_001` mapping with real clinician–user linkage in DB | Backend |
-| Mood | Persist mood check-ins in PostgreSQL when DB mode is on (today in-memory only) | Backend |
+| Area | Gap | Suggested owner | Wave 19 |
+|------|-----|-----------------|---------|
+| Billing | Durable invoice **records** in DB (PDF download now generated) | Backend + Frontend | Partial — PDF done; DB ledger open |
+| Account / profile | Address fields beyond contact block | Both | Open |
+| Psychologist workspace | Replace demo `user_psychologist_001` → `clinician_001` mapping with real clinician–user linkage in DB | Backend | Open |
+| Mood | Persist mood check-ins in PostgreSQL when DB mode is on | Backend | **Done** — `patient_mood_checkins` table |
 
 ## Already functional (patient shell and flows)
 

@@ -17,20 +17,22 @@ This is the execution tracker to finish all admin tabs with real API-backed func
 
 ## Current Admin Tab Status
 
+*Reconciled 2026-05-09 (Wave 19): backend `GET /api/admin/ops/*` exists; frontend pages call `src/admin/ops/api.ts`.*
+
 - `admin/dashboard`: `functional` (ops insights, telehealth insights, referrals queue, intake queue)
 - `admin/users`: `functional` (psychologist management card with API)
 - `admin/referrals`: `functional` (referral queue and actions)
 - `admin/privacy-requests`: `functional` (patient data request queue card)
 - `admin/security-incidents`: `functional` (incident register + transitions)
 - `admin/audit-logs`: `functional` (audit event list)
-- `admin/data-deletion`: `partial` (hardcoded patient IDs for retention checks)
-- `admin/appointments`: `partial` (depends on missing `admin/ops/appointments` backend endpoint)
-- `admin/patients`: `partial` (depends on missing `admin/ops/patients` backend endpoint)
-- `admin/staff`: `partial` (depends on missing `admin/ops/staff` backend endpoint)
-- `admin/settings`: `partial` (depends on missing `admin/ops/settings` backend endpoint)
-- `admin/resources`: `partial` (depends on missing `admin/ops/resources` backend endpoint)
-- `admin/billing`: `partial` (snapshot only, depends on `admin/ops/billing` scope)
-- `admin/analytics`: `partial` (summary only, depends on `admin/ops/analytics-summary` scope)
+- `admin/data-deletion`: `functional` (`GET admin/ops/deletion-queue` with filters)
+- `admin/appointments`: `functional` (`GET admin/ops/appointments`)
+- `admin/patients`: `functional` (`GET admin/ops/patients`)
+- `admin/staff`: `functional` (`GET admin/ops/staff`)
+- `admin/settings`: `functional` (`GET admin/ops/settings` — domain snapshot)
+- `admin/resources`: `functional` (`GET admin/ops/resources` — referral governance list)
+- `admin/billing`: `functional` (`GET admin/ops/billing` summary)
+- `admin/analytics`: `functional` (`GET admin/ops/analytics-summary`)
 
 ## One-by-One Wiring Order
 
