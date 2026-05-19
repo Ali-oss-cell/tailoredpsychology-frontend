@@ -7,6 +7,7 @@ import {
   CaretRight,
   CheckCircle,
   ClipboardText,
+  CurrencyCircleDollar,
   MapTrifold,
   PaperPlaneTilt,
   PlayCircle,
@@ -31,6 +32,7 @@ const STEP_ORDER = [
   "session_started",
   "session_completed",
   "session_no_show",
+  "invoice_downloaded",
 ] as const
 
 type OrderedJourneyKey = (typeof STEP_ORDER)[number]
@@ -85,6 +87,12 @@ const STEP_GUIDE: Record<
     whenPending: "Only appears if a no-show is recorded instead of a completed visit.",
     whenDone: "A no-show was logged; contact the clinic if this was a mistake.",
     icon: WarningCircle,
+  },
+  invoice_downloaded: {
+    meaning: "You retrieved a tax invoice or receipt from Billing for your records.",
+    whenPending: "After a visit, open Billing and download your invoice when it is available.",
+    whenDone: "A portal invoice download was recorded.",
+    icon: CurrencyCircleDollar,
   },
 }
 

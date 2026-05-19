@@ -134,7 +134,7 @@ Invalid transitions must return contract error (`409 Conflict`) with machine-rea
 
 | ID | Requirement | Owner | Priority | KPI | Acceptance criteria | Status |
 |---|---|---|---|---|---|---|
-| BR-501 | Unified status timeline for patient | Product/Frontend | P1 | Step completion rate | Timeline states visible and understandable in patient portal | Not started |
+| BR-501 | Unified status timeline for patient | Product/Frontend | P1 | Step completion rate | Timeline states visible and understandable in patient portal | **Partial** — `GET /patients/:id/journey-timeline`; dashboard + appointments UI (Wave 21) |
 | BR-502 | Save/resume across devices | Product/Backend | P1 | Draft completion recovery rate | Resume available on different devices after login | Not started |
 | BR-503 | Intake drop-off analytics by step | Data/Product | P1 | Drop-off by step | Event schema and dashboard definitions approved | Not started |
 | BR-504 | Time-to-first-appointment metric | Data/Ops | P1 | Median TTFA | Calculation definition and data source documented | Not started |

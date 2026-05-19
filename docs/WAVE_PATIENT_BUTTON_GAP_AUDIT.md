@@ -11,7 +11,7 @@ This document tracks patient-facing actions: what is wired, what is still a gap,
 - **Upcoming Session** (`Join`, `Manage`): appointment APIs and shared manage UI via [`upcoming-session-card.tsx`](../components/patient/dashboard/upcoming-session-card.tsx) and [`appointment-manage-panel.tsx`](../components/patient/appointments/appointment-manage-panel.tsx).
 - **My Appointments page** (`Manage`, status display): live list from `GET /api/patients/:id/appointments`, badges, and same manage panel in [`patient-appointments-section.tsx`](../components/patient/appointments/patient-appointments-section.tsx).
 - **Account** (`Edit Profile`, `Change Password`, `Notifications`): [`patient-account-settings.tsx`](../components/patient/account/patient-account-settings.tsx) with auth profile/password and notification preference APIs.
-- **Invoices** (`Download`): [`patient-invoices-section.tsx`](../components/patient/billing/patient-invoices-section.tsx) with billing list and download (placeholder `.txt` until real PDF storage).
+- **Invoices** (`Download`): [`patient-invoices-section.tsx`](../components/patient/billing/patient-invoices-section.tsx) — PDF download; PostgreSQL `patient_invoices` when DB enabled (Wave 21).
 - **Mood Check-in**: emoji actions and history via `GET`/`POST /api/patients/:id/mood-checkins` in [`mood-checkin-card.tsx`](../components/patient/dashboard/mood-checkin-card.tsx) (in-memory stub on backend).
 - **Psychologist shell — Join Next Session**: resolves next workspace appointment in [`psychologist-join-next-session.tsx`](../components/psychologist/psychologist-join-next-session.tsx).
 

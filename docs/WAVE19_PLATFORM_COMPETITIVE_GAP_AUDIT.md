@@ -86,7 +86,7 @@
 |----|-----|----------------|-------------------|----------|---------|
 | PG-01 | Invoice download placeholder | PMS: real PDFs | `billing.service.ts` | Phase B | **Done** — minimal PDF download |
 | PG-02 | Account profile depth | PMS standard | `patient_profiles` + account settings | Phase B | **Done** — phone, emergency, accessibility editable |
-| PG-03 | Unified journey timeline | Mature portals | BR-501 | Phase C | Open |
+| PG-03 | Unified journey timeline | Mature portals | BR-501 | Phase C | **Partial** — dashboard + appointments (Wave 21) |
 | PG-04 | Medicare auto-adjudication | Integrated PMS | Honesty by design | — | **By design** |
 | PG-05 | Mood in-memory only | Persist check-ins | `patient_mood_checkins` migration | Phase B | **Done** — PostgreSQL when DB on |
 

@@ -91,7 +91,7 @@ Australia also has **state/territory health records legislation** that may apply
 | **Append-only audit for sensitive transitions (BR-402)** | Without immutable, queryable evidence, **enterprise sales** and **incident review** are harder. |
 | **Consent versioning / withdrawal (BR-405)** | Health privacy expectations often require **demonstrable consent state** at time of treatment and changes over time. |
 | **Field-level audit (BR-403)** | Needed for “who changed what, when, why” on sensitive records. |
-| **Unified patient journey timeline (BR-501)** | Without it, the product can feel like **separate forms** rather than **one coordinated service**. |
+| **Unified patient journey timeline (BR-501)** | Dashboard + appointments surfaces wired to `GET /patients/:id/journey-timeline`; billing milestone after invoice download (Wave 21). |
 
 ### B.3 Documentation hygiene (internal, but creates false “missing core”)
 

@@ -1,3 +1,4 @@
+import { PatientJourneyTimelineCard } from "@/components/patient/dashboard/patient-journey-timeline-card"
 import { PatientAppointmentsSection } from "@/components/patient/appointments/patient-appointments-section"
 import { PatientPageHeader } from "@/components/patient/patient-page-header"
 import { PatientShell } from "@/components/patient/patient-shell"
@@ -12,6 +13,7 @@ export default function PatientAppointmentsPage() {
           description={patientAppointmentsContent.header.description}
         />
 
+        <PatientJourneyTimelineCard />
         <PatientAppointmentsSection />
       </section>
     </PatientShell>

@@ -116,7 +116,7 @@ Use this to **sequence work**: finish **§7.1** before widening scope into **§7
 
 **Suggested checkboxes (need to have)**
 
-- [ ] **N1** — Production auth path verified; demo/stub copy gated or removed in prod builds (`login` and env strategy). *(Wave 5: role cookie write removed from frontend login/register; backend now sets HttpOnly role cookie. Local smoke passes; repeat on **staging/prod** credentials before release.)*
+- [ ] **N1** — Production auth path verified; demo/stub copy gated or removed in prod builds (`login` and env strategy). *(Wave 21: forgot/reset password APIs + UI; configure `PUBLIC_APP_URL` + SMTP for prod email delivery; staging smoke still required.)*
 - [x] **N2** — Role smoke matrix passed (patient / psych / manager / admin) against live or staging API. *(Local **2026-05-04**: API RBAC probes + Next `proxy.ts` redirect probes recorded in `WAVE3_AUTH_RBAC_SMOKE_MATRIX.md`.)*
 - [x] **N3** — Spot-audit pricing, Medicare copy, invoices, join links for honesty. *(Completed 2026-05-06; findings and wording fixes recorded in `WAVE5_HONESTY_AUDIT.md`.)*
 - [ ] **N4** — Replace `ENTITY_PLACEHOLDER` in `content/legal/privacy-policy-au.ts`; privacy officer + contact; legal sign-off recorded. *(Entity text done; legal owner/status/target date and contact source are now tracked, counsel sign-off still pending in `LEGAL_SIGNOFF_TRACKER.md`.)*
