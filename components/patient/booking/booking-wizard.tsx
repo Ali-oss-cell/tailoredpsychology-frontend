@@ -15,6 +15,7 @@ import { ReferralUpload } from "@/components/patient/booking/referral-upload"
 import { PatientPageHeader } from "@/components/patient/patient-page-header"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { InlinePurposeHint } from "@/components/shared/inline-purpose-hint"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -45,6 +46,7 @@ import { publicPricing } from "@/content/public-pricing"
 import { trackFrontendAnalyticsEvent } from "@/src/analytics/events"
 import type { BookingRequestDraft, BookingStepId } from "@/src/patient/booking/types"
 import { getCurrentUser } from "@/src/auth/current-user"
+import { usePatientBookingEligibility } from "@/src/patient/booking/use-patient-booking-eligibility"
 import { toast } from "@/src/lib/toast"
 
 const STORAGE_KEY = "clink_booking_draft_v1"
@@ -244,13 +246,68 @@ export function BookingWizard() {
   const draftVersionRef = React.useRef(0)
   const lastSyncedSnapshotRef = React.useRef("")
 
+  const bookingEligibility = usePatientBookingEligibility(intakePatientId)
+
   const shouldShowReferralStep =
     draft.bookingMeta.bookingType === "initial" ||
     draft.bookingMeta.changesSinceLastVisit === "yes" ||
     draft.medicarePath.hasReferral === "yes" ||
     Boolean(draft.referralFile.fileName)
 
-  const visibleSteps = bookingSteps.filter((step) => step.id !== "referral" || shouldShowReferralStep)
+  const skipModeStep = !bookingEligibility.loading && bookingEligibility.isNewPatient
+
+  const visibleSteps = bookingSteps.filter((step) => {
+    if (step.id === "referral" && !shouldShowReferralStep) return false
+    if (step.id === "mode" && skipModeStep) return false
+    return true
+  })
+
+  const matchSource = searchParams.get("source") === "match"
+  const preselectedClinicianId = searchParams.get("clinician")
+  const preselectedClinicianName =
+    liveClinicians.find((c) => c.id === preselectedClinicianId)?.name ??
+    clinicians.find((c) => c.id === preselectedClinicianId)?.name
+
+  React.useEffect(() => {
+    if (bookingEligibility.loading) {
+      return
+    }
+    setDraft((current) => {
+      const parts = bookingEligibility.displayName.trim().split(/\s+/).filter(Boolean)
+      const next = { ...current }
+      if (bookingEligibility.isNewPatient) {
+        next.bookingMeta = {
+          bookingType: "initial",
+          changesSinceLastVisit: "no",
+        }
+      } else if (current.bookingMeta.bookingType !== "follow_up" && current.bookingMeta.bookingType !== "initial") {
+        next.bookingMeta = { ...current.bookingMeta, bookingType: "initial" }
+      }
+      if (!current.patientIdentity.fullName.trim() && parts.length > 0) {
+        next.patientIdentity = {
+          ...current.patientIdentity,
+          fullName: bookingEligibility.displayName.trim(),
+        }
+      }
+      if (!current.patientIdentity.email.trim() && bookingEligibility.email) {
+        next.patientIdentity = {
+          ...next.patientIdentity,
+          email: bookingEligibility.email,
+        }
+      }
+      return next
+    })
+    if (skipModeStep && activeStep === "mode") {
+      setActiveStep("schedule")
+    }
+  }, [
+    bookingEligibility.loading,
+    bookingEligibility.isNewPatient,
+    bookingEligibility.displayName,
+    bookingEligibility.email,
+    skipModeStep,
+    activeStep,
+  ])
 
   React.useEffect(() => {
     if (typeof window === "undefined" || activeStep === "submitted") {
@@ -673,11 +730,31 @@ export function BookingWizard() {
 
   const content = (() => {
     if (activeStep === "mode") {
+      if (bookingEligibility.isNewPatient) {
+        return (
+          <div className="space-y-4 rounded-xl border border-primary/30 bg-primary/5 p-4">
+            <Badge className="rounded-full">New patient</Badge>
+            <p className="text-sm font-semibold">{bookingContent.newPatient.modeTitle}</p>
+            <p className="text-muted-foreground text-sm">{bookingContent.newPatient.modeDescription}</p>
+          </div>
+        )
+      }
+
+      const typeOptions = bookingEligibility.canBookFollowUp
+        ? bookingTypeOptions
+        : bookingTypeOptions.filter((o) => o.value === "initial")
+
       return (
         <div className="space-y-4">
-          <p className="text-muted-foreground text-sm">{bookingContent.helper.followUp}</p>
-          <div className="grid gap-3 md:grid-cols-2">
-            {bookingTypeOptions.map((option) => {
+          <p className="text-muted-foreground text-sm">{bookingContent.returningPatient.modeDescription}</p>
+          {bookingEligibility.canBookFollowUp ? (
+            <p className="text-muted-foreground text-xs">
+              Welcome back — you have {bookingEligibility.pastAppointmentCount} prior visit
+              {bookingEligibility.pastAppointmentCount === 1 ? "" : "s"} on file.
+            </p>
+          ) : null}
+          <div className={`grid gap-3 ${typeOptions.length > 1 ? "md:grid-cols-2" : ""}`}>
+            {typeOptions.map((option) => {
               const selected = draft.bookingMeta.bookingType === option.value
               return (
                 <button
@@ -733,6 +810,18 @@ export function BookingWizard() {
       }
       return (
         <div className="space-y-5">
+          {bookingEligibility.isNewPatient ? (
+            <div className="space-y-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-3">
+              <Badge variant="secondary" className="rounded-full">
+                First appointment
+              </Badge>
+              <p className="text-sm font-medium">
+                {matchSource && preselectedClinicianName
+                  ? bookingContent.newPatient.scheduleBanner(preselectedClinicianName)
+                  : bookingContent.newPatient.scheduleBanner("")}
+              </p>
+            </div>
+          ) : null}
           <p className="text-muted-foreground text-sm">{bookingContent.helper.schedule}</p>
           {scheduleLoadError ? (
             <div className="space-y-2">
@@ -1406,9 +1495,28 @@ export function BookingWizard() {
     )
   })()
 
+  const wizardLoading =
+    activeStep !== "submitted" && (bookingEligibility.loading || intakePatientId === null || !hasRemoteHydrated)
+
+  if (wizardLoading) {
+    return (
+      <section className="space-y-6" data-tutorial="patient.page.book-appointment">
+        <PatientPageHeader title={bookingContent.header.title} description={bookingContent.header.description} />
+        <DashboardStateBlock variant="loading" message="Preparing your booking…" />
+      </section>
+    )
+  }
+
   return (
     <section className="space-y-6" data-tutorial="patient.page.book-appointment">
-      <PatientPageHeader title={bookingContent.header.title} description={bookingContent.header.description} />
+      <PatientPageHeader
+        title={bookingEligibility.isNewPatient ? "Book your first appointment" : bookingContent.header.title}
+        description={
+          bookingEligibility.isNewPatient
+            ? "Complete intake and choose a session time. Follow-up booking is available after your first visit."
+            : bookingContent.header.description
+        }
+      />
       {activeStep !== "submitted" ? (
         <p className="text-muted-foreground text-xs">
           Draft sync:{" "}

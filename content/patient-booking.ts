@@ -37,6 +37,16 @@ export const bookingContent = {
     description:
       "Telehealth-first intake for Australia. We collect only what your care team needs to safely match and schedule your first session.",
   },
+  newPatient: {
+    modeTitle: "Your first appointment",
+    modeDescription:
+      "We will guide you through intake, Medicare or referral context, and scheduling. Follow-up booking unlocks after you have visited with us at least once.",
+    scheduleBanner: (clinicianName: string) =>
+      `First session${clinicianName ? ` with ${clinicianName}` : ""} — choose a time that works for you.`,
+  },
+  returningPatient: {
+    modeDescription: "Choose whether this is your first visit with us or a follow-up with your care team.",
+  },
   helper: {
     save:
       "Draft is saved on this device while you complete the form. You can return and finish later.",
