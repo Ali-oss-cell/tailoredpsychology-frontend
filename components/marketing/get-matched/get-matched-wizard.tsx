@@ -27,6 +27,7 @@ import {
 import { registerWithBackend } from "@/src/auth/api"
 import { getCurrentUser } from "@/src/auth/current-user"
 import { rankMatchedClinicians } from "@/src/get-matched/match-clinicians"
+import { pushMatchQuizToIntakeDraft } from "@/src/get-matched/push-match-quiz-intake"
 import { loadMatchQuizSession, saveMatchQuizDraft } from "@/src/get-matched/storage"
 import type { MatchQuizDraft, MatchQuizStep, MatchedClinician } from "@/src/get-matched/types"
 
@@ -132,6 +133,7 @@ export function GetMatchedWizard() {
     setErrors([])
     if (step === "preferences") {
       if (isPatientLoggedIn) {
+        void pushMatchQuizToIntakeDraft(draft).catch(() => undefined)
         const ranked = rankMatchedClinicians(draft)
         setMatches(ranked)
         setStep("results")
@@ -173,6 +175,7 @@ export function GetMatchedWizard() {
         password: draft.password,
         displayName,
       })
+      await pushMatchQuizToIntakeDraft(draft).catch(() => undefined)
       const ranked = rankMatchedClinicians(draft)
       setMatches(ranked)
       setStep("results")

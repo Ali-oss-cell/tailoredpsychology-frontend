@@ -9,6 +9,7 @@ import { ChangePasswordForm } from "@/components/shared/change-password-form"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import {
   emptyPatientContactProfile,
+  emptyPatientDemographics,
   getCurrentUser,
   type CurrentUser,
   type PatientContactProfile,
@@ -58,7 +59,9 @@ function formatProfileRows(user: CurrentUser): ProfileRow[] {
     { label: "Email", value: user.email },
   ]
   const p = user.patientContactProfile ?? emptyPatientContactProfile()
+  const d = user.patientDemographics ?? emptyPatientDemographics()
   rows.push(
+    { label: "Date of birth", value: d.dateOfBirth.trim() || "—" },
     { label: "Mobile phone", value: p.phoneMobile.trim() || "—" },
     { label: "Preferred contact", value: preferredContactLabel(p.preferredContactMethod) },
     { label: "Accessibility and session needs", value: p.accessibilityNotes.trim() || "—" },

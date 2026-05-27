@@ -46,6 +46,8 @@ import { publicPricing } from "@/content/public-pricing"
 import { trackFrontendAnalyticsEvent } from "@/src/analytics/events"
 import type { BookingRequestDraft, BookingStepId } from "@/src/patient/booking/types"
 import { getCurrentUser } from "@/src/auth/current-user"
+import { loadMatchQuizDraft } from "@/src/get-matched/storage"
+import { mergeBookingDraftFromSources } from "@/src/patient/booking/merge-booking-draft"
 import { usePatientBookingEligibility } from "@/src/patient/booking/use-patient-booking-eligibility"
 import { toast } from "@/src/lib/toast"
 
@@ -366,30 +368,35 @@ export function BookingWizard() {
     let isCancelled = false
     const hydrateRemoteDraft = async () => {
       try {
-        const latest = await getLatestIntakeDraft(intakePatientId)
+        const [latest, user] = await Promise.all([
+          getLatestIntakeDraft(intakePatientId),
+          getCurrentUser().catch(() => null),
+        ])
         if (isCancelled) {
           return
         }
-        if (latest.data && Object.keys(latest.data).length > 0) {
-          const incoming = latest.data as Partial<BookingRequestDraft>
-          setDraft((current) => ({
-            ...current,
-            ...incoming,
-            referralFile: {
-              ...current.referralFile,
-              ...(incoming.referralFile ?? {}),
-              file: null,
-            },
-            patientIdentity: {
-              ...current.patientIdentity,
-              ...(incoming.patientIdentity ?? {}),
-              indigenousStatus:
-                incoming.patientIdentity?.indigenousStatus ?? current.patientIdentity.indigenousStatus ?? "",
-            },
-          }))
-        }
+        const matchQuiz = loadMatchQuizDraft()
+        const intakePartial =
+          latest.data && Object.keys(latest.data).length > 0
+            ? (latest.data as Partial<BookingRequestDraft>)
+            : undefined
+        setDraft((current) =>
+          mergeBookingDraftFromSources(current, {
+            intake: intakePartial,
+            user,
+            matchQuiz,
+          }),
+        )
         setDraftVersion(latest.draftVersion)
-        lastSyncedSnapshotRef.current = JSON.stringify(latest.data ?? {})
+        const hydrated = mergeBookingDraftFromSources(initialBookingDraft, {
+          intake: intakePartial,
+          user,
+          matchQuiz,
+        })
+        lastSyncedSnapshotRef.current = JSON.stringify({
+          ...hydrated,
+          referralFile: { ...hydrated.referralFile, file: null },
+        })
         setRemoteSyncState("saved")
       } catch {
         if (!isCancelled) {
@@ -999,7 +1006,13 @@ export function BookingWizard() {
                 updateDraft("patientIdentity", { ...draft.patientIdentity, email: event.target.value })
               }
               placeholder="name@example.com"
+              readOnly={Boolean(bookingEligibility.email)}
+              aria-readonly={Boolean(bookingEligibility.email)}
+              disabled={Boolean(bookingEligibility.email)}
             />
+            {bookingEligibility.email ? (
+              <p className="text-muted-foreground text-xs">Email is managed on your account and cannot be changed here.</p>
+            ) : null}
           </div>
           <div className="space-y-2 md:col-span-2">
             <label className="text-sm font-medium">Aboriginal and Torres Strait Islander status (optional)</label>

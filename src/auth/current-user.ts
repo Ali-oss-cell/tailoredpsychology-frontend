@@ -36,6 +36,22 @@ export function emptyPatientContactProfile(): PatientContactProfile {
   }
 }
 
+export type PatientDemographics = {
+  dateOfBirth: string
+  indigenousStatus: string
+  state: string
+  suburb: string
+}
+
+export function emptyPatientDemographics(): PatientDemographics {
+  return {
+    dateOfBirth: "",
+    indigenousStatus: "",
+    state: "",
+    suburb: "",
+  }
+}
+
 export type CurrentUser = {
   id: string
   email: string
@@ -45,6 +61,19 @@ export type CurrentUser = {
   accountSetupComplete: boolean
   /** Present for patient accounts from the API. */
   patientContactProfile?: PatientContactProfile
+  /** Present for patient accounts from the API (committed intake demographics). */
+  patientDemographics?: PatientDemographics
+}
+
+function parsePatientDemographics(raw: unknown): PatientDemographics | undefined {
+  if (!raw || typeof raw !== "object") return undefined
+  const o = raw as Record<string, unknown>
+  return {
+    dateOfBirth: typeof o.dateOfBirth === "string" ? o.dateOfBirth : "",
+    indigenousStatus: typeof o.indigenousStatus === "string" ? o.indigenousStatus : "",
+    state: typeof o.state === "string" ? o.state : "",
+    suburb: typeof o.suburb === "string" ? o.suburb : "",
+  }
 }
 
 function parsePatientContactProfile(raw: unknown): PatientContactProfile | undefined {
@@ -67,6 +96,8 @@ function parsePatientContactProfile(raw: unknown): PatientContactProfile | undef
 export function parseCurrentUser(payload: unknown): CurrentUser {
   const row = payload as Partial<CurrentUser> & Pick<CurrentUser, "id" | "email" | "displayName" | "role">
   const parsedPatient = row.role === "patient" ? parsePatientContactProfile(row.patientContactProfile) : undefined
+  const parsedDemographics =
+    row.role === "patient" ? parsePatientDemographics(row.patientDemographics) : undefined
   return {
     id: row.id,
     email: row.email,
@@ -74,7 +105,10 @@ export function parseCurrentUser(payload: unknown): CurrentUser {
     role: row.role,
     accountSetupComplete: row.accountSetupComplete !== false,
     ...(row.role === "patient"
-      ? { patientContactProfile: parsedPatient ?? emptyPatientContactProfile() }
+      ? {
+          patientContactProfile: parsedPatient ?? emptyPatientContactProfile(),
+          patientDemographics: parsedDemographics ?? emptyPatientDemographics(),
+        }
       : {}),
   }
 }

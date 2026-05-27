@@ -4,14 +4,8 @@ import type { MatchQuizDraft, MatchQuizStep } from "@/src/get-matched/types"
 const STORAGE_KEY = "tp_match_quiz_v1"
 
 export function loadMatchQuizDraft(): MatchQuizDraft | null {
-  if (typeof window === "undefined") return null
-  try {
-    const raw = window.sessionStorage.getItem(STORAGE_KEY)
-    if (!raw) return null
-    return { ...initialMatchQuizDraft, ...(JSON.parse(raw) as Partial<MatchQuizDraft>) }
-  } catch {
-    return null
-  }
+  const session = loadMatchQuizSession()
+  return session?.draft ?? null
 }
 
 export function saveMatchQuizDraft(draft: MatchQuizDraft, step: MatchQuizStep): void {
