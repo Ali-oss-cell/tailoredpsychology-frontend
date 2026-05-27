@@ -26,7 +26,7 @@ export function PublicHeader() {
             <Link href="/login">Login</Link>
           </Button>
           <Button asChild size="sm">
-            <Link href="/get-matched">Get Matched</Link>
+            <Link href="/get-matched">Find a psychologist</Link>
           </Button>
           <ThemeToggle />
         </div>

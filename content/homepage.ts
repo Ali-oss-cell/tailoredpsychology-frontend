@@ -99,13 +99,13 @@ export type HomePageContent = {
 export const homepageContent: HomePageContent = {
   hero: {
     badge: "Available for new patients",
-    title: "Quality care for your",
-    titleAccent: "mental wellbeing",
+    title: "Find the right psychologist for",
+    titleAccent: "your situation",
     description:
-      "Tailored Psychology provides compassionate, evidence-based psychological support tailored to your journey. Connect with psychologists who understand your context and goals.",
+      "Answer a few quick questions — about 2 minutes — and we will suggest psychologists who fit your state, goals, and preferences. Warm, evidence-based care when you are ready to book.",
     imageSrc: "/assets/hero-consultation-CPVmFEx5.webp",
     imageAlt: "A psychologist and client talking together in a bright, comfortable consultation space.",
-    primaryAction: { href: "/get-matched", label: "Get Matched" },
+    primaryAction: { href: "/get-matched", label: "Find your right psychologist" },
     secondaryAction: {
       href: "/services",
       label: "View Services",
@@ -282,7 +282,7 @@ export const homepageContent: HomePageContent = {
     description:
       "Tell us your preferences and availability, and we will help match you with the right psychologist.",
     primaryHref: "/get-matched",
-    primaryLabel: "Start Matching",
+    primaryLabel: "Find your right psychologist",
     secondaryHref: "/contact",
     secondaryLabel: "Talk to Our Team",
   },
