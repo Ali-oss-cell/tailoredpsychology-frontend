@@ -41,11 +41,64 @@ type ChatEventHandlers = {
 }
 
 const SOCKET_OPTIONS = {
+  path: "/socket.io",
   transports: ["polling", "websocket"] as ("polling" | "websocket")[],
   upgrade: true,
   reconnection: true,
-  reconnectionAttempts: 5,
-  timeout: 20_000,
+  reconnectionAttempts: 8,
+  timeout: 25_000,
+}
+
+function waitForStableConnect(socket: Socket, timeoutMs: number): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (socket.connected) {
+      resolve()
+      return
+    }
+
+    let settled = false
+    const finish = (handler: () => void) => {
+      if (settled) return
+      settled = true
+      clearTimeout(timer)
+      cleanup()
+      handler()
+    }
+
+    const timer = window.setTimeout(() => {
+      finish(() => reject(new Error("Chat connection timed out")))
+    }, timeoutMs)
+
+    const onConnect = () => {
+      window.setTimeout(() => {
+        if (socket.connected) {
+          finish(() => resolve())
+        } else {
+          finish(() => reject(new Error("Chat disconnected during authentication")))
+        }
+      }, 0)
+    }
+
+    const onConnectError = (error: Error) => {
+      finish(() => reject(error ?? new Error("Chat connection failed")))
+    }
+
+    const onDisconnect = (reason: string) => {
+      if (!socket.connected) {
+        finish(() => reject(new Error(`Chat disconnected: ${reason}`)))
+      }
+    }
+
+    const cleanup = () => {
+      socket.off("connect", onConnect)
+      socket.off("connect_error", onConnectError)
+      socket.off("disconnect", onDisconnect)
+    }
+
+    socket.once("connect", onConnect)
+    socket.once("connect_error", onConnectError)
+    socket.once("disconnect", onDisconnect)
+  })
 }
 
 export class SessionChatClient {
@@ -55,27 +108,15 @@ export class SessionChatClient {
     if (this.socket?.connected) {
       return
     }
+
+    this.disconnect()
     const token = await ensureBackendAccessToken()
     this.socket = io(`${getSocketBaseUrl()}/chat`, {
       ...SOCKET_OPTIONS,
+      forceNew: true,
       auth: { token: `Bearer ${token}` },
     })
-    await new Promise<void>((resolve, reject) => {
-      const onConnect = () => {
-        cleanup()
-        resolve()
-      }
-      const onError = (error: Error) => {
-        cleanup()
-        reject(error ?? new Error("Socket connection failed"))
-      }
-      const cleanup = () => {
-        this.socket?.off("connect", onConnect)
-        this.socket?.off("connect_error", onError)
-      }
-      this.socket?.once("connect", onConnect)
-      this.socket?.once("connect_error", onError)
-    })
+    await waitForStableConnect(this.socket, SOCKET_OPTIONS.timeout)
   }
 
   disconnect(): void {
@@ -96,23 +137,23 @@ export class SessionChatClient {
   }
 
   async join(appointmentId: string): Promise<JoinAck> {
-    if (!this.socket) {
+    if (!this.socket?.connected) {
       throw new Error("Socket is not connected")
     }
     const response = (await this.socket.emitWithAck("chat:join", { appointmentId })) as JoinAck
-    if (!response.ok) {
-      throw new Error(response.error ?? "Unable to join chat room")
+    if (!response?.ok) {
+      throw new Error(response?.error ?? "Unable to join chat room")
     }
     return response
   }
 
   async send(appointmentId: string, message: string): Promise<SendAck> {
-    if (!this.socket) {
+    if (!this.socket?.connected) {
       throw new Error("Socket is not connected")
     }
     const response = (await this.socket.emitWithAck("chat:send", { appointmentId, message })) as SendAck
-    if (!response.ok) {
-      throw new Error(response.error ?? "Unable to send message")
+    if (!response?.ok) {
+      throw new Error(response?.error ?? "Unable to send message")
     }
     return response
   }

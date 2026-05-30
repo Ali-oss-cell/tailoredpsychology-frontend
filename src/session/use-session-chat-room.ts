@@ -17,6 +17,26 @@ type UseSessionChatRoomOptions = {
   onPresence?: (onlineUserIds: string[]) => void
 }
 
+const REST_POLL_MS = 5_000
+
+function mergeMessages(existing: ChatMessageResponse[], incoming: ChatMessageResponse[]): ChatMessageResponse[] {
+  const byId = new Map(existing.map((message) => [message.messageId, message]))
+  for (const message of incoming) {
+    byId.set(message.messageId, message)
+  }
+  return [...byId.values()].sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+  )
+}
+
+async function loadRestSnapshot(appointmentId: string) {
+  const [window, history] = await Promise.all([
+    getChatWindowFallback(appointmentId),
+    getChatMessagesFallback(appointmentId).catch(() => [] as ChatMessageResponse[]),
+  ])
+  return { window, history }
+}
+
 export function useSessionChatRoom(appointmentId: string, options: UseSessionChatRoomOptions = {}) {
   const clientRef = useRef<SessionChatClient | null>(null)
   const onMessageRef = useRef(options.onMessage)
@@ -43,6 +63,7 @@ export function useSessionChatRoom(appointmentId: string, options: UseSessionCha
     setError(null)
     setMessages([])
     setPresenceOnlineUserIds([])
+    setIsDegradedMode(false)
 
     async function connect() {
       const chatClient = new SessionChatClient()
@@ -53,10 +74,7 @@ export function useSessionChatRoom(appointmentId: string, options: UseSessionCha
         chatClient.subscribe({
           onMessage: (message) => {
             if (!mounted) return
-            setMessages((prev) => {
-              if (prev.some((entry) => entry.messageId === message.messageId)) return prev
-              return [...prev, message]
-            })
+            setMessages((prev) => mergeMessages(prev, [message]))
             onMessageRef.current?.(message)
           },
           onPresence: (presence) => {
@@ -84,15 +102,13 @@ export function useSessionChatRoom(appointmentId: string, options: UseSessionCha
         if (!mounted) return
         setIsDegradedMode(true)
         try {
-          const [window, history] = await Promise.all([
-            getChatWindowFallback(appointmentId),
-            getChatMessagesFallback(appointmentId).catch(() => [] as ChatMessageResponse[]),
-          ])
+          const { window, history } = await loadRestSnapshot(appointmentId)
           if (!mounted) return
           setStatus(window.status)
           setOpensAt(window.opensAt)
           setReason(window.reason)
           setMessages(history)
+          setError(null)
         } catch {
           if (mounted) {
             const detail = connectError instanceof Error ? connectError.message : "Could not load chat."
@@ -112,6 +128,34 @@ export function useSessionChatRoom(appointmentId: string, options: UseSessionCha
     }
   }, [appointmentId])
 
+  useEffect(() => {
+    if (!isDegradedMode || !appointmentId) return
+
+    let cancelled = false
+
+    async function poll() {
+      try {
+        const { window, history } = await loadRestSnapshot(appointmentId)
+        if (cancelled) return
+        setStatus(window.status)
+        setOpensAt(window.opensAt)
+        setReason(window.reason)
+        setMessages((prev) => mergeMessages(prev, history))
+      } catch {
+        // Keep last good snapshot during transient poll failures.
+      }
+    }
+
+    const timer = window.setInterval(() => {
+      void poll()
+    }, REST_POLL_MS)
+
+    return () => {
+      cancelled = true
+      window.clearInterval(timer)
+    }
+  }, [appointmentId, isDegradedMode])
+
   const sendMessage = useCallback(
     async (text: string) => {
       if (!appointmentId || status !== "open") return
@@ -122,7 +166,7 @@ export function useSessionChatRoom(appointmentId: string, options: UseSessionCha
       try {
         if (isDegradedMode) {
           const created = await sendChatMessageFallback(appointmentId, message)
-          setMessages((prev) => [...prev, created])
+          setMessages((prev) => mergeMessages(prev, [created]))
           onMessageRef.current?.(created)
         } else {
           await clientRef.current?.send(appointmentId, message)

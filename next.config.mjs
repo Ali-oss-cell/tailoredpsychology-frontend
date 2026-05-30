@@ -8,6 +8,16 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001/api"
+    const backendOrigin = apiBase.replace(/\/api\/?$/, "")
+    return [
+      {
+        source: "/socket.io/:path*",
+        destination: `${backendOrigin}/socket.io/:path*`,
+      },
+    ]
+  },
 }
 
 export default nextConfig
