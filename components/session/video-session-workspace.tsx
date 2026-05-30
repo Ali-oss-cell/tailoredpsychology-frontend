@@ -21,7 +21,7 @@ export function VideoSessionWorkspace({ appointmentId, role }: VideoSessionWorks
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">Video session workspace</h1>
       <p className="text-sm text-muted-foreground">
-        Twilio video stream is separate. This panel handles pre-session realtime chat only.
+        Complete readiness checks, join the live Twilio video room, and use pre-session chat while you wait.
       </p>
       <VideoSessionSessionBanner appointmentId={appointmentId} />
       <JoinSessionGate

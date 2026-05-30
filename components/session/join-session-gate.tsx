@@ -2,6 +2,7 @@
 
 import * as React from "react"
 
+import { TwilioVideoRoom } from "@/components/session/twilio-video-room"
 import { Button } from "@/components/ui/button"
 import {
   type JoinAttemptDecisionResponse,
@@ -39,6 +40,11 @@ export function JoinSessionGate({ appointmentId, readiness, role, onRunChecks }:
   const joinLabel =
     role === "psychologist" && isWarning ? "Override warning and join" : role === "patient" ? "Join session" : "Proceed to session"
 
+  const leaveCall = React.useCallback(() => {
+    setIsJoined(false)
+    setSessionToken(null)
+  }, [])
+
   const evaluateJoin = async (acknowledgementNote?: string) => {
     setIsSubmitting(true)
     setError(null)
@@ -62,10 +68,21 @@ export function JoinSessionGate({ appointmentId, readiness, role, onRunChecks }:
       setIsJoined(true)
       setShowConfirm(false)
     } catch {
-      setError("We couldn't evaluate join readiness. Try again.")
+      setError("We couldn't start the video session. Check that telehealth is configured and try again.")
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  if (isJoined && sessionToken) {
+    return (
+      <TwilioVideoRoom
+        accessToken={sessionToken.accessToken}
+        roomName={sessionToken.roomName}
+        participantIdentity={sessionToken.participantIdentity}
+        onLeave={leaveCall}
+      />
+    )
   }
 
   return (
@@ -79,7 +96,7 @@ export function JoinSessionGate({ appointmentId, readiness, role, onRunChecks }:
           size="lg"
           className="min-h-11 w-full shrink-0 px-6 sm:w-auto"
         >
-          {isSubmitting ? "Checking…" : joinLabel}
+          {isSubmitting ? "Connecting…" : joinLabel}
         </Button>
       </div>
 
@@ -119,25 +136,6 @@ export function JoinSessionGate({ appointmentId, readiness, role, onRunChecks }:
         </div>
       ) : null}
 
-      {isJoined ? (
-        <div className="space-y-1 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
-          <p>Join approved. Twilio join handoff is ready.</p>
-          {sessionToken ? (
-            <>
-              <p>Room: {sessionToken.roomName}</p>
-              <p>Participant: {sessionToken.participantIdentity}</p>
-              <a
-                href={`https://console.twilio.com/us1/develop/video/rooms?roomName=${encodeURIComponent(sessionToken.roomName)}`}
-                target="_blank"
-                rel="noreferrer"
-                className="underline"
-              >
-                Open Twilio room
-              </a>
-            </>
-          ) : null}
-        </div>
-      ) : null}
       {error ? <p className="text-xs text-destructive">{error}</p> : null}
     </section>
   )

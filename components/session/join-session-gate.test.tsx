@@ -7,6 +7,12 @@ jest.mock("@/src/patient/booking/api", () => ({
   postJoinSession: jest.fn(),
 }))
 
+jest.mock("@/components/session/twilio-video-room", () => ({
+  TwilioVideoRoom: ({ participantIdentity }: { participantIdentity: string }) => (
+    <div>Connected to video session as {participantIdentity}</div>
+  ),
+}))
+
 import { postJoinAttempt, postJoinSession } from "@/src/patient/booking/api"
 
 const mockedPostJoinAttempt = postJoinAttempt as jest.MockedFunction<typeof postJoinAttempt>
@@ -66,7 +72,9 @@ describe("JoinSessionGate", () => {
     await waitFor(() => expect(screen.getByText("You can still continue.")).toBeInTheDocument())
 
     fireEvent.click(screen.getByRole("button", { name: "Proceed anyway" }))
-    await waitFor(() => expect(screen.getByText("Join approved. Twilio join handoff is ready.")).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByText("Connected to video session as user_patient_001")).toBeInTheDocument(),
+    )
   })
 
   it("joins directly when readiness is ready", async () => {
@@ -96,7 +104,9 @@ describe("JoinSessionGate", () => {
     )
 
     fireEvent.click(screen.getByRole("button", { name: "Join session" }))
-    await waitFor(() => expect(screen.getByText("Join approved. Twilio join handoff is ready.")).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByText("Connected to video session as user_patient_001")).toBeInTheDocument(),
+    )
   })
 
   it("shows override reason input for psychologist in warning flow", async () => {
