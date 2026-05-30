@@ -3,12 +3,7 @@
 import { io, type Socket } from "socket.io-client"
 
 import { getNotificationStreamToken, type NotificationItem } from "@/src/notifications/api"
-
-function getSocketBaseUrl(): string {
-  const fallback = "http://localhost:3001"
-  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? `${fallback}/api`
-  return apiBase.endsWith("/api") ? apiBase.slice(0, -4) : apiBase
-}
+import { getSocketBaseUrl } from "@/src/session/socket-base-url"
 
 export class NotificationRealtimeClient {
   private socket: Socket | null = null
@@ -18,7 +13,10 @@ export class NotificationRealtimeClient {
     const { socketToken } = await getNotificationStreamToken()
     this.socket = io(`${getSocketBaseUrl()}/notifications`, {
       auth: { token: `Bearer ${socketToken}` },
-      transports: ["websocket"],
+      transports: ["polling", "websocket"],
+      upgrade: true,
+      reconnection: true,
+      timeout: 20_000,
     })
 
     await new Promise<void>((resolve, reject) => {

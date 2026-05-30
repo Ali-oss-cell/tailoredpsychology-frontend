@@ -4,11 +4,13 @@ import { io, type Socket } from "socket.io-client"
 
 import {
   ensureBackendAccessToken,
+  getAppointmentChatMessages,
   getAppointmentChatWindow,
   postAppointmentChatMessage,
   type ChatMessageResponse,
   type ChatWindowResponse,
 } from "@/src/patient/booking/api"
+import { getSocketBaseUrl } from "@/src/session/socket-base-url"
 
 type PresenceEvent = {
   appointmentId: string
@@ -38,10 +40,12 @@ type ChatEventHandlers = {
   onError?: (message: string) => void
 }
 
-function getSocketBaseUrl(): string {
-  const fallback = "http://localhost:3001"
-  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? `${fallback}/api`
-  return apiBase.endsWith("/api") ? apiBase.slice(0, -4) : apiBase
+const SOCKET_OPTIONS = {
+  transports: ["polling", "websocket"] as ("polling" | "websocket")[],
+  upgrade: true,
+  reconnection: true,
+  reconnectionAttempts: 5,
+  timeout: 20_000,
 }
 
 export class SessionChatClient {
@@ -53,12 +57,24 @@ export class SessionChatClient {
     }
     const token = await ensureBackendAccessToken()
     this.socket = io(`${getSocketBaseUrl()}/chat`, {
+      ...SOCKET_OPTIONS,
       auth: { token: `Bearer ${token}` },
-      transports: ["websocket"],
     })
     await new Promise<void>((resolve, reject) => {
-      this.socket?.once("connect", () => resolve())
-      this.socket?.once("connect_error", () => reject(new Error("Socket connection failed")))
+      const onConnect = () => {
+        cleanup()
+        resolve()
+      }
+      const onError = (error: Error) => {
+        cleanup()
+        reject(error ?? new Error("Socket connection failed"))
+      }
+      const cleanup = () => {
+        this.socket?.off("connect", onConnect)
+        this.socket?.off("connect_error", onError)
+      }
+      this.socket?.once("connect", onConnect)
+      this.socket?.once("connect_error", onError)
     })
   }
 
@@ -104,6 +120,10 @@ export class SessionChatClient {
 
 export async function getChatWindowFallback(appointmentId: string): Promise<ChatWindowResponse> {
   return getAppointmentChatWindow(appointmentId)
+}
+
+export async function getChatMessagesFallback(appointmentId: string): Promise<ChatMessageResponse[]> {
+  return getAppointmentChatMessages(appointmentId)
 }
 
 export async function sendChatMessageFallback(

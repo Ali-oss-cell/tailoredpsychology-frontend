@@ -120,7 +120,7 @@ function ChatConversationActive({
 
       {isDegradedMode ? (
         <p className="border-amber-200/80 bg-amber-50/90 text-amber-900 shrink-0 border-b px-4 py-2 text-xs">
-          Realtime unavailable. Running in fallback mode.
+          Realtime unavailable — messages still send via REST, but updates may be delayed until you refresh.
         </p>
       ) : null}
 

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import {
   SessionChatClient,
+  getChatMessagesFallback,
   getChatWindowFallback,
   sendChatMessageFallback,
   type ChatMessageResponse,
@@ -79,17 +80,24 @@ export function useSessionChatRoom(appointmentId: string, options: UseSessionCha
         setOpensAt(joined.window.opensAt)
         setReason(joined.window.reason)
         setIsDegradedMode(false)
-      } catch {
+      } catch (connectError) {
         if (!mounted) return
         setIsDegradedMode(true)
         try {
-          const window = await getChatWindowFallback(appointmentId)
+          const [window, history] = await Promise.all([
+            getChatWindowFallback(appointmentId),
+            getChatMessagesFallback(appointmentId).catch(() => [] as ChatMessageResponse[]),
+          ])
           if (!mounted) return
           setStatus(window.status)
           setOpensAt(window.opensAt)
           setReason(window.reason)
+          setMessages(history)
         } catch {
-          if (mounted) setError("Could not load chat.")
+          if (mounted) {
+            const detail = connectError instanceof Error ? connectError.message : "Could not load chat."
+            setError(detail)
+          }
         }
       } finally {
         if (mounted) setIsConnecting(false)
