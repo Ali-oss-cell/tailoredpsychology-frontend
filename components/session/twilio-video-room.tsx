@@ -27,7 +27,11 @@ function formatTwilioConnectError(error: unknown): string {
 function attachTrack(track: RemoteTrack | LocalVideoTrack | LocalAudioTrack, container: HTMLElement): void {
   if (track.kind === "video" || track.kind === "audio") {
     const element = track.attach()
-    element.classList.add(track.kind === "video" ? "h-full w-full object-cover" : "hidden")
+    if (track.kind === "video") {
+      element.classList.add("h-full", "w-full", "object-cover")
+    } else {
+      element.classList.add("hidden")
+    }
     container.appendChild(element)
   }
 }
