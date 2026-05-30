@@ -13,6 +13,17 @@ export type TwilioVideoRoomProps = {
   onLeave: () => void
 }
 
+function formatTwilioConnectError(error: unknown): string {
+  const raw = error instanceof Error ? error.message : "Could not connect to the video room."
+  if (raw.includes("Invalid Access Token issuer/subject")) {
+    return "Twilio rejected the join token: Account SID and API Key on the server do not match. In deploy/.env use TWILIO_ACCOUNT_SID (AC…), TWILIO_API_KEY (SK…), and the API Key Secret — not the Auth Token. Run: npm run verify:twilio on the backend container."
+  }
+  if (raw.includes("disconnected port object")) {
+    return "Browser blocked the video connection (often a Chrome extension). Try incognito mode or disable extensions, then join again."
+  }
+  return raw
+}
+
 function attachTrack(track: RemoteTrack | LocalVideoTrack | LocalAudioTrack, container: HTMLElement): void {
   if (track.kind === "video" || track.kind === "audio") {
     const element = track.attach()
@@ -113,11 +124,7 @@ export function TwilioVideoRoom({ accessToken, roomName, participantIdentity, on
       } catch (error) {
         if (!cancelled) {
           setStatus("error")
-          const message =
-            error instanceof Error
-              ? error.message
-              : "Could not connect to the video room. Check camera/mic permissions and Twilio configuration."
-          setErrorMessage(message)
+          setErrorMessage(formatTwilioConnectError(error))
         }
       }
     }
