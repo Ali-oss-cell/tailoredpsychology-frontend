@@ -23,6 +23,7 @@ type ChatConversationViewProps = {
   className?: string
   onMessage?: (message: ChatMessageResponse) => void
   onPresence?: (onlineUserIds: string[]) => void
+  onAccessDenied?: (appointmentId: string) => void
 }
 
 type ActiveConversationProps = Omit<ChatConversationViewProps, "appointmentId"> & {
@@ -54,6 +55,7 @@ function ChatConversationActive({
   className = "",
   onMessage,
   onPresence,
+  onAccessDenied,
 }: ActiveConversationProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [draft, setDraft] = useState("")
@@ -67,11 +69,12 @@ function ChatConversationActive({
     reason,
     presenceOnlineUserIds,
     isDegradedMode,
+    accessDenied,
     isConnecting,
     error,
     canSend,
     sendMessage,
-  } = useSessionChatRoom(appointmentId, { onMessage, onPresence })
+  } = useSessionChatRoom(appointmentId, { onMessage, onPresence, onAccessDenied })
 
   const peerOnline = peerUserId ? presenceOnlineUserIds.includes(peerUserId) : false
 
@@ -118,7 +121,11 @@ function ChatConversationActive({
         </header>
       ) : null}
 
-      {isDegradedMode ? (
+      {accessDenied ? (
+        <p className="border-destructive/30 bg-destructive/5 text-destructive shrink-0 border-b px-4 py-3 text-sm md:px-5">
+          {error ?? "You don't have access to this appointment's chat."}
+        </p>
+      ) : isDegradedMode ? (
         <p className="border-amber-200/80 bg-amber-50/90 text-amber-900 shrink-0 border-b px-4 py-2 text-xs">
           Live updates unavailable — syncing every few seconds. Messages still send normally.
         </p>

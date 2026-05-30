@@ -2,7 +2,7 @@
 
 import { ChatCircleDots, X } from "@phosphor-icons/react/dist/ssr"
 import { usePathname } from "next/navigation"
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { PreSessionChatPanel } from "@/components/session/pre-session-chat-panel"
 import { Button } from "@/components/ui/button"
@@ -27,6 +27,11 @@ export function FloatingChatWidget({ role }: FloatingChatWidgetProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [appointmentId, setAppointmentId] = useState<string | null>(null)
   const [isResolving, setIsResolving] = useState(true)
+
+  const handleAccessDenied = useCallback((deniedAppointmentId: string) => {
+    window.localStorage.removeItem(STORAGE_KEY)
+    setAppointmentId((current) => (current === deniedAppointmentId ? null : current))
+  }, [])
 
   useEffect(() => {
     const fromPath = getAppointmentIdFromPath(pathname)
@@ -102,7 +107,12 @@ export function FloatingChatWidget({ role }: FloatingChatWidgetProps) {
             </Button>
           </div>
           {appointmentId ? (
-            <PreSessionChatPanel appointmentId={appointmentId} compact viewerRole={role === "psychologist" ? "psychologist" : "patient"} />
+            <PreSessionChatPanel
+              appointmentId={appointmentId}
+              compact
+              viewerRole={role === "psychologist" ? "psychologist" : "patient"}
+              onAccessDenied={handleAccessDenied}
+            />
           ) : (
             <div className="rounded-md border border-border px-3 py-2 text-sm text-muted-foreground">
               {isResolving

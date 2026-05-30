@@ -5,6 +5,7 @@ import {
   isBackendAccessTokenExpired,
   setBackendAccessTokenInSessionStorage,
 } from "@/src/auth/backend-session"
+import { ChatAccessError, chatAccessMessage } from "@/src/session/chat-errors"
 
 export type AvailabilitySlot = {
   slotId: string
@@ -96,6 +97,11 @@ function readCookie(name: string): string | null {
   return match ? decodeURIComponent(match.split("=")[1]) : null
 }
 
+function isLocalDevApi(): boolean {
+  const base = getApiBaseUrl()
+  return base.includes("localhost") || base.includes("127.0.0.1")
+}
+
 export async function ensureBackendAccessToken(): Promise<string> {
   if (typeof window === "undefined") {
     throw new Error("Backend token is only available in browser context")
@@ -107,6 +113,10 @@ export async function ensureBackendAccessToken(): Promise<string> {
   }
   if (cached) {
     clearBackendAccessTokenInSessionStorage()
+  }
+
+  if (!isLocalDevApi()) {
+    throw new Error("Session expired. Please log out and sign in again.")
   }
 
   const cookieRole = readCookie("clink_role")
@@ -358,6 +368,9 @@ export async function getAppointmentChatWindow(appointmentId: string): Promise<C
     cache: "no-store",
   })
   if (!response.ok) {
+    if (response.status === 403 || response.status === 404) {
+      throw new ChatAccessError(chatAccessMessage(response.status), response.status)
+    }
     throw new Error(`Fetch chat window failed (${response.status})`)
   }
   return (await response.json()) as ChatWindowResponse
@@ -401,6 +414,9 @@ export async function getAppointmentChatMessages(appointmentId: string): Promise
     cache: "no-store",
   })
   if (!response.ok) {
+    if (response.status === 403 || response.status === 404) {
+      throw new ChatAccessError(chatAccessMessage(response.status), response.status)
+    }
     throw new Error(`Fetch chat messages failed (${response.status})`)
   }
   return (await response.json()) as ChatMessageResponse[]
@@ -418,6 +434,9 @@ export async function postAppointmentChatMessage(
     cache: "no-store",
   })
   if (!response.ok) {
+    if (response.status === 403 || response.status === 404) {
+      throw new ChatAccessError(chatAccessMessage(response.status), response.status)
+    }
     throw new Error(`Post chat message failed (${response.status})`)
   }
   return (await response.json()) as ChatMessageResponse

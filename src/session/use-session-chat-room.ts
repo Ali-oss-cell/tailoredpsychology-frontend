@@ -9,12 +9,14 @@ import {
   sendChatMessageFallback,
   type ChatMessageResponse,
 } from "@/src/session/chat-api"
+import { isChatAccessError } from "@/src/session/chat-errors"
 
 type ChatWindowStatus = "locked" | "open" | "closed"
 
 type UseSessionChatRoomOptions = {
   onMessage?: (message: ChatMessageResponse) => void
   onPresence?: (onlineUserIds: string[]) => void
+  onAccessDenied?: (appointmentId: string) => void
 }
 
 const REST_POLL_MS = 5_000
@@ -32,7 +34,10 @@ function mergeMessages(existing: ChatMessageResponse[], incoming: ChatMessageRes
 async function loadRestSnapshot(appointmentId: string) {
   const [window, history] = await Promise.all([
     getChatWindowFallback(appointmentId),
-    getChatMessagesFallback(appointmentId).catch(() => [] as ChatMessageResponse[]),
+    getChatMessagesFallback(appointmentId).catch((error) => {
+      if (isChatAccessError(error)) throw error
+      return [] as ChatMessageResponse[]
+    }),
   ])
   return { window, history }
 }
@@ -41,11 +46,13 @@ export function useSessionChatRoom(appointmentId: string, options: UseSessionCha
   const clientRef = useRef<SessionChatClient | null>(null)
   const onMessageRef = useRef(options.onMessage)
   const onPresenceRef = useRef(options.onPresence)
+  const onAccessDeniedRef = useRef(options.onAccessDenied)
 
   useEffect(() => {
     onMessageRef.current = options.onMessage
     onPresenceRef.current = options.onPresence
-  }, [options.onMessage, options.onPresence])
+    onAccessDeniedRef.current = options.onAccessDenied
+  }, [options.onMessage, options.onPresence, options.onAccessDenied])
 
   const [messages, setMessages] = useState<ChatMessageResponse[]>([])
   const [status, setStatus] = useState<ChatWindowStatus>("locked")
@@ -53,8 +60,19 @@ export function useSessionChatRoom(appointmentId: string, options: UseSessionCha
   const [reason, setReason] = useState("Checking session window...")
   const [presenceOnlineUserIds, setPresenceOnlineUserIds] = useState<string[]>([])
   const [isDegradedMode, setIsDegradedMode] = useState(false)
+  const [accessDenied, setAccessDenied] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const handleAccessDenied = useCallback(
+    (message: string) => {
+      setAccessDenied(true)
+      setIsDegradedMode(false)
+      setError(message)
+      onAccessDeniedRef.current?.(appointmentId)
+    },
+    [appointmentId],
+  )
 
   useEffect(() => {
     let mounted = true
@@ -64,6 +82,7 @@ export function useSessionChatRoom(appointmentId: string, options: UseSessionCha
     setMessages([])
     setPresenceOnlineUserIds([])
     setIsDegradedMode(false)
+    setAccessDenied(false)
 
     async function connect() {
       const chatClient = new SessionChatClient()
@@ -100,6 +119,17 @@ export function useSessionChatRoom(appointmentId: string, options: UseSessionCha
         setIsDegradedMode(false)
       } catch (connectError) {
         if (!mounted) return
+
+        const joinMessage = connectError instanceof Error ? connectError.message.toLowerCase() : ""
+        if (joinMessage.includes("cannot access") || joinMessage.includes("not found")) {
+          handleAccessDenied(
+            connectError instanceof Error
+              ? connectError.message
+              : "You don't have access to this appointment's chat.",
+          )
+          return
+        }
+
         setIsDegradedMode(true)
         try {
           const { window, history } = await loadRestSnapshot(appointmentId)
@@ -109,11 +139,14 @@ export function useSessionChatRoom(appointmentId: string, options: UseSessionCha
           setReason(window.reason)
           setMessages(history)
           setError(null)
-        } catch {
-          if (mounted) {
-            const detail = connectError instanceof Error ? connectError.message : "Could not load chat."
-            setError(detail)
+        } catch (restError) {
+          if (!mounted) return
+          if (isChatAccessError(restError)) {
+            handleAccessDenied(restError.message)
+            return
           }
+          const detail = connectError instanceof Error ? connectError.message : "Could not load chat."
+          setError(detail)
         }
       } finally {
         if (mounted) setIsConnecting(false)
@@ -126,10 +159,10 @@ export function useSessionChatRoom(appointmentId: string, options: UseSessionCha
       clientRef.current?.disconnect()
       clientRef.current = null
     }
-  }, [appointmentId])
+  }, [appointmentId, handleAccessDenied])
 
   useEffect(() => {
-    if (!isDegradedMode || !appointmentId) return
+    if (!isDegradedMode || accessDenied || !appointmentId) return
 
     let cancelled = false
 
@@ -141,8 +174,9 @@ export function useSessionChatRoom(appointmentId: string, options: UseSessionCha
         setOpensAt(window.opensAt)
         setReason(window.reason)
         setMessages((prev) => mergeMessages(prev, history))
-      } catch {
-        // Keep last good snapshot during transient poll failures.
+      } catch (pollError) {
+        if (cancelled || !isChatAccessError(pollError)) return
+        handleAccessDenied(pollError.message)
       }
     }
 
@@ -154,11 +188,11 @@ export function useSessionChatRoom(appointmentId: string, options: UseSessionCha
       cancelled = true
       window.clearInterval(timer)
     }
-  }, [appointmentId, isDegradedMode])
+  }, [accessDenied, appointmentId, handleAccessDenied, isDegradedMode])
 
   const sendMessage = useCallback(
     async (text: string) => {
-      if (!appointmentId || status !== "open") return
+      if (!appointmentId || status !== "open" || accessDenied) return
       const message = text.trim()
       if (!message) return
 
@@ -171,15 +205,22 @@ export function useSessionChatRoom(appointmentId: string, options: UseSessionCha
         } else {
           await clientRef.current?.send(appointmentId, message)
         }
-      } catch {
-        setError("Message could not be delivered.")
+      } catch (sendError) {
+        if (isChatAccessError(sendError)) {
+          handleAccessDenied(sendError.message)
+        } else {
+          setError("Message could not be delivered.")
+        }
         throw new Error("send failed")
       }
     },
-    [appointmentId, isDegradedMode, status],
+    [accessDenied, appointmentId, handleAccessDenied, isDegradedMode, status],
   )
 
-  const canSend = useMemo(() => status === "open" && Boolean(appointmentId), [appointmentId, status])
+  const canSend = useMemo(
+    () => status === "open" && Boolean(appointmentId) && !accessDenied,
+    [accessDenied, appointmentId, status],
+  )
 
   return {
     messages,
@@ -188,6 +229,7 @@ export function useSessionChatRoom(appointmentId: string, options: UseSessionCha
     reason,
     presenceOnlineUserIds,
     isDegradedMode,
+    accessDenied,
     isConnecting,
     error,
     canSend,

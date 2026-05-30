@@ -5,6 +5,9 @@ export const BACKEND_TOKEN_STORAGE_KEY = "clink_backend_access_token_v1"
 /** Mirrored on login; HttpOnly `clink_role` is not readable in JS, so we use this for dev demo re-auth after JWT expiry. */
 export const BACKEND_ROLE_STORAGE_KEY = "clink_backend_role_v1"
 
+/** Last successful login email — used to detect demo re-auth swaps in production. */
+export const BACKEND_EMAIL_STORAGE_KEY = "clink_backend_email_v1"
+
 /** Refresh a bit before `exp` so a request in flight does not hit a just-expired token. */
 const DEFAULT_EXPIRY_SKEW_MS = 120_000
 
@@ -55,6 +58,21 @@ export function setBackendRoleInSessionStorage(role: string): void {
   window.sessionStorage.setItem(BACKEND_ROLE_STORAGE_KEY, role)
 }
 
+export function setBackendEmailInSessionStorage(email: string): void {
+  if (typeof window === "undefined") return
+  window.sessionStorage.setItem(BACKEND_EMAIL_STORAGE_KEY, email)
+}
+
+export function getBackendEmailFromSessionStorage(): string | null {
+  if (typeof window === "undefined") return null
+  return window.sessionStorage.getItem(BACKEND_EMAIL_STORAGE_KEY)
+}
+
+export function clearBackendEmailInSessionStorage(): void {
+  if (typeof window === "undefined") return
+  window.sessionStorage.removeItem(BACKEND_EMAIL_STORAGE_KEY)
+}
+
 export function getBackendRoleFromSessionStorage(): string | null {
   if (typeof window === "undefined") return null
   return window.sessionStorage.getItem(BACKEND_ROLE_STORAGE_KEY)
@@ -69,4 +87,5 @@ export function clearBackendRoleInSessionStorage(): void {
 export function clearClientAuthSession(): void {
   clearBackendAccessTokenInSessionStorage()
   clearBackendRoleInSessionStorage()
+  clearBackendEmailInSessionStorage()
 }

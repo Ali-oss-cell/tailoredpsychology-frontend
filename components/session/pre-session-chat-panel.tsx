@@ -10,6 +10,7 @@ type PreSessionChatPanelProps = {
   viewerUserId?: string
   peerDisplayName?: string
   peerUserId?: string
+  onAccessDenied?: (appointmentId: string) => void
 }
 
 export function PreSessionChatPanel({
@@ -19,6 +20,7 @@ export function PreSessionChatPanel({
   viewerUserId,
   peerDisplayName = "Session chat",
   peerUserId,
+  onAccessDenied,
 }: PreSessionChatPanelProps) {
   return (
     <section className={`overflow-hidden rounded-xl border border-border bg-card shadow-sm ${compact ? "text-sm" : ""}`}>
@@ -28,6 +30,7 @@ export function PreSessionChatPanel({
         viewerUserId={viewerUserId}
         peerDisplayName={peerDisplayName}
         peerUserId={peerUserId}
+        onAccessDenied={onAccessDenied}
         showHeader={!compact}
         compact={compact}
         className={compact ? "max-h-[22rem]" : ""}

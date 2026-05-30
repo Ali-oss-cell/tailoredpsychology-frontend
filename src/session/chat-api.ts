@@ -70,34 +70,20 @@ function waitForStableConnect(socket: Socket, timeoutMs: number): Promise<void> 
     }, timeoutMs)
 
     const onConnect = () => {
-      window.setTimeout(() => {
-        if (socket.connected) {
-          finish(() => resolve())
-        } else {
-          finish(() => reject(new Error("Chat disconnected during authentication")))
-        }
-      }, 0)
+      finish(() => resolve())
     }
 
     const onConnectError = (error: Error) => {
       finish(() => reject(error ?? new Error("Chat connection failed")))
     }
 
-    const onDisconnect = (reason: string) => {
-      if (!socket.connected) {
-        finish(() => reject(new Error(`Chat disconnected: ${reason}`)))
-      }
-    }
-
     const cleanup = () => {
       socket.off("connect", onConnect)
       socket.off("connect_error", onConnectError)
-      socket.off("disconnect", onDisconnect)
     }
 
     socket.once("connect", onConnect)
     socket.once("connect_error", onConnectError)
-    socket.once("disconnect", onDisconnect)
   })
 }
 
