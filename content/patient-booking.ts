@@ -20,7 +20,7 @@ export const bookingStepWhatsNext: Record<Exclude<BookingStepId, "submitted">, s
   clinical: "Next: optional referral PDF upload, if you have one ready.",
   referral: "Next: required consent checkboxes before you review and send your request.",
   consent: "Next: a final review of your details before we submit your booking request.",
-  review: "After submit: you will see a request ID and we will follow up with next steps.",
+  review: "After submit: you will pay securely, then your appointment is confirmed.",
 }
 
 export const referralSourceOptions: { value: ReferralSourceType; label: string }[] = [

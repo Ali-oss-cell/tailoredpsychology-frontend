@@ -21,7 +21,11 @@ export function BookingActions({
         Back
       </Button>
       <Button type="button" onClick={onNext} disabled={isSubmitting}>
-        {isFinalStep ? (isSubmitting ? "Submitting..." : "Submit Request") : "Continue"}
+        {isFinalStep
+          ? isSubmitting
+            ? "Redirecting to payment…"
+            : "Pay & confirm booking"
+          : "Continue"}
       </Button>
     </div>
   )

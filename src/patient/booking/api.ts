@@ -36,14 +36,14 @@ export type CreateBookingRequestPayload = {
 
 export type BookingRequestCreatedResponse = {
   bookingRequestId: string
-  state: "submitted" | "triage_review" | "matched_pending_confirmation" | "appointment_confirmed"
+  state: "pending_payment" | "submitted" | "triage_review" | "matched_pending_confirmation" | "appointment_confirmed" | "payment_abandoned"
   createdAt: string
   idempotentReplay: boolean
 }
 
 export type BookingRequestStatusResponse = {
   bookingRequestId: string
-  state: "submitted" | "triage_review" | "matched_pending_confirmation" | "appointment_confirmed"
+  state: "pending_payment" | "submitted" | "triage_review" | "matched_pending_confirmation" | "appointment_confirmed" | "payment_abandoned"
   lastUpdated: string
   nextAction: string
   clinicianId: string
@@ -328,6 +328,28 @@ export async function getBookingRequestStatus(bookingRequestId: string): Promise
   }
 
   return (await response.json()) as BookingRequestStatusResponse
+}
+
+export type BookingCheckoutResponse = {
+  checkoutUrl: string
+  checkoutSessionId: string
+  invoiceId: string
+  devModeAutoConfirmed: boolean
+}
+
+export async function createBookingCheckout(bookingRequestId: string): Promise<BookingCheckoutResponse> {
+  const url = buildApiUrl(`payments/booking/${encodeURIComponent(bookingRequestId)}/checkout`)
+  const response = await fetch(url.toString(), {
+    method: "POST",
+    headers: await getAuthHeaders(),
+    cache: "no-store",
+  })
+
+  if (!response.ok) {
+    throw new Error(`Payment checkout failed (${response.status})`)
+  }
+
+  return (await response.json()) as BookingCheckoutResponse
 }
 
 export async function uploadReferralDocument(params: {

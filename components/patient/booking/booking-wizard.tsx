@@ -35,6 +35,7 @@ import {
 import {
   commitIntakeDraft,
   createBookingRequest,
+  createBookingCheckout,
   getBookingRequestStatus,
   getClinicianAvailability,
   getLatestIntakeDraft,
@@ -49,7 +50,6 @@ import { getCurrentUser } from "@/src/auth/current-user"
 import { loadMatchQuizDraft } from "@/src/get-matched/storage"
 import { mergeBookingDraftFromSources } from "@/src/patient/booking/merge-booking-draft"
 import { usePatientBookingEligibility } from "@/src/patient/booking/use-patient-booking-eligibility"
-import { toast } from "@/src/lib/toast"
 
 const STORAGE_KEY = "clink_booking_draft_v1"
 const DEMO_PATIENT_ID = "user_patient_001"
@@ -201,6 +201,7 @@ function toScheduleByDate(payload: ClinicianAvailabilityResponse[]) {
 
 export function BookingWizard() {
   const searchParams = useSearchParams()
+  const paymentCancelled = searchParams.get("payment") === "cancelled"
   const seededConcern = searchParams.get("condition")
   const [draft, setDraft] = React.useState<BookingRequestDraft>(() => {
     if (typeof window === "undefined") {
@@ -669,22 +670,18 @@ export function BookingWizard() {
             referralDocumentId: draft.referralFile.documentId || undefined,
           })
 
-          const status = await getBookingRequestStatus(created.bookingRequestId)
           await trackFrontendAnalyticsEvent({
             name: "intake_submitted",
             targetId: created.bookingRequestId,
             idempotencyKey: `frontend_intake_submitted:${created.bookingRequestId}`,
           })
           await commitIntakeDraft(intakePatientId ?? DEMO_PATIENT_ID)
-          setSubmittedStatus(status)
-          setActiveStep("submitted")
-          setErrors([])
+
+          const checkout = await createBookingCheckout(created.bookingRequestId)
           window.localStorage.removeItem(STORAGE_KEY)
-          toast.success("Booking request submitted", {
-            description: "We will review your request and follow up as soon as possible.",
-          })
+          window.location.assign(checkout.checkoutUrl)
         } catch (error) {
-          setErrors([error instanceof Error ? error.message : "Unable to submit booking request."])
+          setErrors([error instanceof Error ? error.message : "Unable to start payment. Your slot may still be held — try again from review."])
         } finally {
           setIsSubmitting(false)
         }
@@ -1530,6 +1527,12 @@ export function BookingWizard() {
             : bookingContent.header.description
         }
       />
+      {paymentCancelled ? (
+        <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 text-sm">
+          Payment was cancelled. Your slot may still be held briefly — return to review and choose{" "}
+          <span className="font-medium">Pay & confirm booking</span> to try again.
+        </div>
+      ) : null}
       {activeStep !== "submitted" ? (
         <p className="text-muted-foreground text-xs">
           Draft sync:{" "}
