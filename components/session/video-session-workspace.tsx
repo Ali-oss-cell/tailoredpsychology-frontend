@@ -35,7 +35,10 @@ export function VideoSessionWorkspace({ appointmentId, role }: VideoSessionWorks
         onReadinessChange={setReadiness}
         rerunSignal={rerunSignal}
       />
-      <PreSessionChatPanel appointmentId={appointmentId} />
+      <PreSessionChatPanel
+        appointmentId={appointmentId}
+        viewerRole={role === "psychologist" ? "psychologist" : role === "practice_manager" ? "practice_manager" : role === "admin" ? "admin" : "patient"}
+      />
     </div>
   )
 }

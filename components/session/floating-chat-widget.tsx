@@ -102,7 +102,7 @@ export function FloatingChatWidget({ role }: FloatingChatWidgetProps) {
             </Button>
           </div>
           {appointmentId ? (
-            <PreSessionChatPanel appointmentId={appointmentId} compact />
+            <PreSessionChatPanel appointmentId={appointmentId} compact viewerRole={role === "psychologist" ? "psychologist" : "patient"} />
           ) : (
             <div className="rounded-md border border-border px-3 py-2 text-sm text-muted-foreground">
               {isResolving

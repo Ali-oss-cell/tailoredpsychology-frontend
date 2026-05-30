@@ -2,7 +2,7 @@
 
 import type * as React from "react"
 import Link from "next/link"
-import { CalendarDots, House, NotePencil, SignOut, UsersThree, UserCircleGear, VideoCamera } from "@phosphor-icons/react/dist/ssr"
+import { CalendarDots, ChatCircleDots, House, NotePencil, SignOut, UsersThree, UserCircleGear, VideoCamera } from "@phosphor-icons/react/dist/ssr"
 
 import { LogoutLink } from "@/components/auth/logout-link"
 import { ClinkLogo } from "@/components/brand/clink-logo"
@@ -31,6 +31,7 @@ type PsychologistShellProps = {
     | "dashboard"
     | "schedule"
     | "patients"
+    | "messages"
     | "notes"
     | "profile"
     | "recordings"
@@ -40,6 +41,7 @@ const navItems = [
   { key: "dashboard", href: "/psychologist/dashboard", label: "Dashboard", icon: House },
   { key: "schedule", href: "/psychologist/schedule", label: "Schedule", icon: CalendarDots },
   { key: "patients", href: "/psychologist/patients", label: "Patients", icon: UsersThree },
+  { key: "messages", href: "/psychologist/messages", label: "Messages", icon: ChatCircleDots },
   { key: "notes", href: "/psychologist/notes", label: "Notes", icon: NotePencil },
   { key: "profile", href: "/psychologist/profile", label: "Profile", icon: UserCircleGear },
   { key: "recordings", href: "/psychologist/recordings", label: "Recordings", icon: VideoCamera },

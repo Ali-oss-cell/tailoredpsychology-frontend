@@ -393,6 +393,19 @@ export async function saveAppointmentReadiness(
   return (await response.json()) as TelehealthReadinessResponse
 }
 
+export async function getAppointmentChatMessages(appointmentId: string): Promise<ChatMessageResponse[]> {
+  const url = buildApiUrl(`appointments/${appointmentId}/chat/messages`)
+  const response = await fetch(url.toString(), {
+    method: "GET",
+    headers: await getAuthHeaders(),
+    cache: "no-store",
+  })
+  if (!response.ok) {
+    throw new Error(`Fetch chat messages failed (${response.status})`)
+  }
+  return (await response.json()) as ChatMessageResponse[]
+}
+
 export async function postAppointmentChatMessage(
   appointmentId: string,
   message: string,
