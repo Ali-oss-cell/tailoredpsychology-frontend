@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import * as React from "react"
-import { CheckCircle, Loader2 } from "lucide-react"
+import { CheckCircle, CircleNotch } from "@phosphor-icons/react"
 
 import { PatientPageHeader } from "@/components/patient/patient-page-header"
 import { Button } from "@/components/ui/button"
@@ -87,7 +87,7 @@ export function BookingPaymentSuccessPanel() {
 
       {isConfirming && !confirmed && !error ? (
         <div className="flex items-center gap-2 rounded-lg border border-border/60 bg-muted/40 p-4 text-sm">
-          <Loader2 className="size-4 animate-spin" aria-hidden />
+          <CircleNotch className="animate-spin" size={16} aria-hidden />
           Confirming your payment…
         </div>
       ) : null}
