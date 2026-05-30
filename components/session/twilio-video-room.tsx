@@ -1,7 +1,15 @@
 "use client"
 
 import * as React from "react"
-import { Microphone, MicrophoneSlash, PhoneDisconnect, VideoCamera, VideoCameraSlash } from "@phosphor-icons/react"
+import {
+  ArrowsIn,
+  ArrowsOut,
+  Microphone,
+  MicrophoneSlash,
+  PhoneDisconnect,
+  VideoCamera,
+  VideoCameraSlash,
+} from "@phosphor-icons/react"
 import type { LocalAudioTrack, LocalVideoTrack, RemoteParticipant, RemoteTrack, Room } from "twilio-video"
 
 import { Button } from "@/components/ui/button"
@@ -42,7 +50,26 @@ function detachTrack(track: RemoteTrack | LocalVideoTrack | LocalAudioTrack): vo
   }
 }
 
+async function enterFullscreen(element: HTMLElement): Promise<void> {
+  if (element.requestFullscreen) {
+    await element.requestFullscreen()
+    return
+  }
+  const legacy = element as HTMLElement & { webkitRequestFullscreen?: () => void }
+  legacy.webkitRequestFullscreen?.()
+}
+
+async function exitFullscreen(): Promise<void> {
+  if (document.exitFullscreen) {
+    await document.exitFullscreen()
+    return
+  }
+  const legacy = document as Document & { webkitExitFullscreen?: () => void }
+  legacy.webkitExitFullscreen?.()
+}
+
 export function TwilioVideoRoom({ accessToken, roomName, participantIdentity, onLeave }: TwilioVideoRoomProps) {
+  const stageRef = React.useRef<HTMLDivElement>(null)
   const localVideoRef = React.useRef<HTMLDivElement>(null)
   const remoteContainerRef = React.useRef<HTMLDivElement>(null)
   const roomRef = React.useRef<Room | null>(null)
@@ -52,8 +79,17 @@ export function TwilioVideoRoom({ accessToken, roomName, participantIdentity, on
   const [isMuted, setIsMuted] = React.useState(false)
   const [isVideoOff, setIsVideoOff] = React.useState(false)
   const [remoteCount, setRemoteCount] = React.useState(0)
+  const [isFullscreen, setIsFullscreen] = React.useState(false)
 
   onLeaveRef.current = onLeave
+
+  React.useEffect(() => {
+    const syncFullscreen = (): void => {
+      setIsFullscreen(document.fullscreenElement === stageRef.current)
+    }
+    document.addEventListener("fullscreenchange", syncFullscreen)
+    return () => document.removeEventListener("fullscreenchange", syncFullscreen)
+  }, [])
 
   React.useEffect(() => {
     let cancelled = false
@@ -164,9 +200,22 @@ export function TwilioVideoRoom({ accessToken, roomName, participantIdentity, on
   }
 
   const leaveCall = (): void => {
+    if (document.fullscreenElement === stageRef.current) {
+      void exitFullscreen()
+    }
     roomRef.current?.disconnect()
     roomRef.current = null
     onLeave()
+  }
+
+  const toggleFullscreen = (): void => {
+    const stage = stageRef.current
+    if (!stage) return
+    if (document.fullscreenElement === stage) {
+      void exitFullscreen()
+      return
+    }
+    void enterFullscreen(stage).catch(() => undefined)
   }
 
   if (status === "error") {
@@ -195,37 +244,93 @@ export function TwilioVideoRoom({ accessToken, roomName, participantIdentity, on
         ) : null}
       </div>
 
-      <div className="relative">
+      <div
+        ref={stageRef}
+        className={
+          isFullscreen
+            ? "flex min-h-full flex-col bg-black p-4"
+            : "relative rounded-xl border border-border/60 bg-muted/20"
+        }
+      >
         <div
-          ref={remoteContainerRef}
-          className={`grid min-h-[280px] gap-3 ${remoteCount > 1 ? "md:grid-cols-2" : "grid-cols-1"}`}
+          className={
+            isFullscreen
+              ? "relative min-h-0 flex-1"
+              : "relative"
+          }
         >
-          {status === "connected" && remoteCount === 0 ? (
-            <div className="flex aspect-video items-center justify-center rounded-xl border border-dashed border-border bg-muted/40 px-4 text-center">
-              <p className="text-muted-foreground text-sm">Waiting for the other participant to join…</p>
-            </div>
-          ) : null}
+          <div
+            ref={remoteContainerRef}
+            className={`grid gap-3 ${
+              isFullscreen ? "h-full min-h-[calc(100vh-8rem)] grid-cols-1" : "min-h-[280px]"
+            } ${!isFullscreen && remoteCount > 1 ? "md:grid-cols-2" : "grid-cols-1"}`}
+          >
+            {status === "connected" && remoteCount === 0 ? (
+              <div
+                className={`flex items-center justify-center rounded-xl border border-dashed px-4 text-center ${
+                  isFullscreen
+                    ? "border-white/20 bg-black/40 text-white"
+                    : "border-border bg-muted/40"
+                } aspect-video`}
+              >
+                <p className={`text-sm ${isFullscreen ? "text-white/80" : "text-muted-foreground"}`}>
+                  Waiting for the other participant to join…
+                </p>
+              </div>
+            ) : null}
+          </div>
+
+          <div
+            className={`pointer-events-none absolute z-20 overflow-hidden rounded-lg border border-white/20 bg-black shadow-lg ${
+              isFullscreen ? "right-6 bottom-24 w-44 sm:w-52" : "right-3 bottom-3 w-36 sm:w-44"
+            }`}
+          >
+            <div ref={localVideoRef} className="aspect-video bg-black" />
+            <p className="bg-black/80 px-2 py-1 text-[10px] text-white">You</p>
+          </div>
         </div>
 
-        <div className="pointer-events-none absolute right-3 bottom-3 z-20 w-36 overflow-hidden rounded-lg border border-white/20 bg-black shadow-lg sm:w-44">
-          <div ref={localVideoRef} className="aspect-video bg-black" />
-          <p className="bg-black/80 px-2 py-1 text-[10px] text-white">You</p>
+        <div
+          className={`flex flex-wrap items-center justify-center gap-2 ${
+            isFullscreen ? "mt-4 border-t border-white/10 pt-4" : "pt-3"
+          }`}
+        >
+          <Button
+            type="button"
+            size="sm"
+            variant={isMuted ? "destructive" : "outline"}
+            onClick={toggleMute}
+            className={isFullscreen ? "border-white/20 bg-black/60 text-white hover:bg-black/80" : undefined}
+          >
+            {isMuted ? <MicrophoneSlash className="size-4" /> : <Microphone className="size-4" />}
+            {isMuted ? "Unmute" : "Mute"}
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={isVideoOff ? "destructive" : "outline"}
+            onClick={toggleVideo}
+            className={isFullscreen ? "border-white/20 bg-black/60 text-white hover:bg-black/80" : undefined}
+          >
+            {isVideoOff ? <VideoCameraSlash className="size-4" /> : <VideoCamera className="size-4" />}
+            {isVideoOff ? "Camera on" : "Camera off"}
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={toggleFullscreen}
+            aria-pressed={isFullscreen}
+            className={isFullscreen ? "border-white/20 bg-black/60 text-white hover:bg-black/80" : undefined}
+          >
+            {isFullscreen ? <ArrowsIn className="size-4" /> : <ArrowsOut className="size-4" />}
+            {isFullscreen ? "Exit full screen" : "Full screen"}
+          </Button>
+          <Button type="button" size="sm" variant="destructive" onClick={leaveCall}>
+            <PhoneDisconnect className="size-4" />
+            Leave call
+          </Button>
         </div>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
-        <Button type="button" size="sm" variant={isMuted ? "destructive" : "outline"} onClick={toggleMute}>
-          {isMuted ? <MicrophoneSlash className="size-4" /> : <Microphone className="size-4" />}
-          {isMuted ? "Unmute" : "Mute"}
-        </Button>
-        <Button type="button" size="sm" variant={isVideoOff ? "destructive" : "outline"} onClick={toggleVideo}>
-          {isVideoOff ? <VideoCameraSlash className="size-4" /> : <VideoCamera className="size-4" />}
-          {isVideoOff ? "Camera on" : "Camera off"}
-        </Button>
-        <Button type="button" size="sm" variant="destructive" onClick={leaveCall}>
-          <PhoneDisconnect className="size-4" />
-          Leave call
-        </Button>
       </div>
     </section>
   )
