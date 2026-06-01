@@ -346,7 +346,16 @@ export async function createBookingCheckout(bookingRequestId: string): Promise<B
   })
 
   if (!response.ok) {
-    throw new Error(`Payment checkout failed (${response.status})`)
+    let detail = `Payment checkout failed (${response.status})`
+    try {
+      const body = (await response.json()) as { message?: string | string[] }
+      if (body.message) {
+        detail = Array.isArray(body.message) ? body.message.join(", ") : body.message
+      }
+    } catch {
+      // ignore parse errors
+    }
+    throw new Error(detail)
   }
 
   return (await response.json()) as BookingCheckoutResponse
