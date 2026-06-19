@@ -4,7 +4,6 @@ import * as React from "react"
 import Link from "next/link"
 
 import { PatientPageHeader } from "@/components/patient/patient-page-header"
-import { PatientShell } from "@/components/patient/patient-shell"
 import { ClinicianPublicProfileHeader } from "@/components/shared/clinician-public-profile-header"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { Badge } from "@/components/ui/badge"
@@ -137,8 +136,7 @@ export default function PatientMyClinicianPage() {
   }, [])
 
   return (
-    <PatientShell activeRoute="my-clinician">
-      <section className="space-y-6" data-tutorial="patient.page.my-clinician">
+    <section className="space-y-6" data-tutorial="patient.page.my-clinician">
         <PatientPageHeader
           title={patientMyClinicianContent.header.title}
           description={patientMyClinicianContent.header.description}
@@ -313,6 +311,5 @@ export default function PatientMyClinicianPage() {
             : null}
         </div>
       </section>
-    </PatientShell>
   )
 }

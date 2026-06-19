@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 
 import { PatientPageHeader } from "@/components/patient/patient-page-header"
-import { PatientShell } from "@/components/patient/patient-shell"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -51,8 +50,7 @@ export default function PatientDataRequestsPage() {
   }
 
   return (
-    <PatientShell activeRoute="privacy-requests">
-      <section className="space-y-6" data-tutorial="patient.page.privacy-requests">
+    <section className="space-y-6" data-tutorial="patient.page.privacy-requests">
         <PatientPageHeader
           title="Data Access and Correction Requests"
           description="Submit and track privacy requests for record access or correction."
@@ -112,6 +110,5 @@ export default function PatientDataRequestsPage() {
           </label>
         </ConfirmDialog>
       </section>
-    </PatientShell>
   )
 }

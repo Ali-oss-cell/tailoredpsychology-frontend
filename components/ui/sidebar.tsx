@@ -214,7 +214,7 @@ export function SidebarMenuButton({
       data-slot="sidebar-menu-button"
       data-active={isActive}
       className={cn(
-        "text-muted-foreground hover:bg-muted/70 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
+        "text-muted-foreground hover:bg-muted/70 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm",
         "data-[active=true]:bg-muted data-[active=true]:text-foreground data-[active=true]:font-medium",
         "group-data-[state=collapsed]/sidebar:justify-center group-data-[state=collapsed]/sidebar:px-2",
         className,

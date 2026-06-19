@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
-import { PatientShell } from "@/components/patient/patient-shell"
 import { PatientPageHeader } from "@/components/patient/patient-page-header"
 import { Button } from "@/components/ui/button"
 import { getPatientSessionVideos, requestSessionVideoAccess, type SessionVideoItem } from "@/src/psychologist/videos/api"
@@ -25,8 +24,7 @@ export default function PatientRecordingsPage() {
   }, [])
 
   return (
-    <PatientShell activeRoute="resources">
-      <section className="space-y-6">
+    <section className="space-y-6">
         <PatientPageHeader title="Session Recordings" description="Access your session video library and transcript readiness." />
         <Card>
           <CardHeader className="pb-3">
@@ -77,6 +75,5 @@ export default function PatientRecordingsPage() {
           </CardContent>
         </Card>
       </section>
-    </PatientShell>
   )
 }

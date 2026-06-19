@@ -30,7 +30,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar"
 import { TUTORIAL_EXPAND_PATIENT_SIDEBAR } from "@/src/tutorials/events"
@@ -49,17 +48,19 @@ function PatientShellTutorialSidebarSync() {
   return null
 }
 
+export type PatientShellActiveRoute =
+  | "dashboard"
+  | "appointments"
+  | "invoices"
+  | "resources"
+  | "privacy-requests"
+  | "account"
+  | "onboarding"
+  | "my-clinician"
+
 type PatientShellProps = {
   children: React.ReactNode
-  activeRoute?:
-    | "dashboard"
-    | "appointments"
-    | "invoices"
-    | "resources"
-    | "privacy-requests"
-    | "account"
-    | "onboarding"
-    | "my-clinician"
+  activeRoute?: PatientShellActiveRoute
 }
 
 const navItems = [
@@ -84,14 +85,11 @@ const navTutorial: Record<(typeof navItems)[number]["key"], string> = {
 
 export function PatientShell({ children, activeRoute = "dashboard" }: PatientShellProps) {
   return (
-    <SidebarProvider defaultOpen={false} storageKey="clink-sidebar-patient">
+    <SidebarProvider defaultOpen={true}>
       <div className="bg-background text-foreground flex min-h-screen w-full">
         <PatientShellTutorialSidebarSync />
-        <Sidebar collapsible="icon" data-tutorial="shell.sidebar">
+        <Sidebar collapsible="none" className="transition-none" data-tutorial="shell.sidebar">
           <SidebarHeader>
-            <div className="mb-3 flex justify-end group-data-[state=collapsed]/sidebar:justify-center">
-              <SidebarTrigger variant="soft" />
-            </div>
             <ClinkSidebarBrand dashboardHref="/patient/dashboard" portalLabel="Patient Portal" />
           </SidebarHeader>
           <SidebarContent>
@@ -105,7 +103,7 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
                     <SidebarMenuButton asChild isActive={item.key === activeRoute}>
                       <Link href={item.href} {...tutorialAttr}>
                         <Icon size={18} />
-                        <span className="group-data-[state=collapsed]/sidebar:hidden">{item.label}</span>
+                        <span>{item.label}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -118,7 +116,7 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
                 >
                   <Link href="/patient/book-appointment" data-tutorial="shell.sidebar.book-appointment">
                     <CalendarPlus size={18} weight="bold" />
-                    <span className="group-data-[state=collapsed]/sidebar:hidden">Book New Appointment</span>
+                    <span>Book New Appointment</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -126,7 +124,7 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
                 <SidebarMenuButton asChild>
                   <LogoutLink className="flex w-full items-center gap-3">
                     <SignOut size={18} />
-                    <span className="group-data-[state=collapsed]/sidebar:hidden">Logout</span>
+                    <span>Logout</span>
                   </LogoutLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>

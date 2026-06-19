@@ -15,7 +15,7 @@ export const patientWelcomeSteps: TutorialStepDef[] = [
     id: "patient.welcome.sidebar",
     target: "shell.sidebar",
     title: "Your patient portal",
-    body: "This sidebar is home base. Use it to open Dashboard, Appointments, your clinician, Billing, Resources, privacy requests, and Account. Book New Appointment and Logout are at the bottom of the menu. We keep the menu expanded during the tour—collapse it anytime with the rows icon.",
+    body: "This sidebar is home base. Use it to open Dashboard, Appointments, your clinician, Billing, Resources, privacy requests, and Account. Book New Appointment and Logout are at the bottom of the menu.",
     side: "right",
     align: "start",
     waitForRoutes: ["/patient/dashboard", "/patient/onboarding"],
