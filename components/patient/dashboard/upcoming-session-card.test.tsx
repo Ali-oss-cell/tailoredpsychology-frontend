@@ -1,6 +1,7 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react"
+import { fireEvent, screen, waitFor } from "@testing-library/react"
 
 import { UpcomingSessionCard } from "@/components/patient/dashboard/upcoming-session-card"
+import { renderWithQueryClient } from "@/src/patient/queries/test-utils"
 
 jest.mock("@/src/patient/booking/api", () => ({
   getAppointmentDetails: jest.fn(),
@@ -43,7 +44,7 @@ describe("UpcomingSessionCard", () => {
   })
 
   it("hides join link when suppressJoinButton is true", () => {
-    render(
+    renderWithQueryClient(
       <UpcomingSessionCard
         appointmentId="appt_open_001"
         sessionType="Consultation"
@@ -59,7 +60,7 @@ describe("UpcomingSessionCard", () => {
   })
 
   it("links join action to video-session route", () => {
-    render(
+    renderWithQueryClient(
       <UpcomingSessionCard
         appointmentId="appt_open_001"
         sessionType="Consultation"
@@ -76,7 +77,7 @@ describe("UpcomingSessionCard", () => {
   })
 
   it("loads details when manage is opened and allows cancel", async () => {
-    render(
+    renderWithQueryClient(
       <UpcomingSessionCard
         appointmentId="appt_open_001"
         sessionType="Consultation"

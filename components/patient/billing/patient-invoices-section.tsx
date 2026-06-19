@@ -1,11 +1,12 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
-import { downloadPatientInvoice, listPatientInvoices, type InvoiceSummary } from "@/src/patient/billing/api"
+import { downloadPatientInvoice } from "@/src/patient/billing/api"
+import { usePatientInvoices } from "@/src/patient/queries/use-patient-invoices"
 
 type PatientInvoicesSectionProps = {
   title: string
@@ -13,31 +14,17 @@ type PatientInvoicesSectionProps = {
 }
 
 export function PatientInvoicesSection({ title, description }: PatientInvoicesSectionProps) {
-  const [invoices, setInvoices] = useState<InvoiceSummary[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const invoicesQuery = usePatientInvoices()
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
+  const [downloadError, setDownloadError] = useState<string | null>(null)
 
-  const load = useCallback(async () => {
-    setIsLoading(true)
-    setError(null)
-    try {
-      const rows = await listPatientInvoices()
-      setInvoices(rows)
-    } catch {
-      setError("Could not load invoices.")
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void load()
-  }, [load])
+  const invoices = invoicesQuery.data ?? []
+  const isLoading = invoicesQuery.isLoading
+  const error = invoicesQuery.isError ? "Could not load invoices." : downloadError
 
   async function handleDownload(invoiceId: string): Promise<void> {
     setDownloadingId(invoiceId)
+    setDownloadError(null)
     try {
       const { blob, filename } = await downloadPatientInvoice(invoiceId)
       const url = URL.createObjectURL(blob)
@@ -47,7 +34,7 @@ export function PatientInvoicesSection({ title, description }: PatientInvoicesSe
       anchor.click()
       URL.revokeObjectURL(url)
     } catch {
-      setError("Download failed.")
+      setDownloadError("Download failed.")
     } finally {
       setDownloadingId(null)
     }
@@ -69,7 +56,9 @@ export function PatientInvoicesSection({ title, description }: PatientInvoicesSe
         </CardHeader>
         <CardContent>
           {isLoading ? <DashboardStateBlock variant="loading" message="Loading invoices..." /> : null}
-          {error ? <DashboardStateBlock variant="error" message={error} onRetry={() => void load()} /> : null}
+          {error ? (
+            <DashboardStateBlock variant="error" message={error} onRetry={() => void invoicesQuery.refetch()} />
+          ) : null}
           {!isLoading && !error && invoices.length === 0 ? (
             <DashboardStateBlock variant="empty" message="No invoices yet." />
           ) : null}

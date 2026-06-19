@@ -1,6 +1,17 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 
 import { PatientInvoicesSection } from "@/components/patient/billing/patient-invoices-section"
+import { renderWithQueryClient } from "@/src/patient/queries/test-utils"
+
+jest.mock("@/src/auth/current-user", () => ({
+  getCurrentUser: jest.fn().mockResolvedValue({
+    id: "user_patient_001",
+    email: "patient@clink.test",
+    displayName: "Patient",
+    role: "patient",
+    accountSetupComplete: true,
+  }),
+}))
 
 jest.mock("@/src/patient/billing/api", () => ({
   listPatientInvoices: jest.fn(),
@@ -36,7 +47,7 @@ describe("PatientInvoicesSection", () => {
     global.URL.createObjectURL = jest.fn(() => "blob:mock")
     global.URL.revokeObjectURL = jest.fn()
 
-    render(<PatientInvoicesSection title="Invoices" description="Billing history" />)
+    renderWithQueryClient(<PatientInvoicesSection title="Invoices" description="Billing history" />)
 
     await waitFor(() => expect(mockedList).toHaveBeenCalled())
     expect(await screen.findByText("INV-1042")).toBeInTheDocument()

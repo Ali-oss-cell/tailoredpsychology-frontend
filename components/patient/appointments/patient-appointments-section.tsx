@@ -1,12 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { useCallback, useEffect, useState } from "react"
+import { useState } from "react"
 
 import { AppointmentManagePanel } from "@/components/patient/appointments/appointment-manage-panel"
-import { getCurrentUser } from "@/src/auth/current-user"
-import { getPatientAppointments, type PatientAppointmentSummary } from "@/src/patient/booking/api"
-import { getPatientSessions, getSessionDetail, type SessionDetail } from "@/src/sessions/api"
+import type { PatientAppointmentSummary } from "@/src/patient/booking/api"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -14,6 +12,9 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { formatSessionRange } from "@/src/patient/appointments/format-session-range"
 import { mapAppointmentPhase } from "@/src/patient/appointments/status-phase"
+import { useCurrentUser } from "@/src/patient/queries/use-current-user"
+import { usePatientAppointments } from "@/src/patient/queries/use-patient-appointments"
+import { usePatientAppointmentSessionDetails } from "@/src/patient/queries/use-patient-appointment-session-details"
 import { joinSessionHref } from "@/src/session/join-session"
 
 function showJoinTelehealth(item: PatientAppointmentSummary): boolean {
@@ -53,44 +54,33 @@ function AppointmentsListSkeleton() {
 }
 
 export function PatientAppointmentsSection() {
-  const [upcoming, setUpcoming] = useState<PatientAppointmentSummary[]>([])
-  const [past, setPast] = useState<PatientAppointmentSummary[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const userQuery = useCurrentUser()
+  const appointmentsQuery = usePatientAppointments()
+  const sessionDetailsQuery = usePatientAppointmentSessionDetails()
   const [manageId, setManageId] = useState<string | null>(null)
-  const [sessionDetailById, setSessionDetailById] = useState<Record<string, SessionDetail | null>>({})
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const user = await getCurrentUser()
-      if (user.role !== "patient") {
-        setError("Sign in as a patient to view appointments.")
-        setUpcoming([])
-        setPast([])
-        return
-      }
-      const data = await getPatientAppointments(user.id)
-      setUpcoming(data.upcoming)
-      setPast(data.past)
-      const sessions = await getPatientSessions(user.id)
-      const details = await Promise.all(sessions.slice(0, 6).map((session) => getSessionDetail(session.sessionId)))
-      setSessionDetailById(Object.fromEntries(details.map((detail) => [detail.sessionId, detail])))
-    } catch {
-      setError("Could not load appointments.")
-      setUpcoming([])
-      setPast([])
-      setSessionDetailById({})
-    } finally {
-      setLoading(false)
+  const isPatient = userQuery.data?.role === "patient"
+  const loading =
+    userQuery.isLoading ||
+    (isPatient && (appointmentsQuery.isLoading || sessionDetailsQuery.isLoading))
+
+  const error = (() => {
+    if (userQuery.isSuccess && userQuery.data.role !== "patient") {
+      return "Sign in as a patient to view appointments."
     }
-  }, [])
+    if (userQuery.isError || appointmentsQuery.isError || sessionDetailsQuery.isError) {
+      return "Could not load appointments."
+    }
+    return null
+  })()
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void load()
-  }, [load])
+  const upcoming = appointmentsQuery.data?.upcoming ?? []
+  const past = appointmentsQuery.data?.past ?? []
+  const sessionDetailById = sessionDetailsQuery.data ?? {}
+
+  const refreshAppointments = () => {
+    void Promise.all([appointmentsQuery.refetch(), sessionDetailsQuery.refetch()])
+  }
 
   return (
     <>
@@ -137,7 +127,7 @@ export function PatientAppointmentsSection() {
                   </div>
                   {manageId === item.appointmentId ? (
                     <div className="mt-2">
-                      <AppointmentManagePanel appointmentId={item.appointmentId} onAppointmentUpdated={() => void load()} />
+                      <AppointmentManagePanel appointmentId={item.appointmentId} onAppointmentUpdated={refreshAppointments} />
                     </div>
                   ) : null}
                 </div>

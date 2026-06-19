@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react"
 
 import { PatientAppointmentsSection } from "@/components/patient/appointments/patient-appointments-section"
+import { renderWithQueryClient } from "@/src/patient/queries/test-utils"
 
 jest.mock("@/components/patient/appointments/appointment-manage-panel", () => ({
   AppointmentManagePanel: () => <div>Manage panel</div>,
@@ -70,7 +71,7 @@ describe("PatientAppointmentsSection", () => {
       viewerAccessMode: "owner_patient",
     })
 
-    render(<PatientAppointmentsSection />)
+    renderWithQueryClient(<PatientAppointmentsSection />)
 
     await waitFor(() => expect(screen.getByText("Recent Sessions")).toBeInTheDocument())
     await waitFor(() => expect(screen.getByText(/owner patient/i)).toBeInTheDocument())

@@ -1,10 +1,12 @@
 "use client"
 
+import { useQueryClient } from "@tanstack/react-query"
 import { useEffect, useMemo, useState } from "react"
 
 import { RescheduleDatetimeField } from "@/components/patient/appointments/reschedule-datetime-field"
 import { Button } from "@/components/ui/button"
 import { getAppointmentDetails, postManageAppointment, type AppointmentDetailsResponse } from "@/src/patient/booking/api"
+import { invalidatePatientAppointments } from "@/src/patient/queries/invalidate"
 import { RESCHEDULE_LOCK_BEFORE_START_MS, RESCHEDULE_RULE_LINES } from "@/src/patient/booking/reschedule-policy"
 
 type AppointmentManagePanelProps = {
@@ -13,6 +15,7 @@ type AppointmentManagePanelProps = {
 }
 
 export function AppointmentManagePanel({ appointmentId, onAppointmentUpdated }: AppointmentManagePanelProps) {
+  const queryClient = useQueryClient()
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [details, setDetails] = useState<AppointmentDetailsResponse | null>(null)
@@ -61,6 +64,7 @@ export function AppointmentManagePanel({ appointmentId, onAppointmentUpdated }: 
     try {
       const next = await postManageAppointment(appointmentId, { action: "cancel" })
       setDetails(next)
+      await invalidatePatientAppointments(queryClient)
       onAppointmentUpdated?.()
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not cancel appointment.")
@@ -80,6 +84,7 @@ export function AppointmentManagePanel({ appointmentId, onAppointmentUpdated }: 
       })
       setDetails(next)
       setRescheduleAt(toLocalInputValue(next.scheduledStartAt))
+      await invalidatePatientAppointments(queryClient)
       onAppointmentUpdated?.()
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not reschedule appointment.")
