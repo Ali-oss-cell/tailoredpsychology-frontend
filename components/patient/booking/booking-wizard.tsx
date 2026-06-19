@@ -1507,49 +1507,35 @@ export function BookingWizard() {
 
   if (wizardLoading) {
     return (
-      <section
-        className="flex min-h-0 flex-1 flex-col gap-4"
-        data-tutorial="patient.page.book-appointment"
-      >
+      <section className="space-y-6" data-tutorial="patient.page.book-appointment">
         <PatientPageHeader title={bookingContent.header.title} description={bookingContent.header.description} />
-        <div className="flex flex-1 items-center justify-center">
-          <DashboardStateBlock variant="loading" message="Preparing your booking…" />
-        </div>
+        <DashboardStateBlock variant="loading" message="Preparing your booking…" />
       </section>
     )
   }
 
   return (
-    <section
-      className="flex min-h-0 flex-1 flex-col gap-4"
-      data-tutorial="patient.page.book-appointment"
-    >
-      <header className="shrink-0 space-y-3">
-        <PatientPageHeader
-          title={bookingEligibility.isNewPatient ? "Book your first appointment" : bookingContent.header.title}
-          description={
-            bookingEligibility.isNewPatient
-              ? "Complete intake and choose a session time. Follow-up booking is available after your first visit."
-              : bookingContent.header.description
-          }
-        />
-        {paymentCancelled ? (
-          <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm">
-            Payment was cancelled. Your slot may still be held briefly — return to review and choose{" "}
-            <span className="font-medium">Pay & confirm booking</span> to try again.
-          </div>
-        ) : null}
-      </header>
-
+    <section className="space-y-6" data-tutorial="patient.page.book-appointment">
+      <PatientPageHeader
+        title={bookingEligibility.isNewPatient ? "Book your first appointment" : bookingContent.header.title}
+        description={
+          bookingEligibility.isNewPatient
+            ? "Complete intake and choose a session time. Follow-up booking is available after your first visit."
+            : bookingContent.header.description
+        }
+      />
+      {paymentCancelled ? (
+        <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 text-sm">
+          Payment was cancelled. Your slot may still be held briefly — return to review and choose{" "}
+          <span className="font-medium">Pay & confirm booking</span> to try again.
+        </div>
+      ) : null}
       {activeStep !== "submitted" ? (
-        <div className="flex min-h-0 flex-1 flex-col gap-3">
-          <div className="shrink-0">
-            <BookingStepper steps={visibleSteps} currentIndex={stepIndex} />
-          </div>
-
-          <Card className="flex min-h-0 flex-1 flex-col gap-0 overflow-hidden p-0 shadow-sm">
-            <CardHeader className="border-border/50 shrink-0 gap-2 border-b px-5 py-4">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div className="space-y-4">
+          <BookingStepper steps={visibleSteps} currentIndex={stepIndex} />
+          <Card className="gap-0 overflow-hidden p-0 shadow-sm">
+            <CardHeader className="border-border/50 gap-3 border-b px-6 pt-6 pb-5">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div className="min-w-0 space-y-1">
                   <CardTitle className="text-lg" id="booking-step-title">
                     {visibleSteps[stepIndex]?.label ?? "Booking request"}
@@ -1565,30 +1551,27 @@ export function BookingWizard() {
                 />
               </div>
             </CardHeader>
-
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-              <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
-                {errors.length > 0 ? (
-                  <div className="border-destructive/40 bg-destructive/10 text-destructive rounded-xl border p-3 text-xs">
-                    <p className="mb-2 flex items-center gap-1 font-medium">
-                      <WarningCircle size={14} />
-                      Please fix the following before continuing:
-                    </p>
-                    <ul className="list-inside list-disc space-y-1">
-                      {errors.map((error) => (
-                        <li key={error}>{error}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-
-                <div
-                  key={activeStep}
-                  className="motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-200 motion-reduce:animate-none"
-                  aria-labelledby="booking-step-title"
-                >
-                  {content}
+            <CardContent className="space-y-5 px-6 pt-5 pb-0">
+              {errors.length > 0 ? (
+                <div className="border-destructive/40 bg-destructive/10 text-destructive rounded-xl border p-3 text-xs">
+                  <p className="mb-2 flex items-center gap-1 font-medium">
+                    <WarningCircle size={14} />
+                    Please fix the following before continuing:
+                  </p>
+                  <ul className="list-inside list-disc space-y-1">
+                    {errors.map((error) => (
+                      <li key={error}>{error}</li>
+                    ))}
+                  </ul>
                 </div>
+              ) : null}
+
+              <div
+                key={activeStep}
+                className="motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-200 motion-reduce:animate-none"
+                aria-labelledby="booking-step-title"
+              >
+                {content}
               </div>
 
               <BookingActions
@@ -1598,17 +1581,17 @@ export function BookingWizard() {
                 onBack={goBack}
                 onNext={goNext}
               />
-            </div>
+            </CardContent>
           </Card>
         </div>
       ) : (
-        <Card className="flex min-h-0 flex-1 flex-col gap-0 overflow-hidden p-0 shadow-sm">
-          <CardHeader className="border-border/50 shrink-0 border-b px-5 py-4">
+        <Card className="gap-0 overflow-hidden p-0 shadow-sm">
+          <CardHeader className="border-border/50 border-b px-6 pt-6 pb-5">
             <CardTitle className="text-lg" id="booking-step-title">
               Request received
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 overflow-y-auto px-5 py-4">
+          <CardContent className="space-y-5 px-6 py-5">
             <div aria-labelledby="booking-step-title">{content}</div>
           </CardContent>
         </Card>

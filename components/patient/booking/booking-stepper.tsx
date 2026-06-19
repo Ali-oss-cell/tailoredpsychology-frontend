@@ -13,7 +13,7 @@ export function BookingStepper({ steps, currentIndex }: BookingStepperProps) {
     <nav aria-label="Booking progress">
       <ol
         className={cn(
-          "grid gap-2.5 rounded-2xl border border-border/50 bg-muted/25 p-3 shadow-sm",
+          "grid gap-3 rounded-2xl border border-border/50 bg-muted/25 p-4 shadow-sm",
           "sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-8",
         )}
       >

@@ -36,11 +36,6 @@ function resolveActiveRoute(pathname: string): PatientShellActiveRoute {
 export function PatientShellLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const activeRoute = React.useMemo(() => resolveActiveRoute(pathname), [pathname])
-  const mainLayout = pathname.startsWith("/patient/book-appointment") ? "locked" : "scroll"
 
-  return (
-    <PatientShell activeRoute={activeRoute} mainLayout={mainLayout}>
-      {children}
-    </PatientShell>
-  )
+  return <PatientShell activeRoute={activeRoute}>{children}</PatientShell>
 }

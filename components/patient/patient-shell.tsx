@@ -61,8 +61,6 @@ export type PatientShellActiveRoute =
 type PatientShellProps = {
   children: React.ReactNode
   activeRoute?: PatientShellActiveRoute
-  /** When locked, main does not scroll — child pages own internal scroll regions (e.g. booking wizard). */
-  mainLayout?: "scroll" | "locked"
 }
 
 const navItems = [
@@ -85,11 +83,7 @@ const navTutorial: Record<(typeof navItems)[number]["key"], string> = {
   account: "shell.sidebar.account",
 }
 
-export function PatientShell({
-  children,
-  activeRoute = "dashboard",
-  mainLayout = "scroll",
-}: PatientShellProps) {
+export function PatientShell({ children, activeRoute = "dashboard" }: PatientShellProps) {
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="bg-background text-foreground flex h-screen w-full overflow-hidden">
@@ -173,11 +167,7 @@ export function PatientShell({
             </div>
           </header>
           <main
-            className={
-              mainLayout === "locked"
-                ? "flex min-h-0 flex-1 flex-col overflow-hidden p-4 md:p-5 lg:p-6"
-                : "flex-1 overflow-y-auto scroll-smooth p-4 md:p-6 lg:p-8"
-            }
+            className="flex-1 overflow-y-auto scroll-smooth p-4 md:p-6 lg:p-8"
             data-tutorial="shell.main"
           >
             {children}
