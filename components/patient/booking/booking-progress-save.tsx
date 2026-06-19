@@ -1,15 +1,64 @@
-import { FloppyDisk } from "@phosphor-icons/react/dist/ssr"
+"use client"
 
-type BookingProgressSaveProps = {
-  message: string
+import { ArrowsClockwise, CheckCircle, Cloud, WarningCircle } from "@phosphor-icons/react"
+
+import { cn } from "@/lib/utils"
+
+export type BookingDraftSyncState = "idle" | "syncing" | "saved" | "conflict" | "error"
+
+type BookingDraftStatusProps = {
+  syncState: BookingDraftSyncState
+  localMessage: string
+  className?: string
 }
 
-export function BookingProgressSave({ message }: BookingProgressSaveProps) {
+function syncLabel(syncState: BookingDraftSyncState): string | null {
+  switch (syncState) {
+    case "syncing":
+      return "Saving to cloud..."
+    case "saved":
+      return "Saved across devices"
+    case "conflict":
+      return "Version conflict detected. Refresh to merge latest draft."
+    case "error":
+      return "Cloud draft unavailable. Local save still active."
+    default:
+      return null
+  }
+}
+
+export function BookingDraftStatus({ syncState, localMessage, className }: BookingDraftStatusProps) {
+  const isSyncing = syncState === "syncing"
+  const isError = syncState === "conflict" || syncState === "error"
+  const isSaved = syncState === "saved"
+  const syncLine = syncLabel(syncState)
+
   return (
-    <p className="text-muted-foreground flex items-center gap-2 text-xs">
-      <FloppyDisk size={14} />
-      {message}
-    </p>
+    <div
+      className={cn(
+        "text-muted-foreground inline-flex max-w-xs items-start gap-2 rounded-lg border border-border/40 bg-muted/20 px-2.5 py-1.5 text-[11px] leading-snug font-normal",
+        className,
+      )}
+      aria-live="polite"
+    >
+      {isSyncing ? (
+        <ArrowsClockwise size={13} className="mt-0.5 shrink-0 animate-spin text-primary" aria-hidden />
+      ) : isError ? (
+        <WarningCircle size={13} className="mt-0.5 shrink-0 text-amber-600" aria-hidden />
+      ) : isSaved ? (
+        <CheckCircle size={13} className="text-primary mt-0.5 shrink-0" aria-hidden />
+      ) : (
+        <Cloud size={13} className="mt-0.5 shrink-0 opacity-70" aria-hidden />
+      )}
+      <span>
+        {syncLine ? <span className="text-foreground/75 block font-medium">{syncLine}</span> : null}
+        <span className="text-muted-foreground/90">{localMessage}</span>
+      </span>
+    </div>
   )
 }
 
+/** @deprecated Use {@link BookingDraftStatus} */
+export function BookingProgressSave({ message }: { message: string }) {
+  return <BookingDraftStatus syncState="idle" localMessage={message} />
+}

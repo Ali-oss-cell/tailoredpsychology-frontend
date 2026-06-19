@@ -8,9 +8,10 @@ import { CaretLeft, CaretRight, CheckCircle, WarningCircle } from "@phosphor-ico
 import { ClinicianBookingOptionCard } from "@/components/patient/booking/clinician-booking-option-card"
 import { CompactDatePicker } from "@/components/patient/booking/compact-date-picker"
 import { BookingActions } from "@/components/patient/booking/booking-actions"
-import { BookingProgressSave } from "@/components/patient/booking/booking-progress-save"
+import { BookingDraftStatus } from "@/components/patient/booking/booking-progress-save"
 import { BookingScheduleSkeleton } from "@/components/patient/booking/booking-schedule-skeleton"
 import { BookingStepper } from "@/components/patient/booking/booking-stepper"
+import { BookingTypeOptionCard } from "@/components/patient/booking/booking-type-option-card"
 import { ReferralUpload } from "@/components/patient/booking/referral-upload"
 import { PatientPageHeader } from "@/components/patient/patient-page-header"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
@@ -70,7 +71,7 @@ const STATIC_CLINICIAN_BY_ID = Object.fromEntries(clinicians.map((c) => [c.id, c
 >
 
 function inputClassName() {
-  return "bg-background text-foreground border-border focus-visible:ring-ring w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition-colors focus-visible:ring-2"
+  return "bg-background text-foreground border-border/70 focus-visible:ring-ring w-full rounded-xl border px-3.5 py-2.5 text-sm shadow-sm outline-none transition-[border-color,box-shadow] focus-visible:ring-2"
 }
 
 function parsePersistedDraft(raw: string | null): BookingRequestDraft | null {
@@ -757,31 +758,27 @@ export function BookingWizard() {
               {bookingEligibility.pastAppointmentCount === 1 ? "" : "s"} on file.
             </p>
           ) : null}
-          <div className={`grid gap-3 ${typeOptions.length > 1 ? "md:grid-cols-2" : ""}`}>
+          <div className={`grid gap-4 ${typeOptions.length > 1 ? "md:grid-cols-2" : ""}`}>
             {typeOptions.map((option) => {
               const selected = draft.bookingMeta.bookingType === option.value
               return (
-                <button
+                <BookingTypeOptionCard
                   key={option.value}
-                  type="button"
-                  onClick={() =>
+                  label={option.label}
+                  description={option.description}
+                  selected={selected}
+                  onSelect={() =>
                     updateDraft("bookingMeta", {
                       bookingType: option.value,
                       changesSinceLastVisit: draft.bookingMeta.changesSinceLastVisit,
                     })
                   }
-                  className={`rounded-xl border p-4 text-left ${
-                    selected ? "border-primary bg-primary/5" : "border-border/70 bg-background"
-                  }`}
-                >
-                  <p className="text-sm font-semibold">{option.label}</p>
-                  <p className="text-muted-foreground mt-1 text-xs">{option.description}</p>
-                </button>
+                />
               )
             })}
           </div>
           {draft.bookingMeta.bookingType === "follow_up" ? (
-            <div className="space-y-2">
+            <div className="space-y-2 rounded-xl border border-border/50 bg-muted/15 p-4">
               <label className="text-sm font-medium">Has anything changed since your last visit?</label>
               <select
                 className={inputClassName()}
@@ -1534,72 +1531,71 @@ export function BookingWizard() {
         </div>
       ) : null}
       {activeStep !== "submitted" ? (
-        <p className="text-muted-foreground text-xs">
-          Draft sync:{" "}
-          {remoteSyncState === "syncing"
-            ? "Saving to cloud..."
-            : remoteSyncState === "saved"
-              ? "Saved across devices"
-              : remoteSyncState === "conflict"
-                ? "Version conflict detected. Refresh to merge latest draft."
-                : remoteSyncState === "error"
-                  ? "Cloud draft unavailable. Local save still active."
-                  : "Idle"}
-        </p>
-      ) : null}
-      {activeStep !== "submitted" ? (
-        <>
+        <div className="space-y-4">
           <BookingStepper steps={visibleSteps} currentIndex={stepIndex} />
-          <BookingProgressSave message={bookingContent.helper.save} />
-        </>
-      ) : null}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg" id="booking-step-title">
-            {activeStep === "submitted"
-              ? "Request received"
-              : visibleSteps[stepIndex]?.label ?? "Booking request"}
-          </CardTitle>
-          {activeStep !== "submitted" ? (
-            <p className="text-muted-foreground pt-1 text-sm leading-relaxed" aria-live="polite">
-              {bookingStepWhatsNext[activeStep]}
-            </p>
-          ) : null}
-        </CardHeader>
-        <CardContent className="space-y-5">
-          {errors.length > 0 ? (
-            <div className="border-destructive/40 bg-destructive/10 text-destructive rounded-lg border p-3 text-xs">
-              <p className="mb-2 flex items-center gap-1 font-medium">
-                <WarningCircle size={14} />
-                Please fix the following before continuing:
-              </p>
-              <ul className="list-inside list-disc space-y-1">
-                {errors.map((error) => (
-                  <li key={error}>{error}</li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
+          <Card className="gap-0 overflow-hidden p-0 shadow-sm">
+            <CardHeader className="border-border/50 gap-3 border-b px-6 pt-6 pb-5">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <div className="min-w-0 space-y-1">
+                  <CardTitle className="text-lg" id="booking-step-title">
+                    {visibleSteps[stepIndex]?.label ?? "Booking request"}
+                  </CardTitle>
+                  <p className="text-muted-foreground text-sm leading-relaxed" aria-live="polite">
+                    {bookingStepWhatsNext[activeStep]}
+                  </p>
+                </div>
+                <BookingDraftStatus
+                  syncState={remoteSyncState}
+                  localMessage={bookingContent.helper.save}
+                  className="shrink-0 lg:max-w-[14rem]"
+                />
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-5 px-6 pt-5 pb-0">
+              {errors.length > 0 ? (
+                <div className="border-destructive/40 bg-destructive/10 text-destructive rounded-xl border p-3 text-xs">
+                  <p className="mb-2 flex items-center gap-1 font-medium">
+                    <WarningCircle size={14} />
+                    Please fix the following before continuing:
+                  </p>
+                  <ul className="list-inside list-disc space-y-1">
+                    {errors.map((error) => (
+                      <li key={error}>{error}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
 
-          <div
-            key={activeStep}
-            className="motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-200 motion-reduce:animate-none"
-            aria-labelledby="booking-step-title"
-          >
-            {content}
-          </div>
+              <div
+                key={activeStep}
+                className="motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-200 motion-reduce:animate-none"
+                aria-labelledby="booking-step-title"
+              >
+                {content}
+              </div>
 
-          {activeStep !== "submitted" ? (
-            <BookingActions
-              isFirstStep={isFirstStep}
-              isFinalStep={isFinalStep}
-              isSubmitting={isSubmitting}
-              onBack={goBack}
-              onNext={goNext}
-            />
-          ) : null}
-        </CardContent>
-      </Card>
+              <BookingActions
+                isFirstStep={isFirstStep}
+                isFinalStep={isFinalStep}
+                isSubmitting={isSubmitting}
+                onBack={goBack}
+                onNext={goNext}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      ) : (
+        <Card className="gap-0 overflow-hidden p-0 shadow-sm">
+          <CardHeader className="border-border/50 border-b px-6 pt-6 pb-5">
+            <CardTitle className="text-lg" id="booking-step-title">
+              Request received
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-5 px-6 py-5">
+            <div aria-labelledby="booking-step-title">{content}</div>
+          </CardContent>
+        </Card>
+      )}
     </section>
   )
 }

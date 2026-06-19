@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 type BookingActionsProps = {
   isFirstStep: boolean
@@ -16,11 +17,21 @@ export function BookingActions({
   onNext,
 }: BookingActionsProps) {
   return (
-    <div className="flex flex-wrap justify-end gap-2 border-t border-border/60 pt-4">
-      <Button type="button" variant="outline" onClick={onBack} disabled={isFirstStep || isSubmitting}>
+    <div
+      className={cn(
+        "border-border/50 bg-muted/15 -mx-6 flex flex-wrap justify-end gap-3 border-t px-6 py-4",
+      )}
+    >
+      <Button
+        type="button"
+        variant="outline"
+        className="min-w-[5.5rem] rounded-lg"
+        onClick={onBack}
+        disabled={isFirstStep || isSubmitting}
+      >
         Back
       </Button>
-      <Button type="button" onClick={onNext} disabled={isSubmitting}>
+      <Button type="button" className="min-w-[5.5rem] rounded-lg" onClick={onNext} disabled={isSubmitting}>
         {isFinalStep
           ? isSubmitting
             ? "Redirecting to payment…"
@@ -30,4 +41,3 @@ export function BookingActions({
     </div>
   )
 }
-
