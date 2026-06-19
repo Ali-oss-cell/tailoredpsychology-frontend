@@ -37,6 +37,15 @@ describe("MoodCheckinCard", () => {
     mockedPostMood.mockResolvedValue({ id: "mood_1", moodLabel: "Good", createdAt: new Date().toISOString() })
   })
 
+  it("shows skeleton while loading instead of loading text", async () => {
+    mockedGetMood.mockImplementation(() => new Promise(() => undefined))
+
+    render(<MoodCheckinCard options={options} />)
+
+    expect(screen.getByLabelText("Loading mood check-in")).toBeInTheDocument()
+    expect(screen.queryByText("Loading…")).not.toBeInTheDocument()
+  })
+
   it("submits mood when emoji is clicked", async () => {
     render(<MoodCheckinCard options={options} />)
 

@@ -2,17 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react"
 
+import { UpcomingSessionCardSkeleton } from "@/components/patient/dashboard/dashboard-skeletons"
 import { UpcomingSessionCard } from "@/components/patient/dashboard/upcoming-session-card"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getCurrentUser } from "@/src/auth/current-user"
 import { getPatientAppointments, type PatientAppointmentSummary } from "@/src/patient/booking/api"
-
-function pickNextUpcoming(upcoming: PatientAppointmentSummary[]): PatientAppointmentSummary | null {
-  if (upcoming.length === 0) return null
-  const now = Date.now()
-  return upcoming.find((a) => new Date(a.scheduledStartAt).getTime() > now) ?? upcoming[0]
-}
+import { pickNextUpcoming } from "@/src/patient/dashboard/join-cta"
 
 function formatUpcomingLabels(startIso: string, endIso: string): { dateLabel: string; timeLabel: string } {
   const start = new Date(startIso)
@@ -23,7 +19,23 @@ function formatUpcomingLabels(startIso: string, endIso: string): { dateLabel: st
   return { dateLabel, timeLabel }
 }
 
-export function PatientDashboardUpcomingSession() {
+type PatientDashboardUpcomingSessionProps = {
+  upcoming?: PatientAppointmentSummary | null
+  loading?: boolean
+  error?: string | null
+  onRetry?: () => void
+  suppressJoinButton?: boolean
+}
+
+export function PatientDashboardUpcomingSession({
+  upcoming: upcomingProp,
+  loading: loadingProp,
+  error: errorProp,
+  onRetry,
+  suppressJoinButton = false,
+}: PatientDashboardUpcomingSessionProps = {}) {
+  const controlled = loadingProp !== undefined
+
   const [row, setRow] = useState<PatientAppointmentSummary | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -48,37 +60,43 @@ export function PatientDashboardUpcomingSession() {
   }, [])
 
   useEffect(() => {
+    if (controlled) return
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void load()
-  }, [load])
+  }, [controlled, load])
 
-  if (loading) {
+  const resolvedLoading = controlled ? loadingProp : loading
+  const resolvedError = controlled ? (errorProp ?? null) : error
+  const resolvedRow = controlled ? (upcomingProp ?? null) : row
+  const handleRetry = onRetry ?? (() => void load())
+
+  if (resolvedLoading) {
     return (
       <Card className="md:col-span-8">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg">Upcoming Session</CardTitle>
         </CardHeader>
         <CardContent>
-          <DashboardStateBlock variant="empty" message="Loading your next session…" />
+          <UpcomingSessionCardSkeleton />
         </CardContent>
       </Card>
     )
   }
 
-  if (error) {
+  if (resolvedError) {
     return (
       <Card className="md:col-span-8">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg">Upcoming Session</CardTitle>
         </CardHeader>
         <CardContent>
-          <DashboardStateBlock variant="error" message={error} onRetry={() => void load()} />
+          <DashboardStateBlock variant="error" message={resolvedError} onRetry={handleRetry} />
         </CardContent>
       </Card>
     )
   }
 
-  if (!row) {
+  if (!resolvedRow) {
     return (
       <Card className="md:col-span-8">
         <CardHeader className="pb-3">
@@ -91,15 +109,16 @@ export function PatientDashboardUpcomingSession() {
     )
   }
 
-  const { dateLabel, timeLabel } = formatUpcomingLabels(row.scheduledStartAt, row.scheduledEndAt)
+  const { dateLabel, timeLabel } = formatUpcomingLabels(resolvedRow.scheduledStartAt, resolvedRow.scheduledEndAt)
 
   return (
     <UpcomingSessionCard
-      appointmentId={row.appointmentId}
-      sessionType={row.sessionTypeLabel}
-      clinicianName={row.clinicianName}
+      appointmentId={resolvedRow.appointmentId}
+      sessionType={resolvedRow.sessionTypeLabel}
+      clinicianName={resolvedRow.clinicianName}
       dateLabel={dateLabel}
       timeLabel={timeLabel}
+      suppressJoinButton={suppressJoinButton}
     />
   )
 }

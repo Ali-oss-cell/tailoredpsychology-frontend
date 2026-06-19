@@ -42,6 +42,22 @@ describe("UpcomingSessionCard", () => {
     }))
   })
 
+  it("hides join link when suppressJoinButton is true", () => {
+    render(
+      <UpcomingSessionCard
+        appointmentId="appt_open_001"
+        sessionType="Consultation"
+        clinicianName="Dr. Example"
+        dateLabel="Oct 24"
+        timeLabel="10:00 AM - 10:50 AM"
+        suppressJoinButton
+      />,
+    )
+
+    expect(screen.queryByRole("link", { name: "Join Telehealth Session" })).not.toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Manage" })).toBeInTheDocument()
+  })
+
   it("links join action to video-session route", () => {
     render(
       <UpcomingSessionCard

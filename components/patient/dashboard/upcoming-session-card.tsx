@@ -15,6 +15,7 @@ type UpcomingSessionCardProps = {
   clinicianName: string
   dateLabel: string
   timeLabel: string
+  suppressJoinButton?: boolean
 }
 
 export function UpcomingSessionCard({
@@ -23,6 +24,7 @@ export function UpcomingSessionCard({
   clinicianName,
   dateLabel,
   timeLabel,
+  suppressJoinButton = false,
 }: UpcomingSessionCardProps) {
   const [showManage, setShowManage] = useState(false)
 
@@ -47,9 +49,11 @@ export function UpcomingSessionCard({
           </div>
         </div>
         <div className="flex flex-wrap gap-2 border-t border-border/60 pt-4" data-tutorial="patient.dashboard.join-session">
-          <Button asChild>
-            <Link href={joinSessionHref(appointmentId)}>Join Telehealth Session</Link>
-          </Button>
+          {!suppressJoinButton ? (
+            <Button asChild>
+              <Link href={joinSessionHref(appointmentId)}>Join Telehealth Session</Link>
+            </Button>
+          ) : null}
           <Button variant="outline" onClick={() => setShowManage((open) => !open)}>
             {showManage ? "Close Manage" : "Manage"}
           </Button>

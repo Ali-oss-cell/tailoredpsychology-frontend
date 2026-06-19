@@ -3,6 +3,7 @@
 import { Plus } from "@phosphor-icons/react/dist/ssr"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
+import { MoodCheckinSkeleton } from "@/components/patient/dashboard/dashboard-skeletons"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -99,7 +100,7 @@ export function MoodCheckinCard({ options }: MoodCheckinCardProps) {
             ) : null}
             <p className="text-muted-foreground text-center text-xs">How are you feeling today?</p>
             {loading ? (
-              <p className="text-muted-foreground text-center text-xs">Loading…</p>
+              <MoodCheckinSkeleton />
             ) : !patientId ? (
               <p className="text-muted-foreground text-center text-xs">Sign in as a patient to save moods.</p>
             ) : (
