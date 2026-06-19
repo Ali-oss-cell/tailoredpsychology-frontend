@@ -5,6 +5,7 @@ import Link from "next/link"
 import {
   Books,
   CalendarDots,
+  CalendarPlus,
   CreditCard,
   House,
   ShieldCheck,
@@ -20,11 +21,9 @@ import { NotificationBell } from "@/components/notifications/notification-bell"
 import { PatientTutorialHelpButton } from "@/components/tutorials/patient-tutorial-help-button"
 import { PatientHeaderProfile } from "./patient-header-profile"
 import { FloatingChatWidget } from "@/components/session/floating-chat-widget"
-import { Button } from "@/components/ui/button"
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
@@ -112,22 +111,27 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
                   </SidebarMenuItem>
                 )
               })}
+              <SidebarMenuItem className="border-border/60 mt-3 border-t pt-3">
+                <SidebarMenuButton
+                  asChild
+                  className="bg-primary/10 text-primary hover:bg-primary/15 font-medium"
+                >
+                  <Link href="/patient/book-appointment" data-tutorial="shell.sidebar.book-appointment">
+                    <CalendarPlus size={18} weight="bold" />
+                    <span className="group-data-[state=collapsed]/sidebar:hidden">Book New Appointment</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <LogoutLink className="flex w-full items-center gap-3">
+                    <SignOut size={18} />
+                    <span className="group-data-[state=collapsed]/sidebar:hidden">Logout</span>
+                  </LogoutLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
-          <SidebarFooter className="space-y-2 border-t border-border/60 pt-4">
-            <Button asChild variant="outline" className="w-full justify-start gap-2">
-              <Link href="/patient/book-appointment" data-tutorial="shell.sidebar.book-appointment">
-                <CalendarDots size={16} />
-                <span className="group-data-[state=collapsed]/sidebar:hidden">Book New Appointment</span>
-              </Link>
-            </Button>
-            <Button asChild variant="ghost" className="w-full justify-start gap-2">
-              <LogoutLink>
-                <SignOut size={16} />
-                <span className="group-data-[state=collapsed]/sidebar:hidden">Logout</span>
-              </LogoutLink>
-            </Button>
-          </SidebarFooter>
         </Sidebar>
 
         <SidebarInset>

@@ -1,4 +1,3 @@
-import { MoodCheckinCard } from "@/components/patient/dashboard/mood-checkin-card"
 import { QuickActionsCard } from "@/components/patient/dashboard/quick-actions-card"
 import { ResourceRecommendationsCard } from "@/components/patient/dashboard/resource-recommendations-card"
 import { PatientDashboardUpcomingSession } from "@/components/patient/dashboard/patient-dashboard-upcoming-session"
@@ -40,7 +39,6 @@ export default function PatientDashboardPage() {
           <PatientDashboardUpcomingSession />
           <QuickActionsCard actions={patientDashboardContent.quickActions} />
           <ResourceRecommendationsCard items={patientDashboardContent.resources} />
-          <MoodCheckinCard options={patientDashboardContent.moodOptions} />
           <PatientJourneyTimelineCard />
         </div>
       </section>
