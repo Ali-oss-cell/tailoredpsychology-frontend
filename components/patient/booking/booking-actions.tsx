@@ -19,7 +19,7 @@ export function BookingActions({
   return (
     <div
       className={cn(
-        "border-border/50 bg-muted/15 -mx-6 flex flex-wrap justify-end gap-3 border-t px-6 py-4",
+        "border-border/50 bg-muted/15 shrink-0 -mx-5 flex flex-wrap justify-end gap-3 border-t px-5 py-3",
       )}
     >
       <Button
