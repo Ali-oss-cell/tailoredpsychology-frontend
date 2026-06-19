@@ -155,8 +155,8 @@ export const patientWelcomeSteps: TutorialStepDef[] = [
   {
     id: "patient.welcome.privacy_page",
     target: "patient.page.privacy-requests",
-    title: "Data requests page",
-    body: "Start a new request from the buttons, then monitor the list below for updates. Sensitive flows stay in this dedicated area.",
+    title: "Your records & privacy",
+    body: "Need a copy of your information or want something updated? Start a request here and track progress below.",
     side: "left",
     align: "start",
     waitForRoute: "/patient/data-requests",

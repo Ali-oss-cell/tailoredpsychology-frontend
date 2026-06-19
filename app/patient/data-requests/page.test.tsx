@@ -27,11 +27,14 @@ jest.mock("@/src/privacy-requests/api", () => ({
 describe("PatientDataRequestsPage", () => {
   it("submits new access request", async () => {
     render(<PatientDataRequestsPage />)
-    fireEvent.click(await screen.findByRole("button", { name: "Request access" }))
-    fireEvent.change(screen.getByPlaceholderText("Describe what records you need or what should be corrected."), {
-      target: { value: "Please provide records." },
-    })
-    fireEvent.click(screen.getByRole("button", { name: "Submit request" }))
+    fireEvent.click(await screen.findByRole("button", { name: "Get a copy of my records" }))
+    fireEvent.change(
+      screen.getByPlaceholderText("e.g. I'd like a copy of my session notes from the past 12 months."),
+      {
+        target: { value: "Please provide records." },
+      },
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Send request" }))
     await waitFor(() => expect(createRequestMock).toHaveBeenCalled())
   })
 })
