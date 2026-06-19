@@ -72,7 +72,7 @@ export function PatientDashboardUpcomingSession({
 
   if (resolvedLoading) {
     return (
-      <Card className="md:col-span-8">
+      <Card className="h-auto">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg">Upcoming Session</CardTitle>
         </CardHeader>
@@ -85,7 +85,7 @@ export function PatientDashboardUpcomingSession({
 
   if (resolvedError) {
     return (
-      <Card className="md:col-span-8">
+      <Card className="h-auto">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg">Upcoming Session</CardTitle>
         </CardHeader>
@@ -98,11 +98,11 @@ export function PatientDashboardUpcomingSession({
 
   if (!resolvedRow) {
     return (
-      <Card className="md:col-span-8">
-        <CardHeader className="pb-3">
+      <Card className="h-auto">
+        <CardHeader className="pb-2">
           <CardTitle className="text-lg">Upcoming Session</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           <DashboardStateBlock variant="empty" message="No upcoming session. Book an appointment to see it here." />
         </CardContent>
       </Card>

@@ -29,7 +29,7 @@ export function UpcomingSessionCard({
   const [showManage, setShowManage] = useState(false)
 
   return (
-    <Card className="md:col-span-8">
+    <Card className="h-auto">
       <CardHeader className="pb-3">
         <div className="text-muted-foreground mb-2 inline-flex w-fit items-center gap-2 rounded-full border border-border/60 px-3 py-1 text-xs">
           <CalendarBlank size={14} />

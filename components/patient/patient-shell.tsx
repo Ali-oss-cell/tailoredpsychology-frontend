@@ -86,9 +86,13 @@ const navTutorial: Record<(typeof navItems)[number]["key"], string> = {
 export function PatientShell({ children, activeRoute = "dashboard" }: PatientShellProps) {
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="bg-background text-foreground flex min-h-screen w-full">
+      <div className="bg-background text-foreground flex h-screen w-full overflow-hidden">
         <PatientShellTutorialSidebarSync />
-        <Sidebar collapsible="none" className="transition-none" data-tutorial="shell.sidebar">
+        <Sidebar
+          collapsible="none"
+          className="fixed inset-y-0 left-0 z-30 h-screen w-64 overflow-y-auto transition-none"
+          data-tutorial="shell.sidebar"
+        >
           <SidebarHeader>
             <ClinkSidebarBrand dashboardHref="/patient/dashboard" portalLabel="Patient Portal" />
           </SidebarHeader>
@@ -132,9 +136,9 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
           </SidebarContent>
         </Sidebar>
 
-        <SidebarInset>
+        <SidebarInset className="flex h-screen min-w-0 flex-1 flex-col overflow-hidden lg:ml-64">
           <header
-            className="bg-background/95 border-border/70 sticky top-0 z-20 border-b backdrop-blur"
+            className="bg-background/95 border-border/70 z-20 shrink-0 border-b backdrop-blur"
             data-tutorial="shell.header"
           >
             <div className="flex h-16 items-center justify-between px-4 md:px-6">
@@ -162,7 +166,10 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
               </div>
             </div>
           </header>
-          <main className="p-4 md:p-6 lg:p-8" data-tutorial="shell.main">
+          <main
+            className="flex-1 overflow-y-auto scroll-smooth p-4 md:p-6 lg:p-8"
+            data-tutorial="shell.main"
+          >
             {children}
           </main>
         </SidebarInset>

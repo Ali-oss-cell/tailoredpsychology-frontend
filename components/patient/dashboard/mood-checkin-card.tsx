@@ -76,7 +76,7 @@ export function MoodCheckinCard({ options }: MoodCheckinCardProps) {
   }
 
   return (
-    <Card className="md:col-span-4">
+    <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-3">
         <CardTitle className="text-lg">Mood Check-in</CardTitle>
         <Button

@@ -21,7 +21,7 @@ export function ResourceRecommendationsCard({
   items,
 }: ResourceRecommendationsCardProps) {
   return (
-    <div className="md:col-span-8 space-y-3">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Recommended for You</h3>
         <Link href="/patient/resources" className="text-primary inline-flex items-center gap-1 text-sm font-medium">

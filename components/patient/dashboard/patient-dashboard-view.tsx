@@ -100,19 +100,21 @@ export function PatientDashboardView() {
 
       <PatientDashboardHeroCta nextSession={nextSession} loading={appointmentsLoading} />
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
-        <PatientDashboardUpcomingSession
-          upcoming={nextSession}
-          loading={appointmentsLoading}
-          error={appointmentsError}
-          onRetry={() => void load()}
-          suppressJoinButton={suppressJoinButton}
-        />
-        <div className="md:col-span-4 space-y-4">
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
+        <div className="space-y-4 lg:col-span-2">
+          <PatientDashboardUpcomingSession
+            upcoming={nextSession}
+            loading={appointmentsLoading}
+            error={appointmentsError}
+            onRetry={() => void load()}
+            suppressJoinButton={suppressJoinButton}
+          />
+          <ResourceRecommendationsCard items={patientDashboardContent.resources} />
+        </div>
+        <div className="sticky top-[100px] space-y-4 self-start lg:col-span-1">
           <MoodCheckinCard options={patientDashboardContent.moodOptions} />
           <BillingSnapshotCard invoices={invoices} loading={invoicesLoading} error={invoicesError} />
         </div>
-        <ResourceRecommendationsCard items={patientDashboardContent.resources} />
       </div>
     </section>
   )
