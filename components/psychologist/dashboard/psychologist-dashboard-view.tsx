@@ -9,9 +9,9 @@ import { OpsBentoCard } from "@/components/psychologist/dashboard/ops-bento-card
 import { PreSessionWorkspaceCard } from "@/components/psychologist/dashboard/pre-session-workspace-card"
 import { SessionsOverviewCard } from "@/components/psychologist/dashboard/sessions-overview-card"
 import { TodayScheduleCard } from "@/components/psychologist/dashboard/today-schedule-card"
+import { PsychologistPortalPage } from "@/components/psychologist/psychologist-portal-page"
 import { PortalMetricTile } from "@/components/shared/portal-list-row"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
 import { psychologistDashboardContent } from "@/content/psychologist-dashboard"
 import { usePsychologistDashboard } from "@/src/psychologist/queries/use-psychologist-dashboard"
 
@@ -26,27 +26,23 @@ export function PsychologistDashboardView() {
   const error = dashboardQuery.isError ? "Could not load your dashboard." : null
   const snapshot = dashboardQuery.data
   const firstName = firstNameOf(snapshot?.user.displayName)
+  const title = loading
+    ? "Loading dashboard…"
+    : firstName
+      ? `Hello, ${firstName}`
+      : psychologistDashboardContent.greeting.title
 
   const handleRetry = () => {
     void dashboardQuery.refetch()
   }
 
   return (
-    <section className="space-y-8" data-tutorial="psychologist.page.dashboard">
-      <header className="space-y-2">
-        <p className="card-eyebrow">Clinician workspace</p>
-        {loading ? (
-          <Skeleton className="skeleton-shimmer h-9 w-56" aria-label="Loading greeting" />
-        ) : (
-          <h1 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">
-            {firstName ? `Hello, ${firstName}` : psychologistDashboardContent.greeting.title}
-          </h1>
-        )}
-        <p className="text-muted-foreground max-w-2xl text-sm leading-relaxed md:text-base">
-          {psychologistDashboardContent.greeting.description}
-        </p>
-      </header>
-
+    <PsychologistPortalPage
+      title={title}
+      description={psychologistDashboardContent.greeting.description}
+      eyebrow="Clinician workspace"
+      tutorialId="psychologist.page.dashboard"
+    >
       <NextClinicianSessionHero
         session={snapshot?.nextSession ?? null}
         loading={loading}
@@ -55,12 +51,7 @@ export function PsychologistDashboardView() {
       />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
-        <SessionsOverviewCard
-          stats={snapshot?.sessions}
-          loading={loading}
-          error={error}
-          onRetry={handleRetry}
-        />
+        <SessionsOverviewCard stats={snapshot?.sessions} loading={loading} error={error} onRetry={handleRetry} />
         <Card className="interactive-lift md:col-span-4">
           <CardHeader className="pb-3">
             <p className="card-eyebrow">At a glance</p>
@@ -72,12 +63,7 @@ export function PsychologistDashboardView() {
           </CardContent>
         </Card>
         <OpsBentoCard items={psychologistDashboardContent.operations} />
-        <TodayScheduleCard
-          entries={snapshot?.todaySchedule}
-          loading={loading}
-          error={error}
-          onRetry={handleRetry}
-        />
+        <TodayScheduleCard entries={snapshot?.todaySchedule} loading={loading} error={error} onRetry={handleRetry} />
         <NotesQueueCard
           pendingCount={snapshot?.notes.pendingCount}
           signedCount={snapshot?.notes.signedCount}
@@ -116,6 +102,6 @@ export function PsychologistDashboardView() {
           <PreSessionWorkspaceCard />
         </div>
       </div>
-    </section>
+    </PsychologistPortalPage>
   )
 }

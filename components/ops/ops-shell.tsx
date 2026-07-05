@@ -21,6 +21,7 @@ import { LogoutLink } from "@/components/auth/logout-link"
 import { ClinkLogo } from "@/components/brand/clink-logo"
 import { ClinkSidebarBrand } from "@/components/brand/clink-sidebar-brand"
 import { NotificationBell } from "@/components/notifications/notification-bell"
+import { PortalShellSearch } from "@/components/shared/portal-shell-search"
 import {
   portalHeaderClassName,
   portalInsetClassName,
@@ -164,13 +165,9 @@ export function OpsShell({ children, activeRoute }: OpsShellProps) {
                   <ClinkLogo alt="" className="size-8" />
                   <span className="text-muted-foreground text-sm font-semibold tracking-tight">Ops</span>
                 </Link>
-                <input
-                  type="search"
-                  placeholder="Search (coming soon)"
-                  readOnly
-                  title="Global admin search is not enabled in this release."
-                  aria-label="Search operations records"
-                  className="bg-muted/60 border-border focus-visible:ring-ring hidden w-96 max-w-full cursor-not-allowed rounded-full border px-4 py-2 text-sm opacity-70 outline-none focus-visible:ring-2 md:block"
+                <PortalShellSearch
+                  patientsHref={isManagerRoute(activeRoute) ? "/manager/patients" : "/admin/patients"}
+                  placeholder="Search patients by name or ID…"
                 />
               </div>
               <div className="flex items-center gap-2">

@@ -63,10 +63,11 @@ export function JourneyRail() {
   const cta = step ? ctaForStep(step) : null
 
   return (
-    <Card className="overflow-hidden shadow-e1" data-tutorial="patient.journey.rail">
+    <Card className="interactive-lift overflow-hidden shadow-e1" data-tutorial="patient.journey.rail">
       <CardHeader className="border-border/60 space-y-3 border-b bg-muted/15 pb-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
+            <p className="card-eyebrow">Journey</p>
             <CardTitle className="font-heading text-lg tracking-tight md:text-xl">Your care journey</CardTitle>
             <CardDescription className="text-muted-foreground max-w-2xl text-xs leading-relaxed md:text-sm">
               Every milestone from intake to invoice, always visible. Select a step for details.

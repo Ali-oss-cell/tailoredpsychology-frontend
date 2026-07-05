@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import * as React from "react"
+import { useUrlSearchQuery } from "@/components/shared/use-url-search-query"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -29,6 +30,7 @@ export default function PsychologistPatientsPage() {
   const [rows, setRows] = React.useState<CaseloadRow[]>([])
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
+  const [search, setSearch] = useUrlSearchQuery()
 
   React.useEffect(() => {
     let cancelled = false
@@ -85,6 +87,12 @@ export default function PsychologistPatientsPage() {
     }
   }, [])
 
+  const filteredRows = React.useMemo(() => {
+    if (!search.trim()) return rows
+    const term = search.toLowerCase()
+    return rows.filter((row) => row.name.toLowerCase().includes(term) || row.id.toLowerCase().includes(term))
+  }, [rows, search])
+
   return (
     <PsychologistShell activeRoute="patients">
       <PsychologistPortalPage
@@ -93,6 +101,14 @@ export default function PsychologistPatientsPage() {
         eyebrow="Caseload"
         tutorialId="psychologist.page.patients"
       >
+        {search ? (
+          <p className="text-muted-foreground text-sm">
+            Showing results for &ldquo;{search}&rdquo;.{" "}
+            <button type="button" className="text-primary font-medium underline-offset-2 hover:underline" onClick={() => setSearch("")}>
+              Clear
+            </button>
+          </p>
+        ) : null}
         <Card className="interactive-lift">
           <CardHeader className="pb-3">
             <p className="card-eyebrow">Assigned patients</p>
@@ -101,10 +117,10 @@ export default function PsychologistPatientsPage() {
           <CardContent className="space-y-2">
             {loading ? <DashboardStateBlock variant="loading" message="Loading live caseload..." /> : null}
             {error ? <DashboardStateBlock variant="error" message={error} /> : null}
-            {!loading && !error && rows.length === 0 ? (
-              <DashboardStateBlock variant="empty" message="No assigned patients yet." />
+            {!loading && !error && filteredRows.length === 0 ? (
+              <DashboardStateBlock variant="empty" message={search ? "No patients matched your search." : "No assigned patients yet."} />
             ) : null}
-            {rows.map((patient) => (
+            {filteredRows.map((patient) => (
               <PortalListRow key={patient.id} highlight={patient.needsPrep} className="md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_auto_auto]">
                 <div className="space-y-1">
                   <p className="text-sm font-medium">{patient.name}</p>

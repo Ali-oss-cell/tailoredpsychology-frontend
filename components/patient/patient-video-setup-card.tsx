@@ -45,8 +45,9 @@ export function PatientVideoSetupCard() {
   }, [run])
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="interactive-lift">
+      <CardHeader className="pb-3">
+        <p className="card-eyebrow">Device check</p>
         <CardTitle>Video setup check</CardTitle>
         <CardDescription>
           Test your camera, microphone, and a quick network hint. Nothing is recorded; we only request permission

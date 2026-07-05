@@ -11,6 +11,7 @@ import { NotificationBell } from "@/components/notifications/notification-bell"
 import { PsychologistHeaderAccountMenu } from "@/components/psychologist/psychologist-header-account-menu"
 import { PsychologistJoinNextSession } from "@/components/psychologist/psychologist-join-next-session"
 import { FloatingChatWidget } from "@/components/session/floating-chat-widget"
+import { PortalShellSearch } from "@/components/shared/portal-shell-search"
 import {
   portalHeaderClassName,
   portalInsetClassName,
@@ -100,12 +101,7 @@ export function PsychologistShell({
                 <Link href="/psychologist/dashboard" className="lg:hidden" aria-label="Tailored Psychology Psychologist home">
                   <ClinkLogo alt="" className="size-8" />
                 </Link>
-                <input
-                  type="search"
-                  placeholder="Search patients, notes, sessions..."
-                  aria-label="Search patients, notes, and sessions"
-                  className="bg-muted/60 border-border focus-visible:ring-ring hidden w-80 max-w-full rounded-full border px-4 py-2 text-sm outline-none focus-visible:ring-2 md:block"
-                />
+                <PortalShellSearch patientsHref="/psychologist/patients" placeholder="Search patients by name or ID…" />
               </div>
               <div className="flex items-center gap-2">
                 <NotificationBell />
