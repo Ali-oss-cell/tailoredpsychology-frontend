@@ -5,7 +5,7 @@ import * as React from "react"
 import { AdminDataTable, type AdminDataTableColumn } from "@/components/ops/admin-data-table"
 import { AdminFilterBar } from "@/components/ops/admin-filter-bar"
 import { OpsShell } from "@/components/ops/ops-shell"
-import { AdminPageHeader } from "@/components/ops/ops-page-header"
+import { OpsPortalPage } from "@/components/ops/ops-portal-page"
 import { opsPagesContent } from "@/content/ops-pages"
 import { getAdminDeletionQueue, type AdminDeletionQueueItem } from "@/src/admin/ops/api"
 
@@ -58,8 +58,8 @@ export default function AdminDataDeletionPage() {
 
   return (
     <OpsShell activeRoute="admin-data-deletion">
-      <section className="space-y-6">
-        <AdminPageHeader title={opsPagesContent.adminDataDeletion.title} description={opsPagesContent.adminDataDeletion.description} />
+      <OpsPortalPage eyebrow="Administration"
+        title={opsPagesContent.adminDataDeletion.title} description={opsPagesContent.adminDataDeletion.description}>
         <AdminFilterBar
           searchValue=""
           onSearchChange={() => undefined}
@@ -86,7 +86,7 @@ export default function AdminDataDeletionPage() {
           error={error}
           emptyMessage="No records in the current deletion queue filter."
         />
-      </section>
+      </OpsPortalPage>
     </OpsShell>
   )
 }

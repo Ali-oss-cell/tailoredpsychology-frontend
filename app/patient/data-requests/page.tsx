@@ -1,9 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { FileText, PencilSimple } from "@phosphor-icons/react"
 
 import { PatientPortalPage } from "@/components/patient/patient-portal-page"
+import { PortalListRow } from "@/components/shared/portal-list-row"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
@@ -25,17 +26,21 @@ export default function PatientDataRequestsPage() {
 
   const copy = patientPrivacyRequestsContent
 
-  useEffect(() => {
-    void (async () => {
-      try {
-        setRows(await getMyPatientDataRequests())
-      } catch {
-        setError(copy.list.error)
-      } finally {
-        setLoading(false)
-      }
-    })()
+  const loadRequests = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      setRows(await getMyPatientDataRequests())
+    } catch {
+      setError(copy.list.error)
+    } finally {
+      setLoading(false)
+    }
   }, [copy.list.error])
+
+  useEffect(() => {
+    void loadRequests()
+  }, [loadRequests])
 
   const createRequest = async () => {
     if (!pendingRequestType || !requestDetails.trim()) return
@@ -67,8 +72,9 @@ export default function PatientDataRequestsPage() {
       eyebrow="Privacy"
       tutorialId="patient.page.privacy-requests"
     >
-      <Card>
+      <Card className="interactive-lift">
         <CardHeader className="pb-2">
+          <p className="card-eyebrow">New request</p>
           <CardTitle className="text-lg">{copy.newRequest.title}</CardTitle>
           <p className="text-muted-foreground text-sm leading-relaxed">{copy.newRequest.intro}</p>
         </CardHeader>
@@ -104,24 +110,29 @@ export default function PatientDataRequestsPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="interactive-lift">
         <CardHeader className="pb-3">
+          <p className="card-eyebrow">History</p>
           <CardTitle className="text-lg">{copy.list.title}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {loading ? <DashboardStateBlock variant="loading" message={copy.list.loading} /> : null}
-          {!loading && error ? <DashboardStateBlock variant="error" message={error} /> : null}
+          {!loading && error ? (
+            <DashboardStateBlock variant="error" message={error} onRetry={() => void loadRequests()} />
+          ) : null}
           {!loading && !error && rows.length === 0 ? (
             <DashboardStateBlock variant="empty" message={copy.list.empty} />
           ) : null}
           {rows.map((row) => (
-            <div key={row.requestId} className="rounded-xl border border-border/70 bg-muted/30 p-4 text-sm">
-              <p className="font-medium">{copy.requestTypeLabel[row.requestType]}</p>
-              <p className="text-muted-foreground mt-1 text-xs leading-relaxed">{row.details}</p>
-              <p className="text-muted-foreground mt-2 text-xs">
-                {formatPrivacyRequestStatus(row.status)} · {formatPrivacyRequestDue(row.slaDueAt)}
-              </p>
-            </div>
+            <PortalListRow key={row.requestId}>
+              <div>
+                <p className="font-medium">{copy.requestTypeLabel[row.requestType]}</p>
+                <p className="text-muted-foreground mt-1 text-xs leading-relaxed">{row.details}</p>
+                <p className="text-muted-foreground mt-2 text-xs">
+                  {formatPrivacyRequestStatus(row.status)} · {formatPrivacyRequestDue(row.slaDueAt)}
+                </p>
+              </div>
+            </PortalListRow>
           ))}
         </CardContent>
       </Card>

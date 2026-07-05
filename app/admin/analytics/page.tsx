@@ -3,7 +3,7 @@
 import * as React from "react"
 
 import { OpsShell } from "@/components/ops/ops-shell"
-import { AdminPageHeader } from "@/components/ops/ops-page-header"
+import { OpsPortalPage } from "@/components/ops/ops-portal-page"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { opsPagesContent } from "@/content/ops-pages"
 import { getAdminAnalyticsSummary, type AdminAnalyticsSummary } from "@/src/admin/ops/api"
@@ -36,8 +36,8 @@ export default function AdminAnalyticsPage() {
 
   return (
     <OpsShell activeRoute="admin-analytics">
-      <section className="space-y-6">
-        <AdminPageHeader title={opsPagesContent.adminAnalytics.title} description={opsPagesContent.adminAnalytics.description} />
+      <OpsPortalPage eyebrow="Administration"
+        title={opsPagesContent.adminAnalytics.title} description={opsPagesContent.adminAnalytics.description}>
         {loading ? <DashboardStateBlock variant="loading" message="Loading data..." /> : null}
         {error ? <DashboardStateBlock variant="error" message={error} /> : null}
         {!loading && !error && summary ? (
@@ -48,7 +48,7 @@ export default function AdminAnalyticsPage() {
             <MetricCard label="Join failures" value={`${summary.joinFailures}`} />
           </div>
         ) : null}
-      </section>
+      </OpsPortalPage>
     </OpsShell>
   )
 }

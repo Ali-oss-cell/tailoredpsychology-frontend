@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 
 import { OpsShell } from "@/components/ops/ops-shell"
-import { AdminPageHeader } from "@/components/ops/ops-page-header"
+import { OpsPortalPage } from "@/components/ops/ops-portal-page"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -75,21 +75,24 @@ export default function AdminSecurityIncidentsPage() {
 
   return (
     <OpsShell activeRoute="admin-security-incidents">
-      <section className="space-y-6">
-        <AdminPageHeader
-          title="Security Incident Register"
-          description="Manage breach triage, investigation, and NDB notification readiness states."
-        />
-        <Card>
+      <OpsPortalPage
+        eyebrow="Administration"
+        title="Security Incident Register"
+        description="Manage breach triage, investigation, and NDB notification readiness states."
+        tutorialId="admin.page.security-incidents"
+      >
+        <Card className="interactive-lift">
           <CardHeader className="pb-3">
+            <p className="card-eyebrow">Governance</p>
             <CardTitle className="text-lg">Register controls</CardTitle>
           </CardHeader>
           <CardContent>
             <Button onClick={() => void createEntry()}>Create incident</Button>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="interactive-lift">
           <CardHeader className="pb-3">
+            <p className="card-eyebrow">Queue</p>
             <CardTitle className="text-lg">Incident queue</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
@@ -118,7 +121,7 @@ export default function AdminSecurityIncidentsPage() {
             ))}
           </CardContent>
         </Card>
-      </section>
+      </OpsPortalPage>
     </OpsShell>
   )
 }

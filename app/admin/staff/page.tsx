@@ -5,7 +5,7 @@ import * as React from "react"
 import { AdminDataTable, type AdminDataTableColumn } from "@/components/ops/admin-data-table"
 import { AdminFilterBar } from "@/components/ops/admin-filter-bar"
 import { OpsShell } from "@/components/ops/ops-shell"
-import { AdminPageHeader } from "@/components/ops/ops-page-header"
+import { OpsPortalPage } from "@/components/ops/ops-portal-page"
 import { opsPagesContent } from "@/content/ops-pages"
 import { getAdminOpsStaff, type AdminStaffItem } from "@/src/admin/ops/api"
 
@@ -53,8 +53,8 @@ export default function AdminStaffPage() {
 
   return (
     <OpsShell activeRoute="admin-staff">
-      <section className="space-y-6">
-        <AdminPageHeader title={opsPagesContent.adminStaff.title} description={opsPagesContent.adminStaff.description} />
+      <OpsPortalPage eyebrow="Administration"
+        title={opsPagesContent.adminStaff.title} description={opsPagesContent.adminStaff.description}>
         <AdminFilterBar
           searchValue={search}
           onSearchChange={setSearch}
@@ -88,7 +88,7 @@ export default function AdminStaffPage() {
           error={error}
           emptyMessage="No staff members matched the current filters."
         />
-      </section>
+      </OpsPortalPage>
     </OpsShell>
   )
 }

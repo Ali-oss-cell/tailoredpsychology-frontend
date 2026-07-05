@@ -1,6 +1,7 @@
 import { PublicFooter } from "@/components/layout/public-footer"
 import { PublicHeader } from "@/components/layout/public-header"
 import { PublicPageEnter } from "@/components/layout/public-page-enter"
+import { ScrollReveal } from "@/components/marketing/scroll-reveal"
 import { PublicMarketingAmbient } from "@/components/marketing/public-marketing-ambient"
 import { CtaStrip } from "@/components/marketing/cta-strip"
 import { PageHero } from "@/components/marketing/page-hero"
@@ -16,9 +17,15 @@ export default function TrustPage() {
         <PublicMarketingAmbient />
         <PublicPageEnter className="relative z-[1]">
           <PageHero {...trustHero} />
+          <ScrollReveal>
           <TrustMetricsSection metrics={publicTrustMetrics} />
+          </ScrollReveal>
+          <ScrollReveal delayMs={40}>
           <TrustPrivacySection items={privacyControls} />
+          </ScrollReveal>
+          <ScrollReveal>
           <CtaStrip {...trustCta} />
+          </ScrollReveal>
         </PublicPageEnter>
       </main>
       <PublicFooter />

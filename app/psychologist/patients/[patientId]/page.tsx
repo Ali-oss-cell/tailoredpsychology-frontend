@@ -1,6 +1,8 @@
 "use client"
 
 import * as React from "react"
+import Link from "next/link"
+import { ArrowLeft } from "@phosphor-icons/react"
 import { useParams } from "next/navigation"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -166,10 +168,18 @@ export default function PsychologistPatientProfilePage() {
   return (
     <PsychologistShell activeRoute="patients">
       <PsychologistPortalPage
-        title={context?.patientDisplayName ?? patientId}
+        title={loading ? "Loading patient…" : (context?.patientDisplayName ?? "Patient profile")}
         description="Live patient context, referrals, sessions, and governed export."
         eyebrow="Patient profile"
         tutorialId="psychologist.page.patient-profile"
+        actions={
+          <Button asChild variant="outline" size="sm">
+            <Link href="/psychologist/patients">
+              <ArrowLeft size={16} aria-hidden />
+              Back to patients
+            </Link>
+          </Button>
+        }
       >
         {loading ? <DashboardStateBlock variant="loading" message="Loading patient profile..." /> : null}
         {error ? <DashboardStateBlock variant="error" message={error} /> : null}

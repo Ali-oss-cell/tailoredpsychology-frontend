@@ -5,7 +5,7 @@ import * as React from "react"
 import { AdminDataTable, type AdminDataTableColumn } from "@/components/ops/admin-data-table"
 import { AdminFilterBar } from "@/components/ops/admin-filter-bar"
 import { OpsShell } from "@/components/ops/ops-shell"
-import { AdminPageHeader } from "@/components/ops/ops-page-header"
+import { OpsPortalPage } from "@/components/ops/ops-portal-page"
 import { opsPagesContent } from "@/content/ops-pages"
 import { getAdminOpsResources, type AdminResourceItem } from "@/src/admin/ops/api"
 
@@ -59,8 +59,8 @@ export default function AdminResourcesPage() {
 
   return (
     <OpsShell activeRoute="admin-resources">
-      <section className="space-y-6">
-        <AdminPageHeader title={opsPagesContent.adminResources.title} description={opsPagesContent.adminResources.description} />
+      <OpsPortalPage eyebrow="Administration"
+        title={opsPagesContent.adminResources.title} description={opsPagesContent.adminResources.description}>
         <AdminFilterBar
           searchValue={search}
           onSearchChange={setSearch}
@@ -96,7 +96,7 @@ export default function AdminResourcesPage() {
           error={error}
           emptyMessage="No resources matched the current filters."
         />
-      </section>
+      </OpsPortalPage>
     </OpsShell>
   )
 }

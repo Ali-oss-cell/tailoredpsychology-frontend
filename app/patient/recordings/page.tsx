@@ -1,79 +1,109 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { PatientPortalPage } from "@/components/patient/patient-portal-page"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
-import { PatientPageHeader } from "@/components/patient/patient-page-header"
+import { PortalListRow } from "@/components/shared/portal-list-row"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { getCurrentUser } from "@/src/auth/current-user"
 import { getPatientSessionVideos, requestSessionVideoAccess, type SessionVideoItem } from "@/src/psychologist/videos/api"
 
 export default function PatientRecordingsPage() {
   const [rows, setRows] = useState<SessionVideoItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [statusByVideo, setStatusByVideo] = useState<Record<string, string>>({})
 
-  useEffect(() => {
-    void (async () => {
-      try {
-        setRows(await getPatientSessionVideos("user_patient_001"))
-      } finally {
-        setLoading(false)
+  const loadRecordings = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const user = await getCurrentUser()
+      if (user.role !== "patient") {
+        setError("Sign in as a patient to view session recordings.")
+        setRows([])
+        return
       }
-    })()
+      setRows(await getPatientSessionVideos(user.id))
+    } catch {
+      setError("Could not load session recordings.")
+      setRows([])
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
+  useEffect(() => {
+    void loadRecordings()
+  }, [loadRecordings])
+
   return (
-    <section className="space-y-6">
-        <PatientPageHeader title="Session Recordings" description="Access your session video library and transcript readiness." />
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg">My Session Videos</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {loading ? <DashboardStateBlock variant="loading" message="Loading data..." /> : null}
-            {!loading && rows.length === 0 ? <DashboardStateBlock variant="empty" message="No session videos yet." /> : null}
-            {rows.map((recording) => (
-              <div key={recording.videoId} className="grid grid-cols-2 gap-2 rounded-md border border-border/70 bg-muted/40 p-3 md:grid-cols-5">
-                <p className="text-sm font-medium">{recording.videoId}</p>
-                <p className="text-sm">{recording.sessionId}</p>
-                <p className="text-sm">{new Date(recording.sessionDate).toLocaleString()}</p>
-                <p className="text-sm">{recording.transcriptReady ? "Transcript ready" : "Transcript pending"}</p>
-                <div className="space-y-1">
-                  <p className="text-xs font-medium uppercase">{recording.policyStatus.replace("_", " ")}</p>
-                  <p className="text-xs text-muted-foreground">{recording.policyReason ?? "Download permitted under owner policy."}</p>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={!recording.canDownload}
-                    onClick={() => {
-                      void (async () => {
-                        const grant = await requestSessionVideoAccess(recording.videoId)
-                        if (!grant.canDownload || !grant.downloadUrl) {
+    <PatientPortalPage
+      title="Session recordings"
+      description="Access your session video library and transcript readiness."
+      eyebrow="Your care"
+      showJourney
+      tutorialId="patient.page.recordings"
+    >
+      <Card className="interactive-lift">
+        <CardHeader className="pb-3">
+          <p className="card-eyebrow">Library</p>
+          <CardTitle className="text-lg">My session videos</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {loading ? <DashboardStateBlock variant="loading" message="Loading recordings..." /> : null}
+          {!loading && error ? (
+            <DashboardStateBlock variant="error" message={error} onRetry={() => void loadRecordings()} />
+          ) : null}
+          {!loading && !error && rows.length === 0 ? (
+            <DashboardStateBlock variant="empty" message="No session videos yet." />
+          ) : null}
+          {!loading && !error
+            ? rows.map((recording) => (
+                <PortalListRow key={recording.videoId} className="md:grid-cols-[minmax(0,1fr)_auto_auto]">
+                  <div>
+                    <p className="text-sm font-medium">{recording.videoId}</p>
+                    <p className="text-muted-foreground text-xs">Session {recording.sessionId}</p>
+                    <p className="text-muted-foreground text-xs">{new Date(recording.sessionDate).toLocaleString()}</p>
+                  </div>
+                  <p className="text-sm self-center">{recording.transcriptReady ? "Transcript ready" : "Transcript pending"}</p>
+                  <div className="space-y-1 self-center">
+                    <p className="text-xs font-medium uppercase">{recording.policyStatus.replace("_", " ")}</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={!recording.canDownload}
+                      onClick={() => {
+                        void (async () => {
+                          const grant = await requestSessionVideoAccess(recording.videoId)
+                          if (!grant.canDownload || !grant.downloadUrl) {
+                            setStatusByVideo((current) => ({
+                              ...current,
+                              [recording.videoId]: grant.denialReason ?? "Download denied by policy.",
+                            }))
+                            return
+                          }
                           setStatusByVideo((current) => ({
                             ...current,
-                            [recording.videoId]: grant.denialReason ?? "Download denied by policy.",
+                            [recording.videoId]: `Access granted until ${new Date(grant.expiresAt ?? "").toLocaleTimeString()}`,
                           }))
-                          return
-                        }
-                        setStatusByVideo((current) => ({
-                          ...current,
-                          [recording.videoId]: `Access granted until ${new Date(grant.expiresAt ?? "").toLocaleTimeString()}`,
-                        }))
-                        window.open(grant.downloadUrl, "_blank", "noopener,noreferrer")
-                      })()
-                    }}
-                  >
-                    Request access
-                  </Button>
-                  {statusByVideo[recording.videoId] ? (
-                    <p className="text-xs text-muted-foreground">{statusByVideo[recording.videoId]}</p>
-                  ) : null}
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </section>
+                          window.open(grant.downloadUrl, "_blank", "noopener,noreferrer")
+                        })()
+                      }}
+                    >
+                      Request access
+                    </Button>
+                    {statusByVideo[recording.videoId] ? (
+                      <p className="text-muted-foreground text-xs">{statusByVideo[recording.videoId]}</p>
+                    ) : null}
+                  </div>
+                </PortalListRow>
+              ))
+            : null}
+        </CardContent>
+      </Card>
+    </PatientPortalPage>
   )
 }

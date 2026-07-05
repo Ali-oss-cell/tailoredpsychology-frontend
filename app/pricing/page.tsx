@@ -5,6 +5,7 @@ import { PublicHeader } from "@/components/layout/public-header"
 import { PageContainer } from "@/components/layout/page-container"
 import { PageSection } from "@/components/layout/page-section"
 import { PublicPageEnter } from "@/components/layout/public-page-enter"
+import { ScrollReveal } from "@/components/marketing/scroll-reveal"
 import { PublicMarketingAmbient } from "@/components/marketing/public-marketing-ambient"
 import { CtaStrip } from "@/components/marketing/cta-strip"
 import { FaqSection } from "@/components/marketing/faq-section"
@@ -26,6 +27,7 @@ export default function PricingPage() {
         <PublicMarketingAmbient />
         <PublicPageEnter className="relative z-[1]">
           <PageHero {...pricingHero} />
+          <ScrollReveal>
           <PageSection>
             <PageContainer className="space-y-8">
               <div className="flex flex-wrap items-end justify-between gap-3">
@@ -54,6 +56,8 @@ export default function PricingPage() {
               </div>
             </PageContainer>
           </PageSection>
+          </ScrollReveal>
+          <ScrollReveal delayMs={40}>
           <PageSection muted className="bg-surface-2/55 dark:bg-surface-2/45">
             <PageContainer className="space-y-8">
               <div className="max-w-2xl space-y-2">
@@ -97,9 +101,16 @@ export default function PricingPage() {
               <p className="text-muted-foreground text-xs leading-relaxed">{publicPricing.assumptions}</p>
             </PageContainer>
           </PageSection>
+          </ScrollReveal>
+          <ScrollReveal delayMs={60}>
           <PricingRelatedStrip />
+          </ScrollReveal>
+          <ScrollReveal>
           <CtaStrip {...pricingCta} />
+          </ScrollReveal>
+          <ScrollReveal delayMs={40}>
           <FaqSection title={pricingFaq.title} items={pricingFaq.items} />
+          </ScrollReveal>
         </PublicPageEnter>
       </main>
       <PublicFooter />

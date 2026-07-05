@@ -5,7 +5,7 @@ import * as React from "react"
 import { AdminDataTable, type AdminDataTableColumn } from "@/components/ops/admin-data-table"
 import { AdminFilterBar } from "@/components/ops/admin-filter-bar"
 import { OpsShell } from "@/components/ops/ops-shell"
-import { AdminPageHeader } from "@/components/ops/ops-page-header"
+import { OpsPortalPage } from "@/components/ops/ops-portal-page"
 import { opsPagesContent } from "@/content/ops-pages"
 import { getAdminOpsPatients, type AdminPatientItem } from "@/src/admin/ops/api"
 
@@ -54,8 +54,8 @@ export default function AdminPatientsPage() {
 
   return (
     <OpsShell activeRoute="admin-patients">
-      <section className="space-y-6">
-        <AdminPageHeader title={opsPagesContent.adminPatients.title} description={opsPagesContent.adminPatients.description} />
+      <OpsPortalPage eyebrow="Administration"
+        title={opsPagesContent.adminPatients.title} description={opsPagesContent.adminPatients.description}>
         <AdminFilterBar
           searchValue={search}
           onSearchChange={setSearch}
@@ -90,7 +90,7 @@ export default function AdminPatientsPage() {
           error={error}
           emptyMessage="No patients matched the current filters."
         />
-      </section>
+      </OpsPortalPage>
     </OpsShell>
   )
 }

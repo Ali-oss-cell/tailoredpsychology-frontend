@@ -3,6 +3,8 @@ import Link from "next/link"
 import { PublicFooter } from "@/components/layout/public-footer"
 import { PublicHeader } from "@/components/layout/public-header"
 import { PublicPageEnter } from "@/components/layout/public-page-enter"
+import { PublicMarketingAmbient } from "@/components/marketing/public-marketing-ambient"
+import { CtaStrip } from "@/components/marketing/cta-strip"
 import { ScrollReveal } from "@/components/marketing/scroll-reveal"
 import { conditionPages } from "@/content/conditions"
 import { cn } from "@/lib/utils"
@@ -11,11 +13,12 @@ export default function ConditionsIndexPage() {
   return (
     <div className="min-h-screen bg-background">
       <PublicHeader />
-      <main className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 py-12 md:px-6">
-        <PublicPageEnter className="flex flex-col gap-8">
+      <main className="relative overflow-x-hidden">
+        <PublicMarketingAmbient />
+        <PublicPageEnter className="relative z-[1] mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 py-12 md:px-6">
         <section className="space-y-3">
-          <p className="text-sm font-semibold uppercase tracking-wide text-primary">Conditions</p>
-          <h1 className="text-3xl font-semibold md:text-4xl">Condition-specific support pathways</h1>
+          <p className="card-eyebrow">Conditions</p>
+          <h1 className="font-heading text-3xl font-semibold md:text-4xl">Condition-specific support pathways</h1>
           <p className="text-muted-foreground">
             Explore care pathways and start intake with the context that matters to your goals.
           </p>
@@ -38,6 +41,16 @@ export default function ConditionsIndexPage() {
               </article>
             ))}
           </section>
+        </ScrollReveal>
+        <ScrollReveal delayMs={60}>
+          <CtaStrip
+            title="Not sure which pathway fits?"
+            description="Take the match quiz or book a consultation — we will help you choose the right next step."
+            primaryHref="/get-matched"
+            primaryLabel="Get matched"
+            secondaryHref="/contact"
+            secondaryLabel="Contact us"
+          />
         </ScrollReveal>
         </PublicPageEnter>
       </main>

@@ -4,6 +4,9 @@ import { PublicFooter } from "@/components/layout/public-footer"
 import { PublicHeader } from "@/components/layout/public-header"
 import { PageContainer } from "@/components/layout/page-container"
 import { PageSection } from "@/components/layout/page-section"
+import { PublicPageEnter } from "@/components/layout/public-page-enter"
+import { PublicMarketingAmbient } from "@/components/marketing/public-marketing-ambient"
+import { CtaStrip } from "@/components/marketing/cta-strip"
 import { GetMatchedWizard } from "@/components/marketing/get-matched/get-matched-wizard"
 import { ScrollReveal } from "@/components/marketing/scroll-reveal"
 import { Badge } from "@/components/ui/badge"
@@ -38,7 +41,9 @@ export default function GetMatchedPage() {
   return (
     <div className="min-h-screen bg-background">
       <PublicHeader />
-      <main>
+      <main className="relative overflow-x-hidden">
+        <PublicMarketingAmbient />
+        <PublicPageEnter className="relative z-[1]">
         <ScrollReveal>
           <GetMatchedIntro />
         </ScrollReveal>
@@ -53,6 +58,17 @@ export default function GetMatchedPage() {
             <GetMatchedWizard />
           </ScrollReveal>
         </Suspense>
+        <ScrollReveal delayMs={60}>
+          <CtaStrip
+            title="Prefer to talk through options?"
+            description="Contact our team or explore services if you are not ready for the quiz yet."
+            primaryHref="/contact"
+            primaryLabel="Contact us"
+            secondaryHref="/services"
+            secondaryLabel="View services"
+          />
+        </ScrollReveal>
+        </PublicPageEnter>
       </main>
       <PublicFooter />
     </div>

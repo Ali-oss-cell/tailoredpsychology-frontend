@@ -9,11 +9,16 @@ const requestAccessMock = jest.fn().mockResolvedValue({
   expiresAt: "2026-04-30T10:00:00.000Z",
 })
 
-jest.mock("@/components/patient/patient-shell", () => ({
-  PatientShell: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+jest.mock("@/components/patient/patient-portal-page", () => ({
+  PatientPortalPage: ({ title, children }: { title: string; children: React.ReactNode }) => (
+    <div>
+      <h1>{title}</h1>
+      {children}
+    </div>
+  ),
 }))
-jest.mock("@/components/patient/patient-page-header", () => ({
-  PatientPageHeader: ({ title }: { title: string; description: string }) => <h1>{title}</h1>,
+jest.mock("@/src/auth/current-user", () => ({
+  getCurrentUser: jest.fn().mockResolvedValue({ id: "user_patient_001", role: "patient" }),
 }))
 jest.mock("@/src/psychologist/videos/api", () => ({
   getPatientSessionVideos: jest.fn().mockResolvedValue([

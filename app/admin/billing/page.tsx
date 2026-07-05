@@ -3,7 +3,7 @@
 import * as React from "react"
 
 import { OpsShell } from "@/components/ops/ops-shell"
-import { AdminPageHeader } from "@/components/ops/ops-page-header"
+import { OpsPortalPage } from "@/components/ops/ops-portal-page"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { opsPagesContent } from "@/content/ops-pages"
 import { getAdminOpsBilling, type AdminBillingSummary } from "@/src/admin/ops/api"
@@ -36,8 +36,8 @@ export default function AdminBillingPage() {
 
   return (
     <OpsShell activeRoute="admin-billing">
-      <section className="space-y-6">
-        <AdminPageHeader title={opsPagesContent.adminBilling.title} description={opsPagesContent.adminBilling.description} />
+      <OpsPortalPage eyebrow="Administration"
+        title={opsPagesContent.adminBilling.title} description={opsPagesContent.adminBilling.description}>
         {loading ? <DashboardStateBlock variant="loading" message="Loading data..." /> : null}
         {error ? <DashboardStateBlock variant="error" message={error} /> : null}
         {!loading && !error && summary ? (
@@ -49,7 +49,7 @@ export default function AdminBillingPage() {
             <MetricCard label="Pending claims" value={`${summary.pendingClaims}`} />
           </div>
         ) : null}
-      </section>
+      </OpsPortalPage>
     </OpsShell>
   )
 }

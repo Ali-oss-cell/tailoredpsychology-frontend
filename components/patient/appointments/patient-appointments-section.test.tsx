@@ -73,7 +73,7 @@ describe("PatientAppointmentsSection", () => {
 
     renderWithQueryClient(<PatientAppointmentsSection />)
 
-    await waitFor(() => expect(screen.getByText("Recent Sessions")).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText("Recent sessions")).toBeInTheDocument())
     await waitFor(() => expect(screen.getByText(/owner patient/i)).toBeInTheDocument())
   })
 })

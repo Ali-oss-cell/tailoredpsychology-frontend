@@ -33,8 +33,13 @@ const updateMock = jest.fn().mockResolvedValue({
 jest.mock("@/components/ops/ops-shell", () => ({
   OpsShell: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }))
-jest.mock("@/components/ops/ops-page-header", () => ({
-  AdminPageHeader: ({ title }: { title: string; description: string }) => <h1>{title}</h1>,
+jest.mock("@/components/ops/ops-portal-page", () => ({
+  OpsPortalPage: ({ title, children }: { title: string; description: string; children: React.ReactNode }) => (
+    <div>
+      <h1>{title}</h1>
+      {children}
+    </div>
+  ),
 }))
 jest.mock("@/src/admin/security-incidents/api", () => ({
   getSecurityIncidents: jest.fn().mockResolvedValue([

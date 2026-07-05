@@ -223,8 +223,9 @@ export function PatientAccountSettings({
       {formSuccess ? <p className="text-sm text-emerald-700">{formSuccess}</p> : null}
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+        <Card className="interactive-lift">
           <CardHeader className="pb-3">
+            <p className="card-eyebrow">Profile</p>
             <CardTitle className="text-lg">Profile</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
@@ -350,8 +351,9 @@ export function PatientAccountSettings({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="interactive-lift">
           <CardHeader className="pb-3">
+            <p className="card-eyebrow">Security</p>
             <CardTitle className="text-lg">Security and Privacy</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
