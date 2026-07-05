@@ -51,16 +51,18 @@ export function HeroSection({
   imageSrc,
 }: HeroSectionProps) {
   return (
-    <PageSection className="relative overflow-hidden py-16 md:py-24">
+    <PageSection data-scroll-hero className="relative overflow-hidden py-16 md:py-24">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-surface-2/65 to-transparent dark:from-surface-2/35" />
       <PageContainer className="relative grid gap-10 lg:grid-cols-2 lg:items-center">
-        <div className="space-y-6">
-          <Badge variant="secondary" className="rounded-full px-3 py-1">
+        <div className="space-y-6" data-hero-copy>
+          <Badge data-hero-enter variant="secondary" className="rounded-full px-3 py-1">
             {badge}
           </Badge>
           <HeroTitle title={title} titleAccent={titleAccent} />
-          <p className="text-muted-foreground max-w-xl text-lg leading-relaxed">{description}</p>
-          <div className="flex flex-wrap items-center gap-3">
+          <p data-hero-enter className="text-muted-foreground max-w-xl text-lg leading-relaxed">
+            {description}
+          </p>
+          <div data-hero-enter className="flex flex-wrap items-center gap-3">
             <Button asChild size="lg" className="press shadow-primary-glow">
               <Link href={primaryAction.href}>{primaryAction.label}</Link>
             </Button>

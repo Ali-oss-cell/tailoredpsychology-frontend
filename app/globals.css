@@ -67,6 +67,7 @@
     --duration-micro: 150ms;
     --duration-element: 250ms;
     --duration-layout: 400ms;
+    --duration-reveal: 750ms;
 }
 
 .dark {
@@ -250,13 +251,29 @@
   /* Scroll-reveal: fade+rise driven by IntersectionObserver ([data-reveal]) */
   [data-reveal] {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(40px) scale(0.97);
+    filter: blur(6px);
     transition:
-      opacity var(--duration-layout) var(--ease-out-quint),
-      transform var(--duration-layout) var(--ease-out-quint);
+      opacity var(--duration-reveal) var(--ease-out-quint),
+      transform var(--duration-reveal) var(--ease-out-quint),
+      filter var(--duration-reveal) var(--ease-out-quint);
     transition-delay: var(--reveal-delay, 0ms);
   }
   [data-reveal="visible"] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+
+  [data-reveal-stagger] > * {
+    opacity: 0;
+    transform: translateY(32px);
+    transition:
+      opacity var(--duration-reveal) var(--ease-out-quint),
+      transform var(--duration-reveal) var(--ease-out-quint);
+    transition-delay: calc(var(--reveal-delay, 0ms) + var(--reveal-stagger, 0ms));
+  }
+  [data-reveal-stagger="visible"] > * {
     opacity: 1;
     transform: translateY(0);
   }
@@ -278,14 +295,16 @@
   .hero-word {
     display: inline-block;
     opacity: 0;
-    transform: translateY(0.6em);
-    animation: hero-word-rise 0.7s var(--ease-out-quint) forwards;
-    animation-delay: calc(var(--word-index, 0) * 60ms);
+    transform: translateY(0.75em) scale(0.98);
+    filter: blur(4px);
+    animation: hero-word-rise 0.85s var(--ease-out-quint) forwards;
+    animation-delay: calc(var(--word-index, 0) * 70ms + 80ms);
   }
   @keyframes hero-word-rise {
     to {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
+      filter: blur(0);
     }
   }
 
@@ -327,9 +346,11 @@
 
 /* Reduced motion: reveal targets render fully visible, no animation */
 @media (prefers-reduced-motion: reduce) {
-  [data-reveal] {
+  [data-reveal],
+  [data-reveal-stagger] > * {
     opacity: 1;
     transform: none;
+    filter: none;
   }
 }
 

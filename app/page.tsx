@@ -7,7 +7,7 @@ import { HomeClinicTeamBand } from "@/components/marketing/home-clinic-team-band
 import { HomeMomentsRow } from "@/components/marketing/home-moments-row"
 import { HomeProcessSection } from "@/components/marketing/home-process-section"
 import { HomepageObserver } from "@/components/marketing/homepage-observer"
-import { ScrollReveal } from "@/components/marketing/scroll-reveal"
+import { ScrollSection } from "@/components/marketing/scroll-section"
 import { ServicesPreview } from "@/components/marketing/services-preview"
 import { SplitFeatureSection } from "@/components/marketing/split-feature-section"
 import { TelehealthRebatesBand } from "@/components/marketing/telehealth-rebates-band"
@@ -21,54 +21,54 @@ export default function HomePage() {
       <PublicHeader />
       <main>
         <HeroSection {...homepageContent.hero} />
-        <ScrollReveal>
+        <ScrollSection variant="cards">
           <TrustStats stats={homepageContent.trustStats} />
-        </ScrollReveal>
-        <ScrollReveal delayMs={60}>
+        </ScrollSection>
+        <ScrollSection variant="split">
           <SplitFeatureSection {...homepageContent.wellbeingIntro} />
-        </ScrollReveal>
-        <ScrollReveal delayMs={80}>
+        </ScrollSection>
+        <ScrollSection variant="split">
           <SplitFeatureSection {...homepageContent.guidedCare} />
-        </ScrollReveal>
-        <ScrollReveal>
+        </ScrollSection>
+        <ScrollSection variant="cards">
           <ServicesPreview
             title={homepageContent.servicesPreview.title}
             description={homepageContent.servicesPreview.description}
             services={homepageContent.servicesPreview.items}
           />
-        </ScrollReveal>
-        <ScrollReveal>
+        </ScrollSection>
+        <ScrollSection variant="split">
           <SplitFeatureSection {...homepageContent.trustConnection} />
-        </ScrollReveal>
-        <ScrollReveal>
+        </ScrollSection>
+        <ScrollSection variant="process">
           <HomeProcessSection {...homepageContent.carePath} />
-        </ScrollReveal>
-        <ScrollReveal>
+        </ScrollSection>
+        <ScrollSection variant="band">
           <TelehealthRebatesBand
             title={homepageContent.telehealthBand.title}
             description={homepageContent.telehealthBand.description}
             items={homepageContent.telehealthBand.items}
           />
-        </ScrollReveal>
-        <ScrollReveal>
+        </ScrollSection>
+        <ScrollSection variant="split">
           <SplitFeatureSection {...homepageContent.teamSnapshot} />
-        </ScrollReveal>
-        <ScrollReveal>
+        </ScrollSection>
+        <ScrollSection variant="cards">
           <HomeMomentsRow
             title={homepageContent.moments.title}
             description={homepageContent.moments.description}
             moments={homepageContent.moments.items}
           />
-        </ScrollReveal>
-        <ScrollReveal>
+        </ScrollSection>
+        <ScrollSection variant="rise-scale">
           <HomeClinicTeamBand {...homepageContent.clinicalBand} />
-        </ScrollReveal>
-        <ScrollReveal>
+        </ScrollSection>
+        <ScrollSection variant="faq">
           <FaqSection title={homepageContent.faq.title} items={homepageContent.faq.items} />
-        </ScrollReveal>
-        <ScrollReveal>
+        </ScrollSection>
+        <ScrollSection variant="rise-scale">
           <CtaStrip {...homepageContent.ctaStrip} />
-        </ScrollReveal>
+        </ScrollSection>
       </main>
       <PublicFooter />
     </div>
