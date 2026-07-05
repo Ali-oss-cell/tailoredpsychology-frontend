@@ -15,7 +15,9 @@ Scope: quick confidence pass for production auth path assumptions and 4-role rou
 |---|---|---|
 | Backend auth endpoint usage (`auth/login`, `auth/register`) | Pass | Calls go through `NEXT_PUBLIC_API_BASE_URL` with `http://localhost:3001/api` fallback. |
 | Role-based post-login redirect | Pass | Uses `getDefaultRouteForRole()` with role cookie set on successful auth. |
-| Demo/stub login copy in production | Pass | Demo credentials block only renders when `process.env.NODE_ENV === "development"`. |
+| Demo/stub login copy in production | Pass | Demo credentials block only renders when `process.env.NODE_ENV === "development"`. **Prod HTML check 2026-07-05:** no demo copy on `https://tailoredpsychology.com.au/login`. |
+| Password reset email delivery | Blocked | Backend `MailService` + SMTP wired in code (2026-07-05); **deploy backend + set `SMTP_*` on server**, then verify email receipt at `/forgot-password`. |
+| Forgot-password API leaks `devResetUrl` in prod | Pass | `POST /api/auth/forgot-password` on production returns generic message only (2026-07-05). |
 | Terms + privacy acceptance visibility at registration | Pass | Register checkbox now links to `/terms-of-service` and `/privacy-policy`. |
 
 ## RBAC smoke matrix (N2)
@@ -247,3 +249,37 @@ _Last auto-update: `2026-05-06T08:39:21.320Z`_
 ```
 
 <!-- W4_LATEST_RESULTS_END -->
+
+## Production verification (2026-07-05)
+
+Target: `https://tailoredpsychology.com.au` / `https://api.tailoredpsychology.com.au/api`
+
+| Test ID | Result | Evidence | Notes |
+|---------|--------|----------|-------|
+| W20-CORS-01 | **Pass** | `OPTIONS /auth/login` → `204`, `access-control-allow-origin: https://tailoredpsychology.com.au`, `credentials: true` | Manual curl 2026-07-05 |
+| W4-AUTH-01..04 | **Blocked** | `401 Invalid credentials` for default QA seed emails | Run `seed:staging-qa-users` on prod DB or set `SMOKE_*` env vars to real accounts, then re-run `npm run smoke:wave20` |
+| W4-RBAC-* | **Blocked** | Depends on auth tokens | Same as above |
+| W4-JOURNEY-01 | **Blocked** | Depends on patient login | Same as above |
+| W20-JOIN-01 | **Blocked** | Depends on patient login + upcoming appointment | Same as above |
+| W20-INVOICE-01 | **Blocked** | Depends on patient login + invoice | Same as above |
+| N1 login demo copy | **Pass** | No “Local demo logins” in prod `/login` HTML | Static fetch 2026-07-05 |
+| N1 SMTP email | **Pending deploy** | `MailService` shipped in backend; configure `SMTP_*` after deploy | See `backend/deploy/README.md` §8 |
+
+**Re-run after deploy + QA users:**
+
+```bash
+cd frontend
+API_BASE="https://api.tailoredpsychology.com.au/api" \
+WEB_BASE="https://tailoredpsychology.com.au" \
+CORS_ORIGIN="https://tailoredpsychology.com.au" \
+SMOKE_PATIENT_EMAIL="<prod-patient>" \
+SMOKE_PATIENT_PASSWORD="<password>" \
+# ... other roles ...
+UPDATE_DOC=1 npm run smoke:wave20
+```
+
+On server (once per environment):
+
+```bash
+docker compose --env-file .env -f docker-compose.traefik.yml exec backend npm run seed:staging-qa-users
+```

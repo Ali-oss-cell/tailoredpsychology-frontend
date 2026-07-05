@@ -1,5 +1,6 @@
 import type { PrivacyPolicySection } from "@/content/legal/privacy-policy-au"
 import { ENTITY_NAME, privacyPolicyEffectiveDate } from "@/content/legal/privacy-policy-au"
+import { legalPublication } from "@/content/legal/legal-publication"
 
 type PrivacyPolicyDocumentProps = {
   sections: PrivacyPolicySection[]
@@ -8,12 +9,14 @@ type PrivacyPolicyDocumentProps = {
 export function PrivacyPolicyDocument({ sections }: PrivacyPolicyDocumentProps) {
   return (
     <article className="max-w-none">
-      <p className="text-muted-foreground rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm leading-relaxed">
-        <strong>Pending legal sign-off.</strong> This policy currently names{" "}
-        <code className="rounded bg-muted px-1 py-0.5 text-xs">{ENTITY_NAME}</code>. Confirm legal owner, privacy
-        officer contact details, and approval status in `frontend/docs/LEGAL_SIGNOFF_TRACKER.md` before treating this
-        as binding policy text.
-      </p>
+      {!legalPublication.privacyPolicyApproved ? (
+        <p className="text-muted-foreground rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm leading-relaxed">
+          <strong>Pending legal sign-off.</strong> This policy currently names{" "}
+          <code className="rounded bg-muted px-1 py-0.5 text-xs">{ENTITY_NAME}</code>. Confirm legal owner, privacy
+          officer contact details, and approval status in `frontend/docs/LEGAL_SIGNOFF_TRACKER.md` before treating this
+          as binding policy text.
+        </p>
+      ) : null}
       <p className="text-muted-foreground mt-4 text-sm">Last updated: {privacyPolicyEffectiveDate}</p>
       <hr className="my-8 border-border" />
       {sections.map((section) => (

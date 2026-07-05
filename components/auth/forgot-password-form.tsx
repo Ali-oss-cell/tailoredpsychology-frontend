@@ -67,7 +67,7 @@ export function ForgotPasswordForm() {
           />
           {error ? <p className="text-destructive text-sm">{error}</p> : null}
           {message ? <p className="text-sm text-emerald-700">{message}</p> : null}
-          {devResetUrl ? (
+          {process.env.NODE_ENV === "development" && devResetUrl ? (
             <p className="text-muted-foreground rounded-md border border-border/60 bg-muted/40 p-3 text-xs">
               Email delivery is not configured in this environment. Use this link to reset:{" "}
               <Link href={devResetUrl} className="text-primary break-all font-medium hover:underline">

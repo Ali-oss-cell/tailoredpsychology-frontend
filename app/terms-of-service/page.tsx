@@ -2,6 +2,7 @@ import { PublicFooter } from "@/components/layout/public-footer"
 import { PublicHeader } from "@/components/layout/public-header"
 import { PublicPageEnter } from "@/components/layout/public-page-enter"
 import { PublicMarketingAmbient } from "@/components/marketing/public-marketing-ambient"
+import { legalPublication } from "@/content/legal/legal-publication"
 import { termsOfServiceEffectiveDate, termsOfServiceSections } from "@/content/legal/terms-of-service-au"
 
 export default function TermsOfServicePage() {
@@ -24,10 +25,12 @@ export default function TermsOfServicePage() {
           </div>
           <div className="mx-auto max-w-3xl px-4 py-10 md:px-6 md:py-14">
             <article className="max-w-none">
-              <p className="text-muted-foreground rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm leading-relaxed">
-                <strong>Pending legal sign-off.</strong> Confirm final counsel approval in
-                `frontend/docs/LEGAL_SIGNOFF_TRACKER.md` before production publication.
-              </p>
+              {!legalPublication.termsOfServiceApproved ? (
+                <p className="text-muted-foreground rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm leading-relaxed">
+                  <strong>Pending legal sign-off.</strong> Confirm final counsel approval in
+                  `frontend/docs/LEGAL_SIGNOFF_TRACKER.md` before production publication.
+                </p>
+              ) : null}
               <p className="text-muted-foreground mt-4 text-sm">Last updated: {termsOfServiceEffectiveDate}</p>
               <hr className="my-8 border-border" />
               {termsOfServiceSections.map((section) => (

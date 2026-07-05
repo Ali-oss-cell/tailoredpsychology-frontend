@@ -11,6 +11,14 @@ Status: Draft operational baseline (owner-assigned).
 | NDB assessment decision | Privacy Officer (or delegated legal owner) | Product Lead | Initial eligibility assessment within 24 hours |
 | Retention policy alignment | Engineering Lead | Legal Counsel | Policy-to-implementation review each release cycle |
 
+## Approval (N6 + N7)
+
+| Version | Approver | Role | Date | Notes |
+|---------|----------|------|------|-------|
+| — | — | — | — | Pending counsel/ops formal sign-off |
+
+---
+
 ## Trigger conditions
 
 Escalate to incident workflow when any of the following occur:

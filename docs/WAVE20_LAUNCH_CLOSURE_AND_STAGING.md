@@ -50,7 +50,7 @@ From `frontend/` (backend on 3001 + frontend on 3000, or point at staging):
 
 ```bash
 cd frontend
-# Local default (127.0.0.1:3001 / 3000)
+# Local default (127.0.0.1:3001 / 3000)domin
 npm run smoke:wave20
 
 # Staging / production API + web
@@ -98,10 +98,10 @@ UPDATE_DOC=1 npm run smoke:wave20:update
 
 | CORE | Wave 20 action |
 |------|----------------|
-| N1 | Re-verify prod login after deploy; dev-only demo copy already gated |
-| N4, N5 | Tracker + pages shipped; **counsel** checkboxes open |
-| N6, N7 | Runbook drafted; **formal approval** open |
-| N8 | Close when W20-S4 + W20-S5 pass on staging |
+| N1 | SMTP mailer implemented; prod login verified (no demo copy); **pending backend deploy + SMTP env + email receipt test** |
+| N4, N5 | Counsel pack ready (`COUNSEL_REVIEW_PACK.md`); **counsel sign-off open** |
+| N6, N7 | Runbook + approval table; **formal sign-off open** |
+| N8 | **Blocked:** prod smoke needs role credentials; manual journey + Twilio pending W20-S4/S5 |
 
 ---
 
@@ -113,12 +113,33 @@ git pull && docker compose --env-file .env -f docker-compose.traefik.yml up -d -
 docker compose --env-file .env -f docker-compose.traefik.yml exec api npx prisma migrate deploy
 ```
 
-Set in `.env`: `COOKIE_DOMAIN`, `CORS_ORIGINS` (if non-default), `TWILIO_*` for real video.
+Set in `.env`: `COOKIE_DOMAIN`, `CORS_ORIGINS` (if non-default), `TWILIO_*` for real video, **`SMTP_*`** for password reset (see deploy README §8).
 
 ---
 
-## 6. Revision history
+## 6. Manual verification log (N8 / A6 / W20-S5)
+
+Record each production browser run here. **Pass bar:** register → book → Stripe pay → appointment visible → **live Twilio A/V** (not shell-only).
+
+| Date | Tester | Environment | Register | Book | Stripe pay | Appt visible | Invoice PDF | Twilio A/V | Appointment ID | Notes |
+|------|--------|-------------|----------|------|------------|--------------|-------------|------------|----------------|-------|
+| — | — | production | — | — | — | — | — | — | — | Pending: deploy SMTP backend, seed or use prod test users, run smoke W20-S4, then complete manual checklist |
+
+### Manual checklist (production)
+
+1. `/register` — account created; terms/privacy links work
+2. `/patient/book-appointment` — wizard completes; Stripe Checkout opens
+3. Stripe — payment succeeds; redirect back to app
+4. `/patient/appointments` — new appointment listed
+5. `/patient/invoices` — invoice + PDF download
+6. `/video-session/:id` — Twilio connects with local camera/mic
+7. Second participant (psychologist browser) — mutual A/V confirmed
+
+---
+
+## 7. Revision history
 
 | Date | Notes |
 |------|--------|
+| 2026-07-05 | SMTP `MailService` for password reset; counsel pack + post-approval flags; prod CORS pass; prod smoke blocked on role credentials; manual verification log added. |
 | 2026-05-19 | Wave 20: launch smoke script, deploy docs, legal tracker entity fix; A6/N8 remain staging-manual. |

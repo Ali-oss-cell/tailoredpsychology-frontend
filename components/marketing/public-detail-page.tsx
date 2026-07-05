@@ -9,6 +9,7 @@ import { PageHero } from "@/components/marketing/page-hero"
 import { BrandMarkBand } from "@/components/marketing/brand-mark-band"
 import { SplitFeatureSection } from "@/components/marketing/split-feature-section"
 import type { PublicDetailPageContent } from "@/content/pages/types"
+import type { ReactNode } from "react"
 
 const defaultCta = {
   title: "Ready to take the next step?",
@@ -21,9 +22,10 @@ const defaultCta = {
 
 type PublicDetailPageProps = {
   content: PublicDetailPageContent
+  afterHeroSlot?: ReactNode
 }
 
-export function PublicDetailPage({ content }: PublicDetailPageProps) {
+export function PublicDetailPage({ content, afterHeroSlot }: PublicDetailPageProps) {
   const cta = content.cta ?? defaultCta
 
   return (
@@ -39,6 +41,7 @@ export function PublicDetailPage({ content }: PublicDetailPageProps) {
           kicker={content.hero.kicker}
           actions={content.hero.actions}
         />
+        {afterHeroSlot}
         <SplitFeatureSection {...content.split} />
         <ListSection
           title={content.highlights.title}

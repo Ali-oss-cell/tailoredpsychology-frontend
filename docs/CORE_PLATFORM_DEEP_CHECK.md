@@ -116,14 +116,14 @@ Use this to **sequence work**: finish **§7.1** before widening scope into **§7
 
 **Suggested checkboxes (need to have)**
 
-- [ ] **N1** — Production auth path verified; demo/stub copy gated or removed in prod builds (`login` and env strategy). *(Wave 21: forgot/reset password APIs + UI; configure `PUBLIC_APP_URL` + SMTP for prod email delivery; staging smoke still required.)*
+- [ ] **N1** — Production auth path verified; demo/stub copy gated or removed in prod builds (`login` and env strategy). *(2026-07-05: prod `/login` has no demo copy; `MailService` + SMTP wired — **deploy backend, set `SMTP_*`, verify forgot-password email receipt**.)*
 - [x] **N2** — Role smoke matrix passed (patient / psych / manager / admin) against live or staging API. *(Local **2026-05-04**: API RBAC probes + Next `proxy.ts` redirect probes recorded in `WAVE3_AUTH_RBAC_SMOKE_MATRIX.md`.)*
 - [x] **N3** — Spot-audit pricing, Medicare copy, invoices, join links for honesty. *(Completed 2026-05-06; findings and wording fixes recorded in `WAVE5_HONESTY_AUDIT.md`.)*
-- [ ] **N4** — Replace `ENTITY_PLACEHOLDER` in `content/legal/privacy-policy-au.ts`; privacy officer + contact; legal sign-off recorded. *(Entity text done; legal owner/status/target date and contact source are now tracked, counsel sign-off still pending in `LEGAL_SIGNOFF_TRACKER.md`.)*
-- [ ] **N5** — Terms page shipped + linked from register/footer as counsel directs. *(Route + links shipped; legal owner/status/target date tracked, counsel sign-off still pending in `LEGAL_SIGNOFF_TRACKER.md`.)*
-- [ ] **N6** — Security/retention review with legal; engineering doc matches approved retention. *(Runbook + owners drafted in `SECURITY_RETENTION_NDB_RUNBOOK.md`; pending legal approval/sign-off date.)*
-- [ ] **N7** — NDB runbook + incident register process agreed (align with admin security-incidents UI if used). *(Operational triage + NDB decision workflow documented in `SECURITY_RETENTION_NDB_RUNBOOK.md`; pending formal approval.)*
-- [ ] **N8** — End-to-end patient booking → session join on staging with real data path. *(Local **2026-05-04**: smoke covers availability → **`POST /booking-requests`** (fixed DB id collision via UUID-style ids) → appointments list → details → `/video-session/…` **200**; repeat on **staging** + real Twilio join.)*
+- [ ] **N4** — Replace `ENTITY_PLACEHOLDER` in `content/legal/privacy-policy-au.ts`; privacy officer + contact; legal sign-off recorded. *(Entity text done; counsel pack in `COUNSEL_REVIEW_PACK.md` — contact details deferred to counsel; flip `legal-publication.ts` + `public-contact.ts` after approval.)*
+- [ ] **N5** — Terms page shipped + linked from register/footer as counsel directs. *(Route + links shipped; flip `legalPublication.termsOfServiceApproved` after counsel sign-off.)*
+- [ ] **N6** — Security/retention review with legal; engineering doc matches approved retention. *(Runbook + approval table in `SECURITY_RETENTION_NDB_RUNBOOK.md`; pending formal sign-off.)*
+- [ ] **N7** — NDB runbook + incident register process agreed (align with admin security-incidents UI if used). *(Same runbook; pending formal approval.)*
+- [ ] **N8** — End-to-end patient booking → session join on staging with real data path. *(Prod CORS pass 2026-07-05; full smoke blocked on prod role credentials; manual Twilio journey pending — see `WAVE20_LAUNCH_CLOSURE_AND_STAGING.md` §7.)*
 - [x] **N9** — BR-301/302 + Wave 7 §D reconciliation doc updated (implement or waiver).
 
 ### 7.2 Nice to have

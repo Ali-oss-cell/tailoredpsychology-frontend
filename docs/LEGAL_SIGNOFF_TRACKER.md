@@ -11,9 +11,9 @@ Purpose: track owner and sign-off state for public legal pages before release.
 
 | Area | Primary owner | Secondary owner | Target date | Sign-off state | Last updated |
 |---|---|---|---|---|---|
-| Privacy policy legal review | Product Lead | Legal counsel | 2026-05-12 | Pending legal | 2026-05-04 |
-| Terms of Service legal review | Product Lead | Legal counsel | 2026-05-12 | Pending legal | 2026-05-04 |
-| Public contact details publication | Ops Lead | Product Lead | 2026-05-10 | Pending legal | 2026-05-04 |
+| Privacy policy legal review | Product Lead | Legal counsel | 2026-05-12 | Pending legal | 2026-07-05 |
+| Terms of Service legal review | Product Lead | Legal counsel | 2026-05-12 | Pending legal | 2026-07-05 |
+| Public contact details publication | Ops Lead | Product Lead | 2026-05-10 | Pending legal | 2026-07-05 |
 
 ## Sign-off states
 
@@ -37,6 +37,10 @@ Purpose: track owner and sign-off state for public legal pages before release.
 - [ ] Legal counsel approved terms copy for production use.
 - [ ] Privacy officer/public contact details finalized and published.
 
+## Counsel review pack
+
+Route documents using [`COUNSEL_REVIEW_PACK.md`](./COUNSEL_REVIEW_PACK.md) (prepared 2026-07-05).
+
 ## Decision log
 
 | Date | Decision | Owner |
@@ -45,3 +49,4 @@ Purpose: track owner and sign-off state for public legal pages before release.
 | 2026-05-04 | Privacy policy placeholder replaced with concrete entity text; sign-off remains pending. | Product |
 | 2026-05-04 | Added explicit owner/target date/sign-off states; set `/contact` as public source-of-truth pending direct privacy officer details. | Product |
 | 2026-05-06 | Added operational security/retention/NDB runbook with named owners for N6/N7 linkage. | Product |
+| 2026-07-05 | Counsel review pack assembled (`COUNSEL_REVIEW_PACK.md`); contact details deferred to counsel; post-approval flags in `content/legal/public-contact.ts` and `legal-publication.ts`. | Product |
