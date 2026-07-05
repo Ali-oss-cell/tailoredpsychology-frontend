@@ -1,8 +1,33 @@
 # Counsel review pack (N4, N5, N6, N7)
 
 **Prepared:** 2026-07-05  
-**Status:** Ready to route to legal counsel  
+**Status:** Ready to send — attach [`counsel-bundle/`](./counsel-bundle/) to email  
 **Owner:** Product Lead
+
+---
+
+## How to send (you do this once)
+
+1. Zip the folder `frontend/docs/counsel-bundle/` (5 markdown files + README).
+2. Email your counsel with the template below; attach the zip.
+3. Record the send date in the **Routing log** at the bottom of this doc and in [`LEGAL_SIGNOFF_TRACKER.md`](./LEGAL_SIGNOFF_TRACKER.md).
+4. **Do not** flip `public-contact.ts` or `legal-publication.ts` until redlines and sign-off return.
+5. Amber banners stay on `/privacy-policy` and `/terms-of-service` until step 4.
+
+**Subject:** Tailored Psychology — legal review pack (privacy, terms, retention, NDB)
+
+**Body:**
+
+> Please review the attached legal and operational baseline for Tailored Psychology Pty Ltd public launch (https://tailoredpsychology.com.au).
+>
+> We need:
+> 1. Approved or redlined privacy policy and terms
+> 2. Public contact details (privacy officer, emails, phone, postal address, ABN if required)
+> 3. Confirmation of retention baseline (7 years adults / until age 25 minors)
+> 4. Confirmation of NDB incident workflow
+> 5. Sign-off names and dates
+>
+> Draft pages are live with a “Pending legal sign-off” banner until you approve.
 
 ---
 
@@ -16,10 +41,10 @@ Single bundle for counsel to review public legal pages and operational security/
 
 | ID | Document | Live URL / path |
 |----|----------|-----------------|
-| N4 | Privacy policy copy | [`content/legal/privacy-policy-au.ts`](../content/legal/privacy-policy-au.ts) → `/privacy-policy` |
-| N5 | Terms of Service copy | [`content/legal/terms-of-service-au.ts`](../content/legal/terms-of-service-au.ts) → `/terms-of-service` |
-| N6 | Security + retention alignment | [`SECURITY_RETENTION_NDB_RUNBOOK.md`](./SECURITY_RETENTION_NDB_RUNBOOK.md) + [`backend/docs/RETENTION_AND_DELETION_POLICY_AU.md`](../../backend/docs/RETENTION_AND_DELETION_POLICY_AU.md) |
-| N7 | NDB / breach runbook | Same as N6 (`SECURITY_RETENTION_NDB_RUNBOOK.md`) |
+| N4 | Privacy policy copy | [`counsel-bundle/01-privacy-policy-draft.md`](./counsel-bundle/01-privacy-policy-draft.md) → live `/privacy-policy` |
+| N5 | Terms of Service copy | [`counsel-bundle/02-terms-of-service-draft.md`](./counsel-bundle/02-terms-of-service-draft.md) → live `/terms-of-service` |
+| N6 | Security + retention alignment | [`counsel-bundle/03-security-retention-ndb-runbook.md`](./counsel-bundle/03-security-retention-ndb-runbook.md) + [`counsel-bundle/04-retention-deletion-policy-summary.md`](./counsel-bundle/04-retention-deletion-policy-summary.md) |
+| N7 | NDB / breach runbook | Same as N6 |
 
 ---
 

@@ -39,7 +39,7 @@ Purpose: track owner and sign-off state for public legal pages before release.
 
 ## Counsel review pack
 
-Route documents using [`COUNSEL_REVIEW_PACK.md`](./COUNSEL_REVIEW_PACK.md) (prepared 2026-07-05).
+Route documents using [`COUNSEL_REVIEW_PACK.md`](./COUNSEL_REVIEW_PACK.md) and attach [`counsel-bundle/`](./counsel-bundle/) (prepared 2026-07-05).
 
 ## Decision log
 
