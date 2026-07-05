@@ -1,4 +1,4 @@
-import { PatientPageHeader } from "@/components/patient/patient-page-header"
+import { PortalPageHeader } from "@/components/shared/portal-page-header"
 import { OpsListCard } from "@/components/ops/ops-list-card"
 import { OpsShell } from "@/components/ops/ops-shell"
 
@@ -25,6 +25,7 @@ type OpsPageTemplateProps = {
     | "admin-resources"
   title: string
   description: string
+  eyebrow?: string
   cardTitle: string
   rows: readonly Record<string, string>[]
 }
@@ -33,13 +34,14 @@ export function OpsPageTemplate({
   activeRoute,
   title,
   description,
+  eyebrow,
   cardTitle,
   rows,
 }: OpsPageTemplateProps) {
   return (
     <OpsShell activeRoute={activeRoute}>
       <section className="space-y-6">
-        <PatientPageHeader title={title} description={description} />
+        <PortalPageHeader title={title} description={description} eyebrow={eyebrow} />
         <OpsListCard title={cardTitle} rows={rows} />
       </section>
     </OpsShell>

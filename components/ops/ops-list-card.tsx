@@ -12,6 +12,7 @@ export function OpsListCard({ title, rows }: OpsListCardProps) {
   return (
     <Card>
       <CardHeader className="pb-3">
+        <p className="card-eyebrow">Records</p>
         <CardTitle className="text-lg">{title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">

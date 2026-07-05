@@ -21,6 +21,12 @@ import { LogoutLink } from "@/components/auth/logout-link"
 import { ClinkLogo } from "@/components/brand/clink-logo"
 import { ClinkSidebarBrand } from "@/components/brand/clink-sidebar-brand"
 import { NotificationBell } from "@/components/notifications/notification-bell"
+import {
+  portalHeaderClassName,
+  portalInsetClassName,
+  portalSidebarClassName,
+  PortalShellMain,
+} from "@/components/shared/portal-shell-chrome"
 import { Button } from "@/components/ui/button"
 import {
   Sidebar,
@@ -107,25 +113,22 @@ export function OpsShell({ children, activeRoute }: OpsShellProps) {
   const navItems = isManagerRoute(activeRoute) ? managerNavItems : adminNavItems
   const opsDashboardHref = isManagerRoute(activeRoute) ? "/manager/dashboard" : "/admin/dashboard"
   return (
-    <SidebarProvider defaultOpen={false} storageKey="clink-sidebar-ops">
-      <div className="bg-background text-foreground flex min-h-screen w-full">
-        <Sidebar collapsible="icon">
-          <SidebarHeader>
-            <div className="mb-3 flex justify-end group-data-[state=collapsed]/sidebar:justify-center">
-              <SidebarTrigger />
-            </div>
+    <SidebarProvider defaultOpen={true} storageKey="clink-sidebar-ops">
+      <div className="bg-background text-foreground flex h-screen w-full overflow-hidden">
+        <Sidebar collapsible="icon" className={portalSidebarClassName}>
+          <SidebarHeader className="group-data-[state=collapsed]/sidebar:mb-3">
             <ClinkSidebarBrand dashboardHref={opsDashboardHref} portalLabel="Operations Portal" />
           </SidebarHeader>
           <SidebarContent>
-            <SidebarMenu className="space-y-2">
+            <SidebarMenu>
               {navItems.map((item) => {
                 const Icon = item.icon
                 return (
                   <SidebarMenuItem key={item.key}>
                     <SidebarMenuButton asChild isActive={item.key === activeRoute}>
-                      <Link href={item.href}>
+                      <Link href={item.href} title={item.label}>
                         <Icon size={18} />
-                        <span className="group-data-[state=collapsed]/sidebar:hidden">{item.label}</span>
+                        <span className="group-data-[state=collapsed]/sidebar:sr-only">{item.label}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -141,31 +144,35 @@ export function OpsShell({ children, activeRoute }: OpsShellProps) {
               title="Compliance mode is not enabled in this release."
             >
               <ShieldCheck size={16} />
-              <span className="group-data-[state=collapsed]/sidebar:hidden">Compliance Mode (coming soon)</span>
+              <span className="group-data-[state=collapsed]/sidebar:sr-only">Compliance Mode (coming soon)</span>
             </Button>
             <Button asChild variant="ghost" className="w-full justify-start gap-2">
               <LogoutLink>
                 <SignOut size={16} />
-                <span className="group-data-[state=collapsed]/sidebar:hidden">Logout</span>
+                <span className="group-data-[state=collapsed]/sidebar:sr-only">Logout</span>
               </LogoutLink>
             </Button>
           </SidebarFooter>
         </Sidebar>
 
-        <SidebarInset>
-          <header className="bg-background/95 border-border/70 sticky top-0 z-20 border-b backdrop-blur">
-            <div className="flex h-16 items-center justify-between px-4 md:px-6">
-              <Link href={opsDashboardHref} className="flex items-center gap-2 lg:hidden" aria-label="Tailored Psychology Operations home">
-                <ClinkLogo alt="" className="size-8" />
-                <span className="text-muted-foreground text-sm font-semibold tracking-tight">Ops</span>
-              </Link>
-              <input
-                type="text"
-                placeholder="Search (coming soon)"
-                readOnly
-                title="Global admin search is not enabled in this release."
-                className="bg-muted/60 border-border focus-visible:ring-ring hidden w-96 cursor-not-allowed rounded-full border px-4 py-2 text-sm opacity-70 outline-none focus-visible:ring-2 md:block"
-              />
+        <SidebarInset className={portalInsetClassName}>
+          <header className={portalHeaderClassName}>
+            <div className="flex h-16 items-center justify-between gap-3 px-4 md:px-6">
+              <div className="flex min-w-0 items-center gap-3">
+                <SidebarTrigger variant="soft" className="hidden lg:inline-flex" />
+                <Link href={opsDashboardHref} className="flex items-center gap-2 lg:hidden" aria-label="Tailored Psychology Operations home">
+                  <ClinkLogo alt="" className="size-8" />
+                  <span className="text-muted-foreground text-sm font-semibold tracking-tight">Ops</span>
+                </Link>
+                <input
+                  type="search"
+                  placeholder="Search (coming soon)"
+                  readOnly
+                  title="Global admin search is not enabled in this release."
+                  aria-label="Search operations records"
+                  className="bg-muted/60 border-border focus-visible:ring-ring hidden w-96 max-w-full cursor-not-allowed rounded-full border px-4 py-2 text-sm opacity-70 outline-none focus-visible:ring-2 md:block"
+                />
+              </div>
               <div className="flex items-center gap-2">
                 <NotificationBell />
                 <div className="bg-primary/20 text-primary flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold">
@@ -174,7 +181,7 @@ export function OpsShell({ children, activeRoute }: OpsShellProps) {
               </div>
             </div>
           </header>
-          <main className="p-4 md:p-6 lg:p-8">{children}</main>
+          <PortalShellMain>{children}</PortalShellMain>
         </SidebarInset>
       </div>
     </SidebarProvider>

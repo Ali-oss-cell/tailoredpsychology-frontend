@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 
-import { PatientPageHeader } from "@/components/patient/patient-page-header"
+import { PatientPortalPage } from "@/components/patient/patient-portal-page"
 import { ClinicianPublicProfileHeader } from "@/components/shared/clinician-public-profile-header"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { Badge } from "@/components/ui/badge"
@@ -136,11 +136,13 @@ export default function PatientMyClinicianPage() {
   }, [])
 
   return (
-    <section className="space-y-6" data-tutorial="patient.page.my-clinician">
-        <PatientPageHeader
-          title={patientMyClinicianContent.header.title}
-          description={patientMyClinicianContent.header.description}
-        />
+    <PatientPortalPage
+      title={patientMyClinicianContent.header.title}
+      description={patientMyClinicianContent.header.description}
+      eyebrow="Your care team"
+      showJourney
+      tutorialId="patient.page.my-clinician"
+    >
         <p className="text-muted-foreground max-w-2xl text-sm leading-relaxed">
           {patientMyClinicianContent.emergencyNotice}
         </p>
@@ -310,6 +312,6 @@ export default function PatientMyClinicianPage() {
               })
             : null}
         </div>
-      </section>
+    </PatientPortalPage>
   )
 }

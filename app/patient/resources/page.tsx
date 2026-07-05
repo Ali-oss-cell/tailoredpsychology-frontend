@@ -1,18 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PatientPageHeader } from "@/components/patient/patient-page-header"
+import { PatientPortalPage } from "@/components/patient/patient-portal-page"
 import { patientResourcesContent } from "@/content/patient-resources"
 
 export default function PatientResourcesPage() {
   return (
-    <section className="space-y-6" data-tutorial="patient.page.resources">
-      <PatientPageHeader
-        title={patientResourcesContent.header.title}
-        description={patientResourcesContent.header.description}
-      />
-
+    <PatientPortalPage
+      title={patientResourcesContent.header.title}
+      description={patientResourcesContent.header.description}
+      eyebrow="Support"
+      tutorialId="patient.page.resources"
+    >
       <div className="grid gap-4 md:grid-cols-3">
         {patientResourcesContent.categories.map((category) => (
-          <Card key={category.title}>
+          <Card key={category.title} className="interactive-lift">
             <CardHeader className="pb-2">
               <CardTitle className="text-base">{category.title}</CardTitle>
             </CardHeader>
@@ -22,6 +22,6 @@ export default function PatientResourcesPage() {
           </Card>
         ))}
       </div>
-    </section>
+    </PatientPortalPage>
   )
 }

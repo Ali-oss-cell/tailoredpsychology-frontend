@@ -10,7 +10,11 @@ export default function AdminDashboardPage() {
   return (
     <OpsShell activeRoute="admin-dashboard">
       <section className="space-y-6">
-        <PatientPageHeader title={opsPagesContent.adminDashboard.title} description={opsPagesContent.adminDashboard.description} />
+        <PatientPageHeader
+          title={opsPagesContent.adminDashboard.title}
+          description={opsPagesContent.adminDashboard.description}
+          eyebrow="Administration"
+        />
         <OpsInsightsCard />
         <TelehealthInsightsCard />
         <ReferralActionCard mode="admin" />

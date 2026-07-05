@@ -3,6 +3,7 @@
 import { BillingSnapshotCard } from "@/components/patient/dashboard/billing-snapshot-card"
 import { NextSessionHero } from "@/components/patient/dashboard/next-session-hero"
 import { ResourceRecommendationsCard } from "@/components/patient/dashboard/resource-recommendations-card"
+import { JourneyRail } from "@/components/patient/journey/journey-rail"
 import { PatientTelehealth101Cta } from "@/components/tutorials/patient-telehealth-101-cta"
 import { PatientTutorialOnboardingCta } from "@/components/tutorials/patient-tutorial-onboarding-cta"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -33,6 +34,7 @@ export function PatientDashboardView() {
   return (
     <section className="space-y-8" data-tutorial="patient.page.dashboard">
       <header className="space-y-2">
+        <p className="card-eyebrow">Your dashboard</p>
         {loading ? (
           <Skeleton className="skeleton-shimmer h-9 w-56" aria-label="Loading greeting" />
         ) : (
@@ -47,6 +49,8 @@ export function PatientDashboardView() {
 
       <PatientTutorialOnboardingCta />
       <PatientTelehealth101Cta />
+
+      <JourneyRail />
 
       <NextSessionHero
         session={snapshot?.nextSession ?? null}

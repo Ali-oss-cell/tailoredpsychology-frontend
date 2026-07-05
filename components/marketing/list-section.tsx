@@ -32,10 +32,7 @@ export function ListSection({ title, items, muted = false }: ListSectionProps) {
           {items.map((item, index) => {
             const Icon = ICONS[index % ICONS.length]
             return (
-              <Card
-                key={item.title}
-                className="border-border/70 transition-shadow duration-200 hover:border-primary/20 hover:shadow-md"
-              >
+              <Card key={item.title} className="interactive-lift border-border/50">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-start gap-3 text-lg leading-snug">
                     <span className="bg-primary/10 text-primary mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">

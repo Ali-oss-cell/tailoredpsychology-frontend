@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { FileText, PencilSimple } from "@phosphor-icons/react"
 
-import { PatientPageHeader } from "@/components/patient/patient-page-header"
+import { PatientPortalPage } from "@/components/patient/patient-portal-page"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
@@ -61,9 +61,12 @@ export default function PatientDataRequestsPage() {
     pendingRequestType === "correction" ? copy.dialog.correction : copy.dialog.access
 
   return (
-    <section className="space-y-6" data-tutorial="patient.page.privacy-requests">
-      <PatientPageHeader title={copy.header.title} description={copy.header.description} />
-
+    <PatientPortalPage
+      title={copy.header.title}
+      description={copy.header.description}
+      eyebrow="Privacy"
+      tutorialId="patient.page.privacy-requests"
+    >
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-lg">{copy.newRequest.title}</CardTitle>
@@ -146,6 +149,6 @@ export default function PatientDataRequestsPage() {
           />
         </label>
       </ConfirmDialog>
-    </section>
+    </PatientPortalPage>
   )
 }

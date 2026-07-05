@@ -18,6 +18,7 @@ import { LogoutLink } from "@/components/auth/logout-link"
 import { ClinkLogo } from "@/components/brand/clink-logo"
 import { ClinkSidebarBrand } from "@/components/brand/clink-sidebar-brand"
 import { PatientHeaderScrollFx } from "@/components/patient/patient-header-scroll-fx"
+import { portalHeaderClassName, portalInsetClassName, portalSidebarClassName, PortalShellMain } from "@/components/shared/portal-shell-chrome"
 import { NotificationBell } from "@/components/notifications/notification-bell"
 import { PatientTutorialHelpButton } from "@/components/tutorials/patient-tutorial-help-button"
 import { PatientHeaderProfile } from "./patient-header-profile"
@@ -88,11 +89,7 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
     <SidebarProvider defaultOpen={true} storageKey="patient-sidebar-open">
       <div className="bg-background text-foreground flex h-screen w-full overflow-hidden">
         <PatientShellTutorialSidebarSync />
-        <Sidebar
-          collapsible="icon"
-          className="fixed inset-y-0 left-0 z-30 flex h-screen flex-col overflow-y-auto border-r border-border/70 bg-surface-2/80 backdrop-blur-sm transition-[width] duration-200 lg:flex"
-          data-tutorial="shell.sidebar"
-        >
+        <Sidebar collapsible="icon" className={portalSidebarClassName} data-tutorial="shell.sidebar">
           <SidebarHeader className="group-data-[state=collapsed]/sidebar:mb-3">
             <ClinkSidebarBrand dashboardHref="/patient/dashboard" portalLabel="Patient Portal" />
           </SidebarHeader>
@@ -136,12 +133,8 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
           </SidebarContent>
         </Sidebar>
 
-        <SidebarInset className="flex h-screen min-w-0 flex-1 flex-col overflow-hidden transition-[margin] duration-200 ml-64 group-data-[state=collapsed]/sidebar-wrapper:lg:ml-[4.5rem]">
-          <header
-            data-patient-header
-            className="border-border/70 z-20 shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
-            data-tutorial="shell.header"
-          >
+        <SidebarInset className={portalInsetClassName}>
+          <header data-patient-header className={portalHeaderClassName} data-tutorial="shell.header">
             <PatientHeaderScrollFx />
             <div className="flex h-16 items-center justify-between gap-3 px-4 md:px-6">
               <div className="flex min-w-0 items-center gap-3">
@@ -170,12 +163,7 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
               </div>
             </div>
           </header>
-          <main
-            className="flex-1 overflow-y-auto scroll-smooth p-4 md:p-6 lg:p-8"
-            data-tutorial="shell.main"
-          >
-            <div className="mx-auto w-full max-w-[1200px]">{children}</div>
-          </main>
+          <PortalShellMain tutorialId="shell.main">{children}</PortalShellMain>
         </SidebarInset>
         <FloatingChatWidget role="patient" />
       </div>

@@ -5,6 +5,14 @@ import PatientMyClinicianPage from "@/app/patient/my-clinician/page"
 jest.mock("@/components/patient/patient-shell", () => ({
   PatientShell: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }))
+jest.mock("@/components/patient/patient-portal-page", () => ({
+  PatientPortalPage: ({ children, title }: { children: React.ReactNode; title: string }) => (
+    <div>
+      <h1>{title}</h1>
+      {children}
+    </div>
+  ),
+}))
 jest.mock("@/components/patient/patient-page-header", () => ({
   PatientPageHeader: ({ title }: { title: string }) => <h1>{title}</h1>,
 }))

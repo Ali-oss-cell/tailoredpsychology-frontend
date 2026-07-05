@@ -7,6 +7,7 @@ import { FaqSection } from "@/components/marketing/faq-section"
 import { ListSection } from "@/components/marketing/list-section"
 import { PageHero } from "@/components/marketing/page-hero"
 import { BrandMarkBand } from "@/components/marketing/brand-mark-band"
+import { ScrollReveal } from "@/components/marketing/scroll-reveal"
 import { SplitFeatureSection } from "@/components/marketing/split-feature-section"
 import type { PublicDetailPageContent } from "@/content/pages/types"
 import type { ReactNode } from "react"
@@ -42,23 +43,33 @@ export function PublicDetailPage({ content, afterHeroSlot }: PublicDetailPagePro
           actions={content.hero.actions}
         />
         {afterHeroSlot}
-        <SplitFeatureSection {...content.split} />
-        <ListSection
-          title={content.highlights.title}
-          items={content.highlights.items}
-          muted={content.highlights.muted}
-        />
-        {content.brandBand ? (
-          <BrandMarkBand
-            title={content.brandBand.title}
-            body={content.brandBand.body}
-            imageSrc={content.brandBand.imageSrc}
-            imageAlt={content.brandBand.imageAlt}
-            layout={content.brandBand.layout}
+        <ScrollReveal delayMs={40}>
+          <SplitFeatureSection {...content.split} />
+        </ScrollReveal>
+        <ScrollReveal delayMs={60}>
+          <ListSection
+            title={content.highlights.title}
+            items={content.highlights.items}
+            muted={content.highlights.muted}
           />
+        </ScrollReveal>
+        {content.brandBand ? (
+          <ScrollReveal delayMs={80}>
+            <BrandMarkBand
+              title={content.brandBand.title}
+              body={content.brandBand.body}
+              imageSrc={content.brandBand.imageSrc}
+              imageAlt={content.brandBand.imageAlt}
+              layout={content.brandBand.layout}
+            />
+          </ScrollReveal>
         ) : null}
-        <FaqSection title={content.faq.title} items={content.faq.items} />
-        <CtaStrip {...cta} />
+        <ScrollReveal>
+          <FaqSection title={content.faq.title} items={content.faq.items} />
+        </ScrollReveal>
+        <ScrollReveal delayMs={40}>
+          <CtaStrip {...cta} />
+        </ScrollReveal>
         </PublicPageEnter>
       </main>
       <PublicFooter />

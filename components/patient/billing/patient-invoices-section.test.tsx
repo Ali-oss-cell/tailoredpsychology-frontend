@@ -53,7 +53,7 @@ describe("PatientInvoicesSection", () => {
     global.URL.createObjectURL = jest.fn(() => "blob:mock")
     global.URL.revokeObjectURL = jest.fn()
 
-    renderWithQueryClient(<PatientInvoicesSection title="Invoices" description="Billing history" />)
+    renderWithQueryClient(<PatientInvoicesSection />)
 
     await waitFor(() => expect(mockedList).toHaveBeenCalled())
     expect(await screen.findByText("INV-1042")).toBeInTheDocument()

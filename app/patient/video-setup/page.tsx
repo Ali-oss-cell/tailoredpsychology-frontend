@@ -1,14 +1,16 @@
 import { PatientVideoSetupCard } from "@/components/patient/patient-video-setup-card"
-import { PatientPageHeader } from "@/components/patient/patient-page-header"
+import { PatientPortalPage } from "@/components/patient/patient-portal-page"
 
 export default function PatientVideoSetupPage() {
   return (
-    <section className="space-y-6" data-tutorial="patient.page.video-setup">
-      <PatientPageHeader
-        title="Test your video setup"
-        description="Use this page before a telehealth visit to confirm your browser can reach your camera and microphone. This does not start a session with your clinician."
-      />
+    <PatientPortalPage
+      title="Test your video setup"
+      description="Use this page before a telehealth visit to confirm your browser can reach your camera and microphone. This does not start a session with your clinician."
+      eyebrow="Before your session"
+      showJourney
+      tutorialId="patient.page.video-setup"
+    >
       <PatientVideoSetupCard />
-    </section>
+    </PatientPortalPage>
   )
 }

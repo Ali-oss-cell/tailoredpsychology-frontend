@@ -13,6 +13,7 @@ export default function ManagerDashboardPage() {
         <PatientPageHeader
           title={opsPagesContent.managerDashboard.title}
           description={opsPagesContent.managerDashboard.description}
+          eyebrow="Operations"
         />
         <OpsInsightsCard />
         <ReferralActionCard mode="manager" />

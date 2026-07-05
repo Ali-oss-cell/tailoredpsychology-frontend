@@ -14,6 +14,7 @@ export default function PsychologistDashboardPage() {
         <PatientPageHeader
           title={psychologistDashboardContent.greeting.title}
           description={psychologistDashboardContent.greeting.description}
+          eyebrow="Clinician workspace"
         />
         <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
           <SessionsOverviewCard />

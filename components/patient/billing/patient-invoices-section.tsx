@@ -10,11 +10,6 @@ import { downloadPatientInvoice, type InvoiceSummary } from "@/src/patient/billi
 import { formatInvoiceIdDisplay } from "@/src/patient/billing/format-invoice-id"
 import { usePatientInvoices } from "@/src/patient/queries/use-patient-invoices"
 
-type PatientInvoicesSectionProps = {
-  title: string
-  description: string
-}
-
 function InvoiceStatusBadge({ status }: { status: string }) {
   const normalized = status.toLowerCase()
   return (
@@ -83,7 +78,7 @@ function InvoiceRow({
   )
 }
 
-export function PatientInvoicesSection({ title, description }: PatientInvoicesSectionProps) {
+export function PatientInvoicesSection() {
   const invoicesQuery = usePatientInvoices()
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
   const [downloadError, setDownloadError] = useState<string | null>(null)
@@ -111,15 +106,10 @@ export function PatientInvoicesSection({ title, description }: PatientInvoicesSe
   }
 
   return (
-    <section className="space-y-6" data-tutorial="patient.page.invoices">
-      <header className="space-y-2">
-        <h1 className="font-heading text-3xl font-semibold tracking-tight">{title}</h1>
-        <p className="text-muted-foreground max-w-2xl text-sm md:text-base">{description}</p>
-      </header>
-
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Invoice History</CardTitle>
+    <Card>
+      <CardHeader className="pb-3">
+        <p className="card-eyebrow">History</p>
+        <CardTitle className="text-lg">Invoice History</CardTitle>
           <p className="text-muted-foreground text-xs leading-relaxed">
             Downloads use the file your clinic issues (often PDF or plain text). The saved filename matches what the server sends.
           </p>
@@ -156,6 +146,5 @@ export function PatientInvoicesSection({ title, description }: PatientInvoicesSe
           ) : null}
         </CardContent>
       </Card>
-    </section>
   )
 }
