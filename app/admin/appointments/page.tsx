@@ -5,7 +5,7 @@ import * as React from "react"
 import { AdminDataTable, type AdminDataTableColumn } from "@/components/ops/admin-data-table"
 import { AdminFilterBar } from "@/components/ops/admin-filter-bar"
 import { OpsShell } from "@/components/ops/ops-shell"
-import { PatientPageHeader } from "@/components/patient/patient-page-header"
+import { AdminPageHeader } from "@/components/ops/ops-page-header"
 import { opsPagesContent } from "@/content/ops-pages"
 import { getAdminOpsAppointments, type AdminAppointmentItem } from "@/src/admin/ops/api"
 
@@ -64,7 +64,7 @@ export default function AdminAppointmentsPage() {
   return (
     <OpsShell activeRoute="admin-appointments">
       <section className="space-y-6">
-        <PatientPageHeader title={opsPagesContent.adminAppointments.title} description={opsPagesContent.adminAppointments.description} />
+        <AdminPageHeader title={opsPagesContent.adminAppointments.title} description={opsPagesContent.adminAppointments.description} />
         <AdminFilterBar
           searchValue={search}
           onSearchChange={setSearch}

@@ -8,8 +8,13 @@ jest.mock("@/components/ops/ops-shell", () => ({
 jest.mock("@/components/ops/patient-data-requests-queue-card", () => ({
   PatientDataRequestsQueueCard: () => <div>Queue card</div>,
 }))
-jest.mock("@/components/patient/patient-page-header", () => ({
-  PatientPageHeader: ({ title }: { title: string; description: string }) => <h1>{title}</h1>,
+jest.mock("@/components/ops/ops-portal-page", () => ({
+  OpsPortalPage: ({ title, children }: { title: string; description: string; children: React.ReactNode }) => (
+    <div>
+      <h1>{title}</h1>
+      {children}
+    </div>
+  ),
 }))
 
 describe("AdminPrivacyRequestsPage", () => {

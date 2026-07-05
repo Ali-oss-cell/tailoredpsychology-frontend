@@ -3,7 +3,9 @@ import Link from "next/link"
 import { PublicFooter } from "@/components/layout/public-footer"
 import { PublicHeader } from "@/components/layout/public-header"
 import { PublicPageEnter } from "@/components/layout/public-page-enter"
+import { ScrollReveal } from "@/components/marketing/scroll-reveal"
 import { conditionPages } from "@/content/conditions"
+import { cn } from "@/lib/utils"
 
 export default function ConditionsIndexPage() {
   return (
@@ -18,17 +20,25 @@ export default function ConditionsIndexPage() {
             Explore care pathways and start intake with the context that matters to your goals.
           </p>
         </section>
-        <section className="grid gap-3 md:grid-cols-2">
-          {conditionPages.map((item) => (
-            <article key={item.slug} className="rounded-md border border-border/70 p-4">
-              <h2 className="font-semibold">{item.title}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{item.summary}</p>
-              <Link href={`/conditions/${item.slug}`} className="mt-3 inline-block text-sm font-medium text-primary">
-                View pathway
-              </Link>
-            </article>
-          ))}
-        </section>
+        <ScrollReveal delayMs={40}>
+          <section className="grid gap-3 md:grid-cols-2">
+            {conditionPages.map((item) => (
+              <article
+                key={item.slug}
+                className={cn(
+                  "interactive-lift rounded-md border border-border/70 bg-card p-4 shadow-e1 transition-colors",
+                  "hover:border-primary/30",
+                )}
+              >
+                <h2 className="font-semibold">{item.title}</h2>
+                <p className="mt-2 text-sm text-muted-foreground">{item.summary}</p>
+                <Link href={`/conditions/${item.slug}`} className="mt-3 inline-block text-sm font-medium text-primary">
+                  View pathway
+                </Link>
+              </article>
+            ))}
+          </section>
+        </ScrollReveal>
         </PublicPageEnter>
       </main>
       <PublicFooter />

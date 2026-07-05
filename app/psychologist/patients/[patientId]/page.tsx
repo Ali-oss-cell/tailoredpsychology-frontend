@@ -4,9 +4,11 @@ import * as React from "react"
 import { useParams } from "next/navigation"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PatientPageHeader } from "@/components/patient/patient-page-header"
+import { Badge } from "@/components/ui/badge"
+import { PsychologistPortalPage } from "@/components/psychologist/psychologist-portal-page"
 import { PsychologistShell } from "@/components/psychologist/psychologist-shell"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { PortalListRow } from "@/components/shared/portal-list-row"
 import { PatientIntakeSummaryCard } from "@/components/psychologist/patient-intake-summary-card"
 import { PreSessionChecklistCard } from "@/components/psychologist/pre-session-checklist-card"
 import { getCurrentUser } from "@/src/auth/current-user"
@@ -26,6 +28,14 @@ import {
   requestPsychologistPatientExport,
   type PsychologistPatientExportStatus,
 } from "@/src/psychologist/exports/api"
+
+import { cn } from "@/lib/utils"
+
+function riskBadgeClass(level: string | undefined): string {
+  if (level === "high") return "border-destructive/30 bg-destructive/10 text-destructive"
+  if (level === "medium") return "border-amber-400/50 bg-amber-50 text-amber-950"
+  return "border-primary/25 bg-primary/10 text-primary"
+}
 
 export default function PsychologistPatientProfilePage() {
   const params = useParams<{ patientId: string }>()
@@ -155,8 +165,12 @@ export default function PsychologistPatientProfilePage() {
 
   return (
     <PsychologistShell activeRoute="patients">
-      <section className="space-y-6">
-        <PatientPageHeader title={context?.patientDisplayName ?? patientId} description="Live patient context and recent session history." />
+      <PsychologistPortalPage
+        title={context?.patientDisplayName ?? patientId}
+        description="Live patient context, referrals, sessions, and governed export."
+        eyebrow="Patient profile"
+        tutorialId="psychologist.page.patient-profile"
+      >
         {loading ? <DashboardStateBlock variant="loading" message="Loading patient profile..." /> : null}
         {error ? <DashboardStateBlock variant="error" message={error} /> : null}
         <div className="grid gap-4 md:grid-cols-2">
@@ -164,16 +178,20 @@ export default function PsychologistPatientProfilePage() {
             <PreSessionChecklistCard items={workspaceItems} psychologistId={psychologistId} patientId={patientId} />
           ) : null}
           <PatientIntakeSummaryCard intake={intake} loading={intakeLoading} error={intakeError} />
-          <Card id="patient-clinical-snapshot">
+          <Card id="patient-clinical-snapshot" className="interactive-lift">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Clinical Snapshot</CardTitle>
+              <p className="card-eyebrow">Clinical</p>
+              <CardTitle className="text-lg">Clinical snapshot</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm">
+            <CardContent className="space-y-3 text-sm">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-muted-foreground text-xs">Risk</span>
+                <Badge variant="outline" className={cn("capitalize", riskBadgeClass(context?.riskLevel))}>
+                  {context?.riskLevel ?? "unknown"}
+                </Badge>
+              </div>
               <p>
-                <span className="text-muted-foreground">Risk:</span> {context?.riskLevel ?? "unknown"}
-              </p>
-              <p>
-                <span className="text-muted-foreground">Referral:</span> {context?.referralStatus ?? "unknown"}
+                <span className="text-muted-foreground">Referral:</span> {context?.referralStatus?.replace(/_/g, " ") ?? "unknown"}
               </p>
               <p>
                 <span className="text-muted-foreground">Readiness:</span> {context?.readinessStatus ?? "unknown"}
@@ -183,10 +201,11 @@ export default function PsychologistPatientProfilePage() {
               </p>
             </CardContent>
           </Card>
-          <Card id="patient-sessions">
+          <Card id="patient-sessions" className="interactive-lift md:col-span-2">
             <CardHeader className="pb-3">
+              <p className="card-eyebrow">Sessions</p>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <CardTitle className="text-lg">Sessions</CardTitle>
+                <CardTitle className="text-lg">Session history</CardTitle>
                 <div
                   className="flex gap-1 rounded-md border border-border/60 bg-muted/30 p-0.5"
                   role="group"
@@ -240,67 +259,63 @@ export default function PsychologistPatientProfilePage() {
               )}
             </CardContent>
           </Card>
-          <Card id="patient-referrals">
+          <Card id="patient-referrals" className="interactive-lift">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Referrals</CardTitle>
+              <p className="card-eyebrow">Referrals</p>
+              <CardTitle className="text-lg">Linked referrals</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
               {referrals.length === 0 ? <p className="text-muted-foreground">No referrals linked.</p> : null}
               {referrals.map((referral) => (
-                <div key={referral.documentId} className="rounded border border-border/60 p-2">
-                  <p className="font-medium">{referral.documentId}</p>
-                  <p className="text-muted-foreground">
-                    {referral.status} · {referral.sourceType}
+                <PortalListRow key={referral.documentId} className="md:grid-cols-[minmax(0,1fr)_auto]">
+                  <div>
+                    <p className="font-medium">{referral.documentId}</p>
+                    <p className="text-muted-foreground text-xs">
+                      {referral.status} · {referral.sourceType}
+                    </p>
+                  </div>
+                  <p className="text-muted-foreground text-xs md:text-right">
+                    Due {new Date(referral.dueAt).toLocaleString()}
                   </p>
-                  <p className="text-muted-foreground">Due: {new Date(referral.dueAt).toLocaleString()}</p>
-                </div>
+                </PortalListRow>
               ))}
             </CardContent>
           </Card>
-          <Card>
+          <Card className="interactive-lift">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Patient PDF Export</CardTitle>
+              <p className="card-eyebrow">Governance</p>
+              <CardTitle className="text-lg">Patient PDF export</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <p className="text-muted-foreground">Request and download a governed patient data export PDF.</p>
               {!exportStatus ? (
-                <button
-                  type="button"
-                  onClick={() => void requestExport()}
-                  disabled={exportBusy}
-                  className="rounded border border-border px-3 py-1.5 text-sm hover:bg-muted disabled:opacity-60"
-                >
+                <Button type="button" variant="outline" size="sm" onClick={() => void requestExport()} disabled={exportBusy}>
                   {exportBusy ? "Requesting..." : "Request patient PDF export"}
-                </button>
+                </Button>
               ) : (
                 <div className="space-y-2">
                   <p>
-                    status: <span className="font-medium">{exportStatus.status}</span>
+                    Status: <span className="font-medium capitalize">{exportStatus.status}</span>
                   </p>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => void refreshExportStatus()}
-                      disabled={exportBusy}
-                      className="rounded border border-border px-3 py-1.5 text-sm hover:bg-muted disabled:opacity-60"
-                    >
+                  <div className="flex flex-wrap gap-2">
+                    <Button type="button" variant="outline" size="sm" onClick={() => void refreshExportStatus()} disabled={exportBusy}>
                       Refresh
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
+                      size="sm"
                       onClick={() => void downloadExport()}
                       disabled={exportBusy || exportStatus.status !== "ready"}
-                      className="rounded border border-border px-3 py-1.5 text-sm hover:bg-muted disabled:opacity-60"
                     >
                       Download PDF
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
             </CardContent>
           </Card>
         </div>
-      </section>
+      </PsychologistPortalPage>
     </PsychologistShell>
   )
 }

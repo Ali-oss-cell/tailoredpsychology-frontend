@@ -5,8 +5,13 @@ import AdminDashboardPage from "@/app/admin/dashboard/page"
 jest.mock("@/components/ops/ops-shell", () => ({
   OpsShell: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }))
-jest.mock("@/components/patient/patient-page-header", () => ({
-  PatientPageHeader: ({ title }: { title: string; description: string }) => <h1>{title}</h1>,
+jest.mock("@/components/ops/ops-portal-page", () => ({
+  OpsPortalPage: ({ title, children }: { title: string; description: string; children: React.ReactNode }) => (
+    <div>
+      <h1>{title}</h1>
+      {children}
+    </div>
+  ),
 }))
 jest.mock("@/components/ops/ops-insights-card", () => ({ OpsInsightsCard: () => <div>Ops insights</div> }))
 jest.mock("@/components/ops/telehealth-insights-card", () => ({ TelehealthInsightsCard: () => <div>Telehealth insights</div> }))

@@ -15,7 +15,7 @@ import {
 import * as React from "react"
 
 import { PatientTutorialOnboardingCta } from "@/components/tutorials/patient-tutorial-onboarding-cta"
-import { PatientPageHeader } from "@/components/patient/patient-page-header"
+import { PatientPortalPage } from "@/components/patient/patient-portal-page"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -89,11 +89,13 @@ export function PatientOnboardingChecklist() {
   const greeting = displayName ? `Welcome, ${firstName(displayName)}` : "Welcome to Tailored Psychology"
 
   return (
-    <section className="mx-auto max-w-5xl space-y-8 pb-8">
-      <PatientPageHeader
-        title="Get set for care"
-        description="A short path so your profile, intake, and notifications are ready before your first session. Your progress syncs automatically when required fields are saved."
-      />
+    <PatientPortalPage
+      title="Get set for care"
+      description="A short path so your profile, intake, and notifications are ready before your first session. Your progress syncs automatically when required fields are saved."
+      eyebrow="Onboarding"
+      tutorialId="patient.page.onboarding"
+      className="mx-auto max-w-5xl pb-8"
+    >
 
       <PatientTutorialOnboardingCta />
 
@@ -322,6 +324,6 @@ export function PatientOnboardingChecklist() {
           </Card>
         </aside>
       </div>
-    </section>
+    </PatientPortalPage>
   )
 }

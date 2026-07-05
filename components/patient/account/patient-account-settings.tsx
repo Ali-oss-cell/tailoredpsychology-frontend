@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChangePasswordForm } from "@/components/shared/change-password-form"
+import { PatientPortalPage } from "@/components/patient/patient-portal-page"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import {
   emptyPatientContactProfile,
@@ -204,17 +205,18 @@ export function PatientAccountSettings({
   }
 
   return (
-    <section className="space-y-6" data-tutorial="patient.page.account">
-      <header className="space-y-2">
-        <h1 className="font-heading text-3xl font-semibold tracking-tight">{headerTitle}</h1>
-        <p className="text-muted-foreground max-w-2xl text-sm md:text-base">{headerDescription}</p>
-        <p className="text-muted-foreground text-sm">
-          <Link href="/patient/video-setup" className="text-primary font-medium underline-offset-2 hover:underline">
-            Test camera & microphone
-          </Link>{" "}
-          before a video visit.
-        </p>
-      </header>
+    <PatientPortalPage
+      title={headerTitle}
+      description={headerDescription}
+      eyebrow="Account"
+      tutorialId="patient.page.account"
+    >
+      <p className="text-muted-foreground -mt-2 text-sm">
+        <Link href="/patient/video-setup" className="text-primary font-medium underline-offset-2 hover:underline">
+          Test camera & microphone
+        </Link>{" "}
+        before a video visit.
+      </p>
 
       {loadError ? <DashboardStateBlock variant="error" message={loadError} /> : null}
       {formError ? <p className="text-destructive text-sm">{formError}</p> : null}
@@ -438,6 +440,6 @@ export function PatientAccountSettings({
           </CardContent>
         </Card>
       </div>
-    </section>
+    </PatientPortalPage>
   )
 }

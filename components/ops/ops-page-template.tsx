@@ -1,4 +1,4 @@
-import { PortalPageHeader } from "@/components/shared/portal-page-header"
+import { OpsPortalPage } from "@/components/ops/ops-portal-page"
 import { OpsListCard } from "@/components/ops/ops-list-card"
 import { OpsShell } from "@/components/ops/ops-shell"
 
@@ -34,16 +34,15 @@ export function OpsPageTemplate({
   activeRoute,
   title,
   description,
-  eyebrow,
+  eyebrow = "Operations",
   cardTitle,
   rows,
 }: OpsPageTemplateProps) {
   return (
     <OpsShell activeRoute={activeRoute}>
-      <section className="space-y-6">
-        <PortalPageHeader title={title} description={description} eyebrow={eyebrow} />
+      <OpsPortalPage title={title} description={description} eyebrow={eyebrow}>
         <OpsListCard title={cardTitle} rows={rows} />
-      </section>
+      </OpsPortalPage>
     </OpsShell>
   )
 }

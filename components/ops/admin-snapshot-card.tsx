@@ -9,13 +9,20 @@ type AdminSnapshotCardProps = {
 
 export function AdminSnapshotCard({ title, rows }: AdminSnapshotCardProps) {
   return (
-    <Card>
+    <Card className="interactive-lift">
       <CardHeader className="pb-3">
+        <p className="card-eyebrow">Live data</p>
         <CardTitle className="text-lg">{title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
+        {rows.length === 0 ? (
+          <p className="text-muted-foreground text-sm">No records to show.</p>
+        ) : null}
         {rows.map((row, idx) => (
-          <div key={`${title}-${idx}`} className="grid grid-cols-2 gap-2 rounded-md border border-border/60 bg-muted/40 p-3 md:grid-cols-4">
+          <div
+            key={`${title}-${idx}`}
+            className="bg-muted/30 grid grid-cols-2 gap-2 rounded-xl border border-border/50 p-3 md:grid-cols-4"
+          >
             {Object.entries(row).map(([key, value]) => (
               <p key={key} className="text-xs">
                 <span className="text-muted-foreground">{key}: </span>

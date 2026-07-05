@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 
 import { OpsShell } from "@/components/ops/ops-shell"
-import { PatientPageHeader } from "@/components/patient/patient-page-header"
+import { AdminPageHeader } from "@/components/ops/ops-page-header"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -76,7 +76,7 @@ export default function AdminSecurityIncidentsPage() {
   return (
     <OpsShell activeRoute="admin-security-incidents">
       <section className="space-y-6">
-        <PatientPageHeader
+        <AdminPageHeader
           title="Security Incident Register"
           description="Manage breach triage, investigation, and NDB notification readiness states."
         />

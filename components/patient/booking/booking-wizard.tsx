@@ -1474,6 +1474,13 @@ export function BookingWizard() {
         </p>
         <p>
           <Link
+            href="/patient/dashboard"
+            className="text-primary text-sm font-medium underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+          >
+            Go to dashboard
+          </Link>
+          {" · "}
+          <Link
             href="/patient/appointments"
             className="text-primary text-sm font-medium underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
           >

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 
-import { PatientPageHeader } from "@/components/patient/patient-page-header"
+import { OpsPortalPage } from "@/components/ops/ops-portal-page"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { AdminSnapshotCard } from "@/components/ops/admin-snapshot-card"
 
@@ -10,10 +10,17 @@ type AdminLivePageSectionProps = {
   title: string
   description: string
   cardTitle: string
+  eyebrow?: string
   load: () => Promise<Array<Record<string, unknown>>>
 }
 
-export function AdminLivePageSection({ title, description, cardTitle, load }: AdminLivePageSectionProps) {
+export function AdminLivePageSection({
+  title,
+  description,
+  cardTitle,
+  eyebrow = "Administration",
+  load,
+}: AdminLivePageSectionProps) {
   const [rows, setRows] = useState<Array<Record<string, unknown>>>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -40,11 +47,10 @@ export function AdminLivePageSection({ title, description, cardTitle, load }: Ad
   }, [load])
 
   return (
-    <section className="space-y-6">
-      <PatientPageHeader title={title} description={description} />
+    <OpsPortalPage title={title} description={description} eyebrow={eyebrow}>
       {loading ? <DashboardStateBlock variant="loading" message="Loading data..." /> : null}
       {error ? <DashboardStateBlock variant="error" message={error} /> : null}
       {!loading && !error ? <AdminSnapshotCard title={cardTitle} rows={rows} /> : null}
-    </section>
+    </OpsPortalPage>
   )
 }

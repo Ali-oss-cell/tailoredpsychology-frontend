@@ -90,8 +90,9 @@ export function ReferralQueueCard({ title = "Referral queue" }: ReferralQueueCar
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="interactive-lift">
+      <CardHeader className="pb-3">
+        <p className="card-eyebrow">Queue</p>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -136,7 +137,7 @@ export function ReferralQueueCard({ title = "Referral queue" }: ReferralQueueCar
           <DashboardStateBlock variant="empty" message="No referrals found for current filters." />
         ) : null}
         {filteredItems.map((item) => (
-          <article key={item.documentId} className="space-y-2 rounded-md border border-border/70 p-3 text-xs">
+          <article key={item.documentId} className="interactive-lift space-y-2 rounded-md border border-border/70 bg-card p-3 text-xs shadow-e1">
             <div className="flex items-center justify-between gap-2">
               <p className="font-medium">{item.documentId}</p>
               <p className="text-muted-foreground">{item.status}</p>

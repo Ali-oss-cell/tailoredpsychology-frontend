@@ -1,18 +1,19 @@
-import { OpsShell } from "@/components/ops/ops-shell"
+import { OpsPortalPage } from "@/components/ops/ops-portal-page"
 import { ReferralQueueCard } from "@/components/ops/referral-queue-card"
-import { PatientPageHeader } from "@/components/patient/patient-page-header"
+import { OpsShell } from "@/components/ops/ops-shell"
 import { opsPagesContent } from "@/content/ops-pages"
 
 export default function ManagerReferralsPage() {
   return (
     <OpsShell activeRoute="manager-referrals">
-      <section className="space-y-6">
-        <PatientPageHeader
-          title={opsPagesContent.managerReferrals.title}
-          description={opsPagesContent.managerReferrals.description}
-        />
+      <OpsPortalPage
+        title={opsPagesContent.managerReferrals.title}
+        description={opsPagesContent.managerReferrals.description}
+        eyebrow="Operations"
+        tutorialId="manager.page.referrals"
+      >
         <ReferralQueueCard title={opsPagesContent.managerReferrals.cardTitle} />
-      </section>
+      </OpsPortalPage>
     </OpsShell>
   )
 }

@@ -5,6 +5,7 @@ import { PublicHeader } from "@/components/layout/public-header"
 import { PageContainer } from "@/components/layout/page-container"
 import { PageSection } from "@/components/layout/page-section"
 import { GetMatchedWizard } from "@/components/marketing/get-matched/get-matched-wizard"
+import { ScrollReveal } from "@/components/marketing/scroll-reveal"
 import { Badge } from "@/components/ui/badge"
 import { getMatchedQuizContent } from "@/content/get-matched-quiz"
 
@@ -38,7 +39,9 @@ export default function GetMatchedPage() {
     <div className="min-h-screen bg-background">
       <PublicHeader />
       <main>
-        <GetMatchedIntro />
+        <ScrollReveal>
+          <GetMatchedIntro />
+        </ScrollReveal>
         <Suspense
           fallback={
             <PageContainer className="py-12">
@@ -46,7 +49,9 @@ export default function GetMatchedPage() {
             </PageContainer>
           }
         >
-          <GetMatchedWizard />
+          <ScrollReveal delayMs={40}>
+            <GetMatchedWizard />
+          </ScrollReveal>
         </Suspense>
       </main>
       <PublicFooter />

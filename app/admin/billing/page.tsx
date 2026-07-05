@@ -3,7 +3,7 @@
 import * as React from "react"
 
 import { OpsShell } from "@/components/ops/ops-shell"
-import { PatientPageHeader } from "@/components/patient/patient-page-header"
+import { AdminPageHeader } from "@/components/ops/ops-page-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { opsPagesContent } from "@/content/ops-pages"
 import { getAdminOpsBilling, type AdminBillingSummary } from "@/src/admin/ops/api"
@@ -37,7 +37,7 @@ export default function AdminBillingPage() {
   return (
     <OpsShell activeRoute="admin-billing">
       <section className="space-y-6">
-        <PatientPageHeader title={opsPagesContent.adminBilling.title} description={opsPagesContent.adminBilling.description} />
+        <AdminPageHeader title={opsPagesContent.adminBilling.title} description={opsPagesContent.adminBilling.description} />
         {loading ? <DashboardStateBlock variant="loading" message="Loading data..." /> : null}
         {error ? <DashboardStateBlock variant="error" message={error} /> : null}
         {!loading && !error && summary ? (
