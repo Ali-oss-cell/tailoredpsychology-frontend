@@ -16,8 +16,9 @@ type OpsBentoCardProps = {
 
 export function OpsBentoCard({ items }: OpsBentoCardProps) {
   return (
-    <Card className="md:col-span-4">
+    <Card className="interactive-lift md:col-span-4">
       <CardHeader className="pb-3">
+        <p className="card-eyebrow">Shortcuts</p>
         <CardTitle className="text-lg">Operations</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -28,7 +29,7 @@ export function OpsBentoCard({ items }: OpsBentoCardProps) {
               key={item.title}
               href={item.href}
               className={cn(
-                "hover:bg-muted/70 block w-full rounded-lg border border-border/50 p-3 text-left transition-colors",
+                "interactive-lift block w-full rounded-xl border border-border/50 p-3 text-left",
               )}
             >
               <p className="text-sm font-medium">{item.title}</p>

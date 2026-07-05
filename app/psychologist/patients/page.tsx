@@ -6,9 +6,10 @@ import * as React from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PatientPageHeader } from "@/components/patient/patient-page-header"
+import { PsychologistPortalPage } from "@/components/psychologist/psychologist-portal-page"
 import { PsychologistShell } from "@/components/psychologist/psychologist-shell"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { PortalListRow } from "@/components/shared/portal-list-row"
 import { psychologistPatientsContent } from "@/content/psychologist-patients"
 import { getCurrentUser } from "@/src/auth/current-user"
 import { getPsychologistPatientContext, getPsychologistWorkspace } from "@/src/psychologist/workspace/api"
@@ -86,24 +87,25 @@ export default function PsychologistPatientsPage() {
 
   return (
     <PsychologistShell activeRoute="patients">
-      <section className="space-y-6">
-        <PatientPageHeader
-          title={psychologistPatientsContent.header.title}
-          description={psychologistPatientsContent.header.description}
-        />
-        <Card>
+      <PsychologistPortalPage
+        title={psychologistPatientsContent.header.title}
+        description={psychologistPatientsContent.header.description}
+        eyebrow="Caseload"
+        tutorialId="psychologist.page.patients"
+      >
+        <Card className="interactive-lift">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Active Caseload</CardTitle>
+            <p className="card-eyebrow">Assigned patients</p>
+            <CardTitle className="text-lg">Active caseload</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             {loading ? <DashboardStateBlock variant="loading" message="Loading live caseload..." /> : null}
             {error ? <DashboardStateBlock variant="error" message={error} /> : null}
-            {!loading && !error && rows.length === 0 ? <DashboardStateBlock variant="empty" message="No assigned patients yet." /> : null}
+            {!loading && !error && rows.length === 0 ? (
+              <DashboardStateBlock variant="empty" message="No assigned patients yet." />
+            ) : null}
             {rows.map((patient) => (
-              <div
-                key={patient.id}
-                className="bg-muted/40 border-border/60 grid grid-cols-1 gap-3 rounded-lg border p-3 sm:grid-cols-2 md:grid-cols-4"
-              >
+              <PortalListRow key={patient.id} highlight={patient.needsPrep} className="md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_auto_auto]">
                 <div className="space-y-1">
                   <p className="text-sm font-medium">{patient.name}</p>
                   <div className="flex flex-wrap gap-1">
@@ -120,15 +122,15 @@ export default function PsychologistPatientsPage() {
                   </div>
                 </div>
                 <p className="text-sm">{patient.nextSession}</p>
-                <p className="text-sm">{patient.status}</p>
+                <p className="text-muted-foreground text-sm capitalize">{patient.status}</p>
                 <Button asChild size="sm" variant="outline" className="justify-self-start md:justify-self-end">
                   <Link href={`/psychologist/patients/${patient.id}`}>Open profile</Link>
                 </Button>
-              </div>
+              </PortalListRow>
             ))}
           </CardContent>
         </Card>
-      </section>
+      </PsychologistPortalPage>
     </PsychologistShell>
   )
 }

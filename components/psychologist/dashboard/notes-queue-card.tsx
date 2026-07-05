@@ -1,36 +1,41 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import Link from "next/link"
 
+import { PortalMetricTile } from "@/components/shared/portal-list-row"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { getCurrentUser } from "@/src/auth/current-user"
-import { getPsychologistNotes } from "@/src/psychologist/notes/api"
+import { Skeleton } from "@/components/ui/skeleton"
 
-export function NotesQueueCard() {
-  const [pendingCount, setPendingCount] = useState(0)
-  const [signedCount, setSignedCount] = useState(0)
-  useEffect(() => {
-    void (async () => {
-      const user = await getCurrentUser()
-      const notes = await getPsychologistNotes(user.id)
-      setPendingCount(notes.filter((n) => n.status !== "signed").length)
-      setSignedCount(notes.filter((n) => n.status === "signed").length)
-    })()
-  }, [])
+type NotesQueueCardProps = {
+  pendingCount?: number
+  signedCount?: number
+  loading?: boolean
+}
+
+export function NotesQueueCard({ pendingCount = 0, signedCount = 0, loading = false }: NotesQueueCardProps) {
   return (
-    <Card className="md:col-span-5">
+    <Card className="interactive-lift md:col-span-5">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">Notes Queue</CardTitle>
+        <p className="card-eyebrow">Documentation</p>
+        <CardTitle className="text-lg">Notes queue</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        <div className="bg-muted/40 rounded-lg border border-border/60 p-3">
-          <p className="text-muted-foreground text-xs">Pending notes</p>
-          <p className="font-heading text-2xl font-semibold">{pendingCount}</p>
-        </div>
-        <div className="bg-muted/40 rounded-lg border border-border/60 p-3">
-          <p className="text-muted-foreground text-xs">Signed today</p>
-          <p className="font-heading text-2xl font-semibold">{signedCount}</p>
-        </div>
+        {loading ? (
+          <div className="grid gap-3 sm:grid-cols-2" aria-busy="true">
+            <Skeleton className="h-20 w-full rounded-xl" />
+            <Skeleton className="h-20 w-full rounded-xl" />
+          </div>
+        ) : (
+          <>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <PortalMetricTile label="Pending notes" value={pendingCount} />
+              <PortalMetricTile label="Signed" value={signedCount} />
+            </div>
+            <Link href="/psychologist/notes" className="text-primary text-sm font-medium hover:underline">
+              Open notes workspace
+            </Link>
+          </>
+        )}
       </CardContent>
     </Card>
   )

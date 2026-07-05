@@ -60,10 +60,11 @@ export function PreSessionWorkspaceCard() {
     : null
 
   return (
-    <Card className="md:col-span-12">
+    <Card className="interactive-lift md:col-span-12">
       <CardHeader>
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
+            <p className="card-eyebrow">Preparation</p>
             <CardTitle>Pre-session workspace</CardTitle>
             <CardDescription>
               Upcoming sessions requiring preparation

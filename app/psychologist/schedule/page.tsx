@@ -4,9 +4,10 @@ import * as React from "react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PatientPageHeader } from "@/components/patient/patient-page-header"
+import { PsychologistPortalPage } from "@/components/psychologist/psychologist-portal-page"
 import { PsychologistShell } from "@/components/psychologist/psychologist-shell"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { PortalListRow } from "@/components/shared/portal-list-row"
 import { psychologistScheduleContent } from "@/content/psychologist-schedule"
 import { getCurrentUser } from "@/src/auth/current-user"
 import { filterSessionsScheduledToday } from "@/src/psychologist/session-filters"
@@ -47,13 +48,13 @@ export default function PsychologistSchedulePage() {
 
   return (
     <PsychologistShell activeRoute="schedule">
-      <section className="space-y-6">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <PatientPageHeader
-            title={psychologistScheduleContent.header.title}
-            description={psychologistScheduleContent.header.description}
-          />
-          <div className="flex flex-wrap items-center gap-2">
+      <PsychologistPortalPage
+        title={psychologistScheduleContent.header.title}
+        description={psychologistScheduleContent.header.description}
+        eyebrow="Schedule"
+        tutorialId="psychologist.page.schedule"
+        actions={
+          <>
             {lastUpdated ? (
               <span className="text-muted-foreground text-xs">
                 Updated {lastUpdated.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit", second: "2-digit" })}
@@ -62,40 +63,45 @@ export default function PsychologistSchedulePage() {
             <Button type="button" variant="outline" size="sm" onClick={() => void load()} disabled={loading}>
               {loading ? "Refreshing…" : "Refresh"}
             </Button>
-          </div>
-        </div>
-        <Card>
+          </>
+        }
+      >
+        <Card className="interactive-lift">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Today&apos;s Timeline</CardTitle>
+            <p className="card-eyebrow">Today</p>
+            <CardTitle className="text-lg">Timeline</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             {loading ? <DashboardStateBlock variant="loading" message="Loading schedule..." /> : null}
-            {error ? <DashboardStateBlock variant="error" message={error} /> : null}
+            {error ? <DashboardStateBlock variant="error" message={error} onRetry={() => void load()} /> : null}
             {!loading && !error && entries.length === 0 ? (
-              <DashboardStateBlock variant="empty" message="No schedule entries." />
+              <DashboardStateBlock variant="empty" message="No schedule entries for today." />
             ) : null}
             {!loading &&
               !error &&
               entries.map((entry) => {
                 const isNextUp = entry.sessionId === nextUpId
                 return (
-                  <div
+                  <PortalListRow
                     key={entry.sessionId}
-                    className={`bg-muted/40 border-border/60 grid grid-cols-2 gap-2 rounded-lg border p-3 md:grid-cols-5 ${
-                      isNextUp ? "border-primary/50 bg-primary/5 ring-1 ring-primary/20" : ""
-                    }`}
+                    highlight={isNextUp}
+                    className="md:grid-cols-[minmax(0,1fr)_auto_auto_auto]"
                   >
-                    <p className="text-sm font-medium">{new Date(entry.scheduledStartAt).toLocaleTimeString()}</p>
+                    <p className="text-sm font-medium tabular-nums">
+                      {new Date(entry.scheduledStartAt).toLocaleTimeString(undefined, {
+                        hour: "numeric",
+                        minute: "2-digit",
+                      })}
+                    </p>
                     <p className="text-sm">{entry.patientId}</p>
-                    <p className="text-muted-foreground text-sm">{entry.status}</p>
-                    <p className="text-sm">{entry.clinicianId}</p>
+                    <p className="text-muted-foreground text-sm capitalize">{entry.status.replace(/_/g, " ")}</p>
                     <p className="text-primary text-sm font-medium">{isNextUp ? "Next up" : "Scheduled"}</p>
-                  </div>
+                  </PortalListRow>
                 )
               })}
           </CardContent>
         </Card>
-      </section>
+      </PsychologistPortalPage>
     </PsychologistShell>
   )
 }

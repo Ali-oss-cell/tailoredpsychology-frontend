@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChangePasswordForm } from "@/components/shared/change-password-form"
 import { ClinicianPublicProfileHeader } from "@/components/shared/clinician-public-profile-header"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
-import { PatientPageHeader } from "@/components/patient/patient-page-header"
+import { PsychologistPortalPage } from "@/components/psychologist/psychologist-portal-page"
 import { PsychologistNotificationPrefsCard } from "@/components/psychologist/psychologist-notification-prefs-card"
 import { PsychologistShell } from "@/components/psychologist/psychologist-shell"
 import { psychologistProfileContent } from "@/content/psychologist-profile"
@@ -147,18 +147,20 @@ export default function PsychologistProfilePage() {
 
   return (
     <PsychologistShell activeRoute="profile">
-      <section className="space-y-6">
-        <PatientPageHeader
-          title={psychologistProfileContent.header.title}
-          description={psychologistProfileContent.header.description}
-        />
+      <PsychologistPortalPage
+        title={psychologistProfileContent.header.title}
+        description={psychologistProfileContent.header.description}
+        eyebrow="Professional profile"
+        tutorialId="psychologist.page.profile"
+      >
         {loadError ? <DashboardStateBlock variant="error" message={loadError} /> : null}
         {formError ? <p className="text-sm text-destructive">{formError}</p> : null}
         {formSuccess ? <p className="text-sm text-emerald-700">{formSuccess}</p> : null}
         <div className="grid gap-4 md:grid-cols-2">
-          <Card>
+          <Card className="interactive-lift">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Clinician Identity (AHPRA)</CardTitle>
+              <p className="card-eyebrow">Identity</p>
+              <CardTitle className="text-lg">Clinician identity (AHPRA)</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               {!profile && !loadError ? <DashboardStateBlock variant="loading" message="Loading data..." /> : null}
@@ -315,7 +317,7 @@ export default function PsychologistProfilePage() {
           </Card>
           <PsychologistNotificationPrefsCard />
         </div>
-      </section>
+      </PsychologistPortalPage>
     </PsychologistShell>
   )
 }

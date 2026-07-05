@@ -6,8 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
-import { PatientPageHeader } from "@/components/patient/patient-page-header"
+import { PsychologistPortalPage } from "@/components/psychologist/psychologist-portal-page"
 import { PsychologistShell } from "@/components/psychologist/psychologist-shell"
+import { PortalListRow } from "@/components/shared/portal-list-row"
 import { psychologistNotesContent } from "@/content/psychologist-notes"
 import {
   createPsychologistNote,
@@ -155,14 +156,16 @@ export default function PsychologistNotesPage() {
 
   return (
     <PsychologistShell activeRoute="notes">
-      <section className="space-y-6">
-        <PatientPageHeader
-          title={psychologistNotesContent.header.title}
-          description={psychologistNotesContent.header.description}
-        />
-        <Card>
+      <PsychologistPortalPage
+        title={psychologistNotesContent.header.title}
+        description={psychologistNotesContent.header.description}
+        eyebrow="Documentation"
+        tutorialId="psychologist.page.notes"
+      >
+        <Card className="interactive-lift">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Notes Queue</CardTitle>
+            <p className="card-eyebrow">Queue</p>
+            <CardTitle className="text-lg">Notes queue</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-end">
@@ -205,29 +208,29 @@ export default function PsychologistNotesPage() {
               <DashboardStateBlock variant="empty" message="No notes yet." />
             ) : null}
             {notes.map((item) => (
-              <div key={item.noteId} className="bg-muted/40 border-border/60 grid grid-cols-2 gap-2 rounded-lg border p-3 md:grid-cols-7">
+              <PortalListRow key={item.noteId} className="md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto_auto_auto_auto]">
                 <p className="text-sm font-medium">{item.patientId}</p>
-                <p className="text-sm">{item.sessionId}</p>
+                <p className="text-muted-foreground text-sm">{item.sessionId}</p>
                 <Badge variant={statusBadgeVariant(item.status)} className="w-fit text-[10px] uppercase">
                   {item.status.replace(/_/g, " ")}
                 </Badge>
                 <p className="text-muted-foreground text-sm">{new Date(item.updatedAt).toLocaleString()}</p>
-                <p className="line-clamp-1 text-sm">{item.body}</p>
                 <Button size="sm" variant="outline" onClick={() => setSelectedNoteId(item.noteId)}>
                   Open
                 </Button>
                 <Button size="sm" variant="outline" disabled={item.status === "signed"} onClick={() => void onSign(item.noteId)}>
                   {item.status === "signed" ? "Signed" : "Sign"}
                 </Button>
-              </div>
+              </PortalListRow>
             ))}
           </CardContent>
         </Card>
         {selectedNoteId ? (
-          <Card>
+          <Card className="interactive-lift">
             <CardHeader className="pb-3">
+              <p className="card-eyebrow">Editor</p>
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <CardTitle className="text-lg">Note detail editor</CardTitle>
+                <CardTitle className="text-lg">Note detail</CardTitle>
                 {activeNote ? (
                   <Badge variant={statusBadgeVariant(activeNote.status)}>{activeNote.status.replace(/_/g, " ")}</Badge>
                 ) : null}
@@ -280,7 +283,7 @@ export default function PsychologistNotesPage() {
             </CardContent>
           </Card>
         ) : null}
-      </section>
+      </PsychologistPortalPage>
     </PsychologistShell>
   )
 }
