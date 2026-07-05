@@ -5,6 +5,7 @@ import * as React from "react"
 
 import { patientQueryKeys } from "@/src/patient/queries/keys"
 import {
+  invalidatePatientBookingConfirmation,
   invalidatePatientDashboard,
   invalidatePatientInvoices,
 } from "@/src/patient/queries/invalidate"
@@ -30,11 +31,7 @@ export function usePatientPortalRealtime(): void {
         void queryClient.invalidateQueries({ queryKey: patientQueryKeys.journey })
         return
       }
-      void Promise.all([
-        invalidatePatientDashboard(queryClient),
-        queryClient.invalidateQueries({ queryKey: patientQueryKeys.journey }),
-        queryClient.invalidateQueries({ queryKey: patientQueryKeys.appointmentsRoot }),
-      ])
+      void invalidatePatientBookingConfirmation(queryClient)
     },
     [queryClient],
   )

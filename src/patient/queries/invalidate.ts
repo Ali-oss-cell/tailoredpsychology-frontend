@@ -21,6 +21,15 @@ export function invalidatePatientDashboard(queryClient: QueryClient): Promise<vo
   return queryClient.invalidateQueries({ queryKey: patientQueryKeys.dashboard })
 }
 
+export function invalidatePatientBookingConfirmation(queryClient: QueryClient): Promise<void> {
+  return Promise.all([
+    invalidatePatientDashboard(queryClient),
+    queryClient.invalidateQueries({ queryKey: patientQueryKeys.journey }),
+    invalidatePatientAppointments(queryClient),
+    invalidatePatientInvoices(queryClient),
+  ]).then(() => undefined)
+}
+
 export function invalidateCurrentUser(queryClient: QueryClient): Promise<void> {
   return queryClient.invalidateQueries({ queryKey: patientQueryKeys.currentUser })
 }

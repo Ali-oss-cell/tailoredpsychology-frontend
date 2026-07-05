@@ -13,7 +13,7 @@ import { BookingScheduleSkeleton } from "@/components/patient/booking/booking-sc
 import { BookingStepper } from "@/components/patient/booking/booking-stepper"
 import { BookingTypeOptionCard } from "@/components/patient/booking/booking-type-option-card"
 import { ReferralUpload } from "@/components/patient/booking/referral-upload"
-import { PatientPageHeader } from "@/components/patient/patient-page-header"
+import { PatientPortalPage } from "@/components/patient/patient-portal-page"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { InlinePurposeHint } from "@/components/shared/inline-purpose-hint"
 import { Badge } from "@/components/ui/badge"
@@ -1507,23 +1507,30 @@ export function BookingWizard() {
 
   if (wizardLoading) {
     return (
-      <section className="space-y-6" data-tutorial="patient.page.book-appointment">
-        <PatientPageHeader title={bookingContent.header.title} description={bookingContent.header.description} />
+      <PatientPortalPage
+        title={bookingContent.header.title}
+        description={bookingContent.header.description}
+        eyebrow="Book care"
+        showJourney
+        tutorialId="patient.page.book-appointment"
+      >
         <DashboardStateBlock variant="loading" message="Preparing your booking…" />
-      </section>
+      </PatientPortalPage>
     )
   }
 
   return (
-    <section className="space-y-6" data-tutorial="patient.page.book-appointment">
-      <PatientPageHeader
-        title={bookingEligibility.isNewPatient ? "Book your first appointment" : bookingContent.header.title}
-        description={
-          bookingEligibility.isNewPatient
-            ? "Complete intake and choose a session time. Follow-up booking is available after your first visit."
-            : bookingContent.header.description
-        }
-      />
+    <PatientPortalPage
+      title={bookingEligibility.isNewPatient ? "Book your first appointment" : bookingContent.header.title}
+      description={
+        bookingEligibility.isNewPatient
+          ? "Complete intake and choose a session time. Follow-up booking is available after your first visit."
+          : bookingContent.header.description
+      }
+      eyebrow="Book care"
+      showJourney
+      tutorialId="patient.page.book-appointment"
+    >
       {paymentCancelled ? (
         <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 text-sm">
           Payment was cancelled. Your slot may still be held briefly — return to review and choose{" "}
@@ -1533,10 +1540,11 @@ export function BookingWizard() {
       {activeStep !== "submitted" ? (
         <div className="space-y-4">
           <BookingStepper steps={visibleSteps} currentIndex={stepIndex} />
-          <Card className="gap-0 overflow-hidden p-0 shadow-sm">
+          <Card className="interactive-lift gap-0 overflow-hidden p-0 shadow-e1">
             <CardHeader className="border-border/50 gap-3 border-b px-6 pt-6 pb-5">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div className="min-w-0 space-y-1">
+                  <p className="card-eyebrow">Step {stepIndex + 1} of {visibleSteps.length}</p>
                   <CardTitle className="text-lg" id="booking-step-title">
                     {visibleSteps[stepIndex]?.label ?? "Booking request"}
                   </CardTitle>
@@ -1585,8 +1593,9 @@ export function BookingWizard() {
           </Card>
         </div>
       ) : (
-        <Card className="gap-0 overflow-hidden p-0 shadow-sm">
+        <Card className="interactive-lift gap-0 overflow-hidden p-0 shadow-e1">
           <CardHeader className="border-border/50 border-b px-6 pt-6 pb-5">
+            <p className="card-eyebrow">Complete</p>
             <CardTitle className="text-lg" id="booking-step-title">
               Request received
             </CardTitle>
@@ -1596,7 +1605,7 @@ export function BookingWizard() {
           </CardContent>
         </Card>
       )}
-    </section>
+    </PatientPortalPage>
   )
 }
 
