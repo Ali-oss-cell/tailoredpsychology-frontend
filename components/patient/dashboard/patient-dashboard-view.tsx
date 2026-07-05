@@ -5,7 +5,6 @@ import Link from "next/link"
 import { BillingSnapshotCard } from "@/components/patient/dashboard/billing-snapshot-card"
 import { PatientDashboardHeroCta, shouldSuppressUpcomingJoin } from "@/components/patient/dashboard/patient-dashboard-hero-cta"
 import { PatientDashboardUpcomingSession } from "@/components/patient/dashboard/patient-dashboard-upcoming-session"
-import { MoodCheckinCard } from "@/components/patient/dashboard/mood-checkin-card"
 import { ResourceRecommendationsCard } from "@/components/patient/dashboard/resource-recommendations-card"
 import { PatientTelehealth101Cta } from "@/components/tutorials/patient-telehealth-101-cta"
 import { PatientTutorialOnboardingCta } from "@/components/tutorials/patient-tutorial-onboarding-cta"
@@ -72,8 +71,7 @@ export function PatientDashboardView() {
           />
           <ResourceRecommendationsCard items={patientDashboardContent.resources} />
         </div>
-        <div className="sticky top-[100px] space-y-4 self-start lg:col-span-1">
-          <MoodCheckinCard options={patientDashboardContent.moodOptions} />
+        <div className="sticky top-[100px] self-start lg:col-span-1">
           <BillingSnapshotCard
             invoices={invoicesQuery.data ?? []}
             loading={invoicesLoading}

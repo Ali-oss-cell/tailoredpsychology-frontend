@@ -52,7 +52,7 @@ export const patientWelcomeSteps: TutorialStepDef[] = [
     id: "patient.welcome.dashboard_page",
     target: "patient.page.dashboard",
     title: "Dashboard page",
-    body: "This area updates per page while the shell stays the same. On the dashboard you’ll see your next session, mood check-in, billing snapshot, and recommended resources as your care progresses.",
+    body: "This area updates per page while the shell stays the same. On the dashboard you’ll see your next session, billing snapshot, and recommended resources as your care progresses.",
     side: "left",
     align: "start",
     waitForRoute: "/patient/dashboard",

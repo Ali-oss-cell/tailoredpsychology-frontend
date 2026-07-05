@@ -18,11 +18,4 @@ export const patientDashboardContent = {
       imageSrc: "/assets/team-discussion.jpg",
     },
   ],
-  moodOptions: [
-    { emoji: "😞", label: "Very low" },
-    { emoji: "🙁", label: "Low" },
-    { emoji: "😐", label: "Neutral" },
-    { emoji: "🙂", label: "Good" },
-    { emoji: "😄", label: "Very good" },
-  ],
 }
