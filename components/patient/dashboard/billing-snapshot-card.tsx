@@ -6,6 +6,7 @@ import { ArrowRight } from "@phosphor-icons/react/dist/ssr"
 import { BillingSnapshotSkeleton } from "@/components/patient/dashboard/dashboard-skeletons"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { InvoiceSummary } from "@/src/patient/billing/api"
+import { formatInvoiceIdDisplay } from "@/src/patient/billing/format-invoice-id"
 
 type BillingSnapshotCardProps = {
   invoices: InvoiceSummary[]
@@ -43,7 +44,9 @@ export function BillingSnapshotCard({ invoices, loading = false, error = null }:
             <p className="text-muted-foreground text-xs">
               {latest.issuedDate} · <span className="text-foreground/80">{latest.status}</span>
             </p>
-            <p className="text-muted-foreground pt-1 text-xs">Invoice {latest.invoiceId}</p>
+            <p className="text-muted-foreground pt-1 font-mono text-xs break-all" title={latest.invoiceId}>
+              Invoice {formatInvoiceIdDisplay(latest.invoiceId, 22)}
+            </p>
           </div>
         ) : null}
       </CardContent>

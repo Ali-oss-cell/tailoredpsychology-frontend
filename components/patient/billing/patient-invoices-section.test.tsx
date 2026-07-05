@@ -33,6 +33,12 @@ describe("PatientInvoicesSection", () => {
     jest.clearAllMocks()
     mockedList.mockResolvedValue([
       { invoiceId: "INV-1042", issuedDate: "Oct 24, 2026", amountLabel: "$220.00", status: "Paid" },
+      {
+        invoiceId: "inv_br_9649694c84e64999b1f2d17678deeb44",
+        issuedDate: "1 June 2026",
+        amountLabel: "$220.00",
+        status: "Paid",
+      },
     ])
     mockedDownload.mockResolvedValue({
       blob: new Blob(["stub"], { type: "text/plain" }),
@@ -51,6 +57,8 @@ describe("PatientInvoicesSection", () => {
 
     await waitFor(() => expect(mockedList).toHaveBeenCalled())
     expect(await screen.findByText("INV-1042")).toBeInTheDocument()
+    expect(screen.getByText("1 June 2026")).toBeInTheDocument()
+    expect(screen.getByTitle("inv_br_9649694c84e64999b1f2d17678deeb44")).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole("button", { name: /Download invoice INV-1042/i }))
     await waitFor(() => expect(mockedDownload).toHaveBeenCalledWith("INV-1042"))
