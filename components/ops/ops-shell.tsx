@@ -21,6 +21,7 @@ import { LogoutLink } from "@/components/auth/logout-link"
 import { ClinkLogo } from "@/components/brand/clink-logo"
 import { ClinkSidebarBrand } from "@/components/brand/clink-sidebar-brand"
 import { NotificationBell } from "@/components/notifications/notification-bell"
+import { OpsHeaderAccountMenu } from "@/components/ops/ops-header-account-menu"
 import { PortalShellSearch } from "@/components/shared/portal-shell-search"
 import {
   portalHeaderClassName,
@@ -111,8 +112,9 @@ function isManagerRoute(route: OpsRouteKey): boolean {
 }
 
 export function OpsShell({ children, activeRoute }: OpsShellProps) {
-  const navItems = isManagerRoute(activeRoute) ? managerNavItems : adminNavItems
-  const opsDashboardHref = isManagerRoute(activeRoute) ? "/manager/dashboard" : "/admin/dashboard"
+  const managerMode = isManagerRoute(activeRoute)
+  const navItems = managerMode ? managerNavItems : adminNavItems
+  const opsDashboardHref = managerMode ? "/manager/dashboard" : "/admin/dashboard"
   return (
     <SidebarProvider defaultOpen={true} storageKey="clink-sidebar-ops">
       <div className="bg-background text-foreground flex h-screen w-full overflow-hidden">
@@ -166,15 +168,13 @@ export function OpsShell({ children, activeRoute }: OpsShellProps) {
                   <span className="text-muted-foreground text-sm font-semibold tracking-tight">Ops</span>
                 </Link>
                 <PortalShellSearch
-                  patientsHref={isManagerRoute(activeRoute) ? "/manager/patients" : "/admin/patients"}
+                  patientsHref={managerMode ? "/manager/patients" : "/admin/patients"}
                   placeholder="Search patients by name or ID…"
                 />
               </div>
               <div className="flex items-center gap-2">
                 <NotificationBell />
-                <div className="bg-primary/20 text-primary flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold">
-                  OP
-                </div>
+                <OpsHeaderAccountMenu mode={managerMode ? "manager" : "admin"} />
               </div>
             </div>
           </header>

@@ -8,12 +8,13 @@ import { OpsShell } from "@/components/ops/ops-shell"
 import { OpsPortalPage } from "@/components/ops/ops-portal-page"
 import { opsPagesContent } from "@/content/ops-pages"
 import { getAdminOpsResources, type AdminResourceItem } from "@/src/admin/ops/api"
+import { useUrlSearchQuery } from "@/components/shared/use-url-search-query"
 
 export default function AdminResourcesPage() {
   const [rows, setRows] = React.useState<AdminResourceItem[]>([])
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
-  const [search, setSearch] = React.useState("")
+  const [search, setSearch] = useUrlSearchQuery()
   const [stateFilter, setStateFilter] = React.useState("all")
 
   React.useEffect(() => {

@@ -13,6 +13,9 @@ jest.mock("@/components/ops/ops-portal-page", () => ({
     </div>
   ),
 }))
+jest.mock("@/components/ops/manager-operations-snapshot-card", () => ({
+  ManagerOperationsSnapshotCard: () => <div>Today&apos;s operations</div>,
+}))
 jest.mock("@/components/ops/ops-insights-card", () => ({ OpsInsightsCard: () => <div>Ops insights</div> }))
 jest.mock("@/components/ops/telehealth-insights-card", () => ({ TelehealthInsightsCard: () => <div>Telehealth insights</div> }))
 jest.mock("@/components/ops/intake-queue-card", () => ({ IntakeQueueCard: () => <div>Intake queue</div> }))

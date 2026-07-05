@@ -5,6 +5,12 @@ import { OpsShell } from "@/components/ops/ops-shell"
 jest.mock("@/components/notifications/notification-bell", () => ({
   NotificationBell: () => <div data-testid="notification-bell-stub" />,
 }))
+jest.mock("@/components/shared/portal-shell-search", () => ({
+  PortalShellSearch: () => <div data-testid="portal-shell-search-stub" />,
+}))
+jest.mock("@/components/ops/ops-header-account-menu", () => ({
+  OpsHeaderAccountMenu: () => <div data-testid="ops-account-menu-stub" />,
+}))
 
 describe("OpsShell navigation visibility", () => {
   it("shows admin-only navigation for admin routes", () => {

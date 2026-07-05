@@ -8,12 +8,13 @@ import { OpsShell } from "@/components/ops/ops-shell"
 import { OpsPortalPage } from "@/components/ops/ops-portal-page"
 import { opsPagesContent } from "@/content/ops-pages"
 import { getAdminOpsStaff, type AdminStaffItem } from "@/src/admin/ops/api"
+import { useUrlSearchQuery } from "@/components/shared/use-url-search-query"
 
 export default function AdminStaffPage() {
   const [rows, setRows] = React.useState<AdminStaffItem[]>([])
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
-  const [search, setSearch] = React.useState("")
+  const [search, setSearch] = useUrlSearchQuery()
   const [role, setRole] = React.useState("all")
 
   React.useEffect(() => {

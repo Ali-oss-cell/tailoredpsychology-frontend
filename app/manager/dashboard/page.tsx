@@ -1,4 +1,5 @@
 import { IntakeQueueCard } from "@/components/ops/intake-queue-card"
+import { ManagerOperationsSnapshotCard } from "@/components/ops/manager-operations-snapshot-card"
 import { ReferralActionCard } from "@/components/ops/referral-action-card"
 import { OpsShell } from "@/components/ops/ops-shell"
 import { OpsInsightsCard } from "@/components/ops/ops-insights-card"
@@ -15,6 +16,7 @@ export default function ManagerDashboardPage() {
         eyebrow="Operations"
         tutorialId="manager.page.dashboard"
       >
+        <ManagerOperationsSnapshotCard />
         <OpsInsightsCard />
         <ReferralActionCard mode="manager" />
         <TelehealthInsightsCard />

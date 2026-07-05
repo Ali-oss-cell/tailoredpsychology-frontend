@@ -8,12 +8,13 @@ import { OpsShell } from "@/components/ops/ops-shell"
 import { OpsPortalPage } from "@/components/ops/ops-portal-page"
 import { opsPagesContent } from "@/content/ops-pages"
 import { getAdminOpsAppointments, type AdminAppointmentItem } from "@/src/admin/ops/api"
+import { useUrlSearchQuery } from "@/components/shared/use-url-search-query"
 
 export default function AdminAppointmentsPage() {
   const [rows, setRows] = React.useState<AdminAppointmentItem[]>([])
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
-  const [search, setSearch] = React.useState("")
+  const [search, setSearch] = useUrlSearchQuery()
   const [status, setStatus] = React.useState("all")
 
   React.useEffect(() => {
