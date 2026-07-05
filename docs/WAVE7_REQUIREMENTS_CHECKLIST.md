@@ -8,6 +8,9 @@ Status values:
 - `Blocked`
 - `Done`
 - `Deferred`
+- `Partial`
+
+**Reconciliation note (2026-07-05):** §G (API contract) and §D (telehealth chat) rows were reconciled to code in Wave 19. §A–§C (lifecycle, identity, intake depth) rows that remain `Not started` are **intentional product backlog**, not missing implementations. §E BR-406 updated to `Partial` where engineering policy docs and admin deletion queue exist without automated purge jobs.
 
 Priority values:
 - `P0` Critical
@@ -126,7 +129,7 @@ Invalid transitions must return contract error (`409 Conflict`) with machine-rea
 | BR-403 | Field-level audit for sensitive edits | Backend | P1 | `PATCH` endpoints | Actor, old value, new value, reason logged | Compliance traceability | Not started |
 | BR-404 | Referral document secure storage policy | Security/Backend | P0 | Document upload API | Storage class, access policy, and retention documented | PHI handling | Partial (`POST /documents/referrals`, `referral_documents` table; policy doc in `RETENTION_AND_DELETION_POLICY_AU.md`) |
 | BR-405 | Consent versioning and withdrawal support | Product/Security | P0 | `POST /consents`, `POST /consents/withdraw` | Versioned records and withdrawal workflow defined | Legal defensibility | Partial (`auth/consents/accept`, `auth/consents/withdraw`, `patient_consents` in DB) |
-| BR-406 | Data retention and soft-delete policy | Security/Backend | P1 | Data lifecycle jobs | Retention windows and deletion behavior documented | Privacy and records law alignment | Not started |
+| BR-406 | Data retention and soft-delete policy | Security/Backend | P1 | Data lifecycle jobs | Retention windows and deletion behavior documented | Privacy and records law alignment | Partial (`RETENTION_AND_DELETION_POLICY_AU.md`, admin deletion queue UI/API; automated purge jobs not shipped) |
 
 ---
 
@@ -166,4 +169,13 @@ Invalid transitions must return contract error (`409 Conflict`) with machine-rea
 - [ ] Security signs off consent/privacy/audit requirements
 - [ ] Frontend and Backend sign off contract alignment
 - [ ] Wave 8 implementation plan can be generated from this checklist
+
+---
+
+## Revision history
+
+| Date | Notes |
+|------|--------|
+| 2026-05-09 | Wave 19 reconciliation: §G APIs Done, §D telehealth Done/Partial, BR-404/405 Partial. |
+| 2026-07-05 | Follow-up reconciliation: added `Partial` status value; BR-406 → Partial; clarified §A–§C as intentional backlog vs doc drift. |
 

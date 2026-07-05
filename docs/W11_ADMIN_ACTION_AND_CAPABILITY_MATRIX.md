@@ -102,8 +102,8 @@ Disposition for each:
 - `Open` action labels -> `Implement now` on target routes or `Disable with message` until endpoint exists.
 - `OpsListCard` generic text rendering -> `Implement now` (action schema support) or replace with feature-specific cards.
 - `OpsPageTemplate` generic-only composition -> `Partial keep`; move action routes to dedicated components.
-- `Compliance Mode` button -> `Disabled with message` (implemented in shell) until requirement is shipped.
-- Admin search input -> `Disabled with message` (implemented in shell) and `Defer with ticket` for cross-domain API.
+- `Compliance Mode` button -> **Resolved (2026-07-05):** sidebar links to compliance tools (`/admin/audit-logs` or `/manager/privacy-requests`) instead of disabled placeholder.
+- Admin search input -> **Resolved (2026-07-05):** context-aware shell search routes to patients, staff, appointments, resources, or users with `?q=` filtering on list pages.
 
 ---
 

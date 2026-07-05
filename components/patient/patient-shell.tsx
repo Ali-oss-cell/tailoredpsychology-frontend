@@ -18,6 +18,7 @@ import { LogoutLink } from "@/components/auth/logout-link"
 import { ClinkLogo } from "@/components/brand/clink-logo"
 import { ClinkSidebarBrand } from "@/components/brand/clink-sidebar-brand"
 import { PatientHeaderScrollFx } from "@/components/patient/patient-header-scroll-fx"
+import { PortalShellSearch } from "@/components/shared/portal-shell-search"
 import { portalHeaderClassName, portalInsetClassName, portalSidebarClassName, PortalShellMain } from "@/components/shared/portal-shell-chrome"
 import { NotificationBell } from "@/components/notifications/notification-bell"
 import { PatientTutorialHelpButton } from "@/components/tutorials/patient-tutorial-help-button"
@@ -142,12 +143,10 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
                 <Link href="/patient/dashboard" className="lg:hidden" aria-label="Tailored Psychology Patient home">
                   <ClinkLogo alt="" className="size-8" />
                 </Link>
-                <input
-                  type="search"
-                  placeholder="Search appointments, resources..."
+                <PortalShellSearch
+                  targetHref="/patient/appointments"
+                  placeholder="Search appointments by clinician or type…"
                   data-tutorial="shell.header.search"
-                  aria-label="Search appointments and resources"
-                  className="bg-muted/60 border-border focus-visible:ring-ring hidden w-80 max-w-full rounded-full border px-4 py-2 text-sm outline-none focus-visible:ring-2 md:block"
                 />
               </div>
               <div className="flex items-center gap-2">

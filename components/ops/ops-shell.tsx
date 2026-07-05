@@ -111,10 +111,32 @@ function isManagerRoute(route: OpsRouteKey): boolean {
   return route.startsWith("manager-")
 }
 
+function opsSearchTarget(activeRoute: OpsRouteKey, managerMode: boolean): string {
+  const prefix = managerMode ? "/manager" : "/admin"
+  if (activeRoute === "admin-users") return "/admin/users"
+  if (activeRoute.endsWith("-staff")) return `${prefix}/staff`
+  if (activeRoute.endsWith("-appointments")) return `${prefix}/appointments`
+  if (activeRoute.endsWith("-resources")) return `${prefix}/resources`
+  return `${prefix}/patients`
+}
+
+function opsSearchPlaceholder(activeRoute: OpsRouteKey): string {
+  if (activeRoute === "admin-users") return "Search psychologist users by name or email…"
+  if (activeRoute.endsWith("-staff")) return "Search staff by name, email, or user ID…"
+  if (activeRoute.endsWith("-appointments")) return "Search appointments by patient, clinician, or ID…"
+  if (activeRoute.endsWith("-resources")) return "Search resources by title, owner, or ID…"
+  return "Search patients by name or ID…"
+}
+
+function opsComplianceHref(managerMode: boolean): string {
+  return managerMode ? "/manager/privacy-requests" : "/admin/audit-logs"
+}
+
 export function OpsShell({ children, activeRoute }: OpsShellProps) {
   const managerMode = isManagerRoute(activeRoute)
   const navItems = managerMode ? managerNavItems : adminNavItems
   const opsDashboardHref = managerMode ? "/manager/dashboard" : "/admin/dashboard"
+  const searchTarget = opsSearchTarget(activeRoute, managerMode)
   return (
     <SidebarProvider defaultOpen={true} storageKey="clink-sidebar-ops">
       <div className="bg-background text-foreground flex h-screen w-full overflow-hidden">
@@ -140,14 +162,11 @@ export function OpsShell({ children, activeRoute }: OpsShellProps) {
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter className="space-y-2 border-t border-border/60 pt-4">
-            <Button
-              variant="outline"
-              className="w-full justify-start gap-2"
-              disabled
-              title="Compliance mode is not enabled in this release."
-            >
-              <ShieldCheck size={16} />
-              <span className="group-data-[state=collapsed]/sidebar:sr-only">Compliance Mode (coming soon)</span>
+            <Button asChild variant="outline" className="w-full justify-start gap-2">
+              <Link href={opsComplianceHref(managerMode)} title="Open compliance tools">
+                <ShieldCheck size={16} />
+                <span className="group-data-[state=collapsed]/sidebar:sr-only">Compliance tools</span>
+              </Link>
             </Button>
             <Button asChild variant="ghost" className="w-full justify-start gap-2">
               <LogoutLink>
@@ -168,8 +187,8 @@ export function OpsShell({ children, activeRoute }: OpsShellProps) {
                   <span className="text-muted-foreground text-sm font-semibold tracking-tight">Ops</span>
                 </Link>
                 <PortalShellSearch
-                  patientsHref={managerMode ? "/manager/patients" : "/admin/patients"}
-                  placeholder="Search patients by name or ID…"
+                  targetHref={searchTarget}
+                  placeholder={opsSearchPlaceholder(activeRoute)}
                 />
               </div>
               <div className="flex items-center gap-2">

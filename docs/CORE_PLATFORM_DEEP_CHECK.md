@@ -146,7 +146,7 @@ Use this to **sequence work**: finish **§7.1** before widening scope into **§7
 - [ ] **P3** — Audit event coverage expanded per Wave 13 / governance plan.
 - [ ] **P4** — Consent model v2 per legal (version, withdraw, minor flows).
 - [ ] **P5** — Metrics definitions + first dashboard slice.
-- [ ] **P6** — Tutorial and public-page backlog from Wave 16–18 as product prioritises.
+- [ ] **P6** — Tutorial and public-page backlog from Wave 16–18 as product prioritises. *(2026-07-05: portal shell search now functional across patient, psychologist, manager, and admin shells; ops compliance sidebar links to audit/privacy tools.)*
 - [x] **P7** — Asset audit complete; optional raster refresh per `IMAGE_CREDITS.md`. *(Wave 19: fixed homepage clinic/team paths to `.svg`.)*
 - [ ] **P8** — Intake field matrix (pronouns, risk, etc.) phased per clinical sign-off.
 
@@ -189,3 +189,4 @@ Work **top to bottom** unless legal/security blocks reordering.
 | 2026-05-06 | Wave 5 progress: Track A session hardening implemented (backend-set HttpOnly role cookie, frontend cookie writes removed) and local smoke evidence refreshed. |
 | 2026-05-06 | Wave 5 progress: Track D staging prep checklist added (`WAVE5_STAGING_SMOKE_PREP_CHECKLIST.md`) pending real staging role credentials. |
 | 2026-05-09 | Wave 19 added: competitive gap audit and phased roadmap (`WAVE19_PLATFORM_COMPETITIVE_GAP_AUDIT.md`). |
+| 2026-07-05 | Portal UX polish: live manager ops pages, shell search (`?q=`) on all portal list pages, ops account menu, manager dashboard snapshot; Wave 7 BR-406 → Partial; P6 portal search note. N8/W20-S4/S5 staging smoke still open pending credentials + manual Twilio run. |

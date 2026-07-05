@@ -1,8 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { useUrlSearchQuery } from "@/components/shared/use-url-search-query"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -27,6 +28,7 @@ export function AdminPsychologistUsersCard() {
   const [error, setError] = useState<string | null>(null)
   const [busyId, setBusyId] = useState<string | null>(null)
   const [draft, setDraft] = useState(emptyDraft)
+  const [search] = useUrlSearchQuery()
 
   async function load(): Promise<void> {
     setLoading(true)
@@ -86,6 +88,24 @@ export function AdminPsychologistUsersCard() {
     }
   }
 
+  const filteredRows = useMemo(() => {
+    const term = search.trim().toLowerCase()
+    if (!term) return rows
+    return rows.filter((row) => {
+      const haystack = [
+        row.displayName,
+        row.email,
+        row.registrationNumber,
+        row.providerNumber,
+        row.specialties.join(" "),
+        row.status,
+      ]
+        .join(" ")
+        .toLowerCase()
+      return haystack.includes(term)
+    })
+  }, [rows, search])
+
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -139,7 +159,10 @@ export function AdminPsychologistUsersCard() {
             {busyId === "create" ? "Creating..." : "Create psychologist"}
           </Button>
         </div>
-        {rows.map((row) => (
+        {!loading && !error && search.trim() && filteredRows.length === 0 ? (
+          <DashboardStateBlock variant="empty" message="No psychologist users matched your search." />
+        ) : null}
+        {filteredRows.map((row) => (
           <article key={row.id} className="rounded-md border border-border/70 p-3 text-sm">
             <div className="flex items-center justify-between gap-3">
               <div>

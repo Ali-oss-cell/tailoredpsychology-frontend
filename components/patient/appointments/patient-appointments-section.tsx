@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 
 import { AppointmentManagePanel } from "@/components/patient/appointments/appointment-manage-panel"
 import type { PatientAppointmentSummary } from "@/src/patient/booking/api"
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { PortalListRow } from "@/components/shared/portal-list-row"
+import { useUrlSearchQuery } from "@/components/shared/use-url-search-query"
 import { formatSessionRange } from "@/src/patient/appointments/format-session-range"
 import { mapAppointmentPhase } from "@/src/patient/appointments/status-phase"
 import { useCurrentUser } from "@/src/patient/queries/use-current-user"
@@ -31,11 +32,28 @@ function statusBadgeVariant(
   return "outline"
 }
 
+function matchesAppointmentSearch(item: PatientAppointmentSummary, term: string): boolean {
+  const { date, time } = formatSessionRange(item.scheduledStartAt, item.scheduledEndAt)
+  const haystack = [
+    item.appointmentId,
+    item.clinicianName,
+    item.sessionTypeLabel,
+    item.statusLabel,
+    item.status,
+    date,
+    time,
+  ]
+    .join(" ")
+    .toLowerCase()
+  return haystack.includes(term)
+}
+
 export function PatientAppointmentsSection() {
   const userQuery = useCurrentUser()
   const appointmentsQuery = usePatientAppointments()
   const sessionDetailsQuery = usePatientAppointmentSessionDetails()
   const [manageId, setManageId] = useState<string | null>(null)
+  const [search] = useUrlSearchQuery()
 
   const isPatient = userQuery.data?.role === "patient"
   const loading =
@@ -55,6 +73,17 @@ export function PatientAppointmentsSection() {
   const upcoming = appointmentsQuery.data?.upcoming ?? []
   const past = appointmentsQuery.data?.past ?? []
   const sessionDetailById = sessionDetailsQuery.data ?? {}
+  const searchTerm = search.trim().toLowerCase()
+
+  const filteredUpcoming = useMemo(() => {
+    if (!searchTerm) return upcoming
+    return upcoming.filter((item) => matchesAppointmentSearch(item, searchTerm))
+  }, [searchTerm, upcoming])
+
+  const filteredPast = useMemo(() => {
+    if (!searchTerm) return past
+    return past.filter((item) => matchesAppointmentSearch(item, searchTerm))
+  }, [past, searchTerm])
 
   const refreshAppointments = () => {
     void Promise.all([appointmentsQuery.refetch(), sessionDetailsQuery.refetch()])
@@ -72,11 +101,14 @@ export function PatientAppointmentsSection() {
           {!loading && error ? (
             <DashboardStateBlock variant="error" message={error} onRetry={refreshAppointments} />
           ) : null}
-          {!loading && !error && upcoming.length === 0 ? (
-            <DashboardStateBlock variant="empty" message="No upcoming appointments." />
+          {!loading && !error && filteredUpcoming.length === 0 ? (
+            <DashboardStateBlock
+              variant="empty"
+              message={searchTerm ? "No upcoming appointments matched your search." : "No upcoming appointments."}
+            />
           ) : null}
           {!loading && !error
-            ? upcoming.map((item) => {
+            ? filteredUpcoming.map((item) => {
                 const { date, time } = formatSessionRange(item.scheduledStartAt, item.scheduledEndAt)
                 const phase = mapAppointmentPhase(item, "upcoming")
                 return (
@@ -131,11 +163,14 @@ export function PatientAppointmentsSection() {
         </CardHeader>
         <CardContent className="space-y-2">
           {loading ? <DashboardStateBlock variant="loading" message="Loading session history..." /> : null}
-          {!loading && !error && past.length === 0 ? (
-            <DashboardStateBlock variant="empty" message="No past sessions yet." />
+          {!loading && !error && filteredPast.length === 0 ? (
+            <DashboardStateBlock
+              variant="empty"
+              message={searchTerm ? "No past sessions matched your search." : "No past sessions yet."}
+            />
           ) : null}
           {!loading && !error
-            ? past.map((row) => {
+            ? filteredPast.map((row) => {
                 const { date } = formatSessionRange(row.scheduledStartAt, row.scheduledEndAt)
                 const phase = mapAppointmentPhase(row, "past")
                 return (
