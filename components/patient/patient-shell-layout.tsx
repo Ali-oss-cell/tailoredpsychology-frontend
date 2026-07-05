@@ -4,6 +4,7 @@ import * as React from "react"
 import { usePathname } from "next/navigation"
 
 import { PatientShell, type PatientShellActiveRoute } from "@/components/patient/patient-shell"
+import { usePatientPortalRealtime } from "@/src/patient/realtime/use-patient-portal-realtime"
 
 function resolveActiveRoute(pathname: string): PatientShellActiveRoute {
   if (pathname.startsWith("/patient/my-clinician")) {
@@ -36,6 +37,7 @@ function resolveActiveRoute(pathname: string): PatientShellActiveRoute {
 export function PatientShellLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const activeRoute = React.useMemo(() => resolveActiveRoute(pathname), [pathname])
+  usePatientPortalRealtime()
 
   return <PatientShell activeRoute={activeRoute}>{children}</PatientShell>
 }

@@ -1,6 +1,7 @@
 import Link from "next/link"
 
 import { ClinkLogo } from "@/components/brand/clink-logo"
+import { HeaderScrollFx } from "@/components/layout/header-scroll-fx"
 import { PublicHeaderNav } from "@/components/layout/public-header-nav"
 import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
@@ -12,6 +13,7 @@ export function PublicHeader() {
       data-public-header
       className="bg-background/95 sticky top-0 z-50 border-b border-border/70 backdrop-blur supports-[backdrop-filter]:bg-background/80"
     >
+      <HeaderScrollFx />
       <PageContainer className="flex min-h-14 items-center justify-start gap-2 py-2 md:gap-3">
         <Link
           className="inline-flex shrink-0 translate-y-px items-center text-primary"

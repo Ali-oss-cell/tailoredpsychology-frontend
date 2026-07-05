@@ -17,6 +17,7 @@ import {
 import { LogoutLink } from "@/components/auth/logout-link"
 import { ClinkLogo } from "@/components/brand/clink-logo"
 import { ClinkSidebarBrand } from "@/components/brand/clink-sidebar-brand"
+import { PatientHeaderScrollFx } from "@/components/patient/patient-header-scroll-fx"
 import { NotificationBell } from "@/components/notifications/notification-bell"
 import { PatientTutorialHelpButton } from "@/components/tutorials/patient-tutorial-help-button"
 import { PatientHeaderProfile } from "./patient-header-profile"
@@ -30,6 +31,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
+  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar"
 import { TUTORIAL_EXPAND_PATIENT_SIDEBAR } from "@/src/tutorials/events"
@@ -38,9 +40,7 @@ function PatientShellTutorialSidebarSync() {
   const { setOpen } = useSidebar()
 
   React.useEffect(() => {
-    const expand = () => {
-      setOpen(true)
-    }
+    const expand = () => setOpen(true)
     window.addEventListener(TUTORIAL_EXPAND_PATIENT_SIDEBAR, expand)
     return () => window.removeEventListener(TUTORIAL_EXPAND_PATIENT_SIDEBAR, expand)
   }, [setOpen])
@@ -85,15 +85,15 @@ const navTutorial: Record<(typeof navItems)[number]["key"], string> = {
 
 export function PatientShell({ children, activeRoute = "dashboard" }: PatientShellProps) {
   return (
-    <SidebarProvider defaultOpen={true}>
+    <SidebarProvider defaultOpen={true} storageKey="patient-sidebar-open">
       <div className="bg-background text-foreground flex h-screen w-full overflow-hidden">
         <PatientShellTutorialSidebarSync />
         <Sidebar
-          collapsible="none"
-          className="fixed inset-y-0 left-0 z-30 h-screen w-64 overflow-y-auto transition-none"
+          collapsible="icon"
+          className="fixed inset-y-0 left-0 z-30 flex h-screen flex-col overflow-y-auto border-r border-border/70 bg-surface-2/80 backdrop-blur-sm transition-[width] duration-200 lg:flex"
           data-tutorial="shell.sidebar"
         >
-          <SidebarHeader>
+          <SidebarHeader className="group-data-[state=collapsed]/sidebar:mb-3">
             <ClinkSidebarBrand dashboardHref="/patient/dashboard" portalLabel="Patient Portal" />
           </SidebarHeader>
           <SidebarContent>
@@ -105,9 +105,9 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton asChild isActive={item.key === activeRoute}>
-                      <Link href={item.href} {...tutorialAttr}>
+                      <Link href={item.href} title={item.label} {...tutorialAttr}>
                         <Icon size={18} />
-                        <span>{item.label}</span>
+                        <span className="group-data-[state=collapsed]/sidebar:sr-only">{item.label}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -118,9 +118,9 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
                   asChild
                   className="bg-primary/10 text-primary hover:bg-primary/15 font-medium"
                 >
-                  <Link href="/patient/book-appointment" data-tutorial="shell.sidebar.book-appointment">
+                  <Link href="/patient/book-appointment" title="Book New Appointment" data-tutorial="shell.sidebar.book-appointment">
                     <CalendarPlus size={18} weight="bold" />
-                    <span>Book New Appointment</span>
+                    <span className="group-data-[state=collapsed]/sidebar:sr-only">Book New Appointment</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -128,7 +128,7 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
                 <SidebarMenuButton asChild>
                   <LogoutLink className="flex w-full items-center gap-3">
                     <SignOut size={18} />
-                    <span>Logout</span>
+                    <span className="group-data-[state=collapsed]/sidebar:sr-only">Logout</span>
                   </LogoutLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -136,21 +136,25 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
           </SidebarContent>
         </Sidebar>
 
-        <SidebarInset className="flex h-screen min-w-0 flex-1 flex-col overflow-hidden lg:ml-64">
+        <SidebarInset className="flex h-screen min-w-0 flex-1 flex-col overflow-hidden transition-[margin] duration-200 ml-64 group-data-[state=collapsed]/sidebar-wrapper:lg:ml-[4.5rem]">
           <header
-            className="bg-background/95 border-border/70 z-20 shrink-0 border-b backdrop-blur"
+            data-patient-header
+            className="border-border/70 z-20 shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
             data-tutorial="shell.header"
           >
-            <div className="flex h-16 items-center justify-between px-4 md:px-6">
-              <div className="flex items-center gap-3">
+            <PatientHeaderScrollFx />
+            <div className="flex h-16 items-center justify-between gap-3 px-4 md:px-6">
+              <div className="flex min-w-0 items-center gap-3">
+                <SidebarTrigger variant="soft" className="hidden lg:inline-flex" />
                 <Link href="/patient/dashboard" className="lg:hidden" aria-label="Tailored Psychology Patient home">
                   <ClinkLogo alt="" className="size-8" />
                 </Link>
                 <input
-                  type="text"
+                  type="search"
                   placeholder="Search appointments, resources..."
                   data-tutorial="shell.header.search"
-                  className="bg-muted/60 border-border focus-visible:ring-ring hidden w-80 rounded-full border px-4 py-2 text-sm outline-none focus-visible:ring-2 md:block"
+                  aria-label="Search appointments and resources"
+                  className="bg-muted/60 border-border focus-visible:ring-ring hidden w-80 max-w-full rounded-full border px-4 py-2 text-sm outline-none focus-visible:ring-2 md:block"
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -170,7 +174,7 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
             className="flex-1 overflow-y-auto scroll-smooth p-4 md:p-6 lg:p-8"
             data-tutorial="shell.main"
           >
-            {children}
+            <div className="mx-auto w-full max-w-[1200px]">{children}</div>
           </main>
         </SidebarInset>
         <FloatingChatWidget role="patient" />

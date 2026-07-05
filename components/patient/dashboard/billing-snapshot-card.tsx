@@ -1,52 +1,89 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight } from "@phosphor-icons/react/dist/ssr"
+import { ArrowRight, Receipt } from "@phosphor-icons/react/dist/ssr"
 
-import { BillingSnapshotSkeleton } from "@/components/patient/dashboard/dashboard-skeletons"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
+import { cn } from "@/lib/utils"
 import type { InvoiceSummary } from "@/src/patient/billing/api"
-import { formatInvoiceIdDisplay } from "@/src/patient/billing/format-invoice-id"
 
 type BillingSnapshotCardProps = {
-  invoices: InvoiceSummary[]
+  latestInvoice: InvoiceSummary | null
+  unpaidCount: number
   loading?: boolean
   error?: string | null
+  onRetry?: () => void
 }
 
-export function BillingSnapshotCard({ invoices, loading = false, error = null }: BillingSnapshotCardProps) {
-  const latest = invoices[0]
+function invoiceStatusChip(status: string): string {
+  const normalized = status.trim().toLowerCase()
+  if (normalized === "paid") return "bg-success/10 text-success border-success/25"
+  if (normalized === "overdue" || normalized === "failed") return "bg-destructive/10 text-destructive border-destructive/25"
+  return "bg-warning/10 text-warning border-warning/25"
+}
 
+/**
+ * Billing at a glance: latest amount + status chip, unpaid alert when
+ * relevant. Raw invoice IDs live on the invoices page, not here.
+ */
+export function BillingSnapshotCard({
+  latestInvoice,
+  unpaidCount,
+  loading = false,
+  error = null,
+  onRetry,
+}: BillingSnapshotCardProps) {
   return (
-    <Card className="border-border/70">
+    <Card className="shadow-e1">
       <CardHeader className="flex flex-row items-center justify-between pb-3">
-        <CardTitle className="text-lg">Billing</CardTitle>
+        <p className="card-eyebrow">Billing</p>
         <Link
           href="/patient/invoices"
-          className="text-primary inline-flex items-center gap-1 text-xs font-medium"
+          className="text-primary inline-flex items-center gap-1 text-xs font-medium underline-offset-2 hover:underline"
         >
           View all <ArrowRight size={12} />
         </Link>
       </CardHeader>
       <CardContent>
-        {loading ? <BillingSnapshotSkeleton /> : null}
-        {!loading && error ? (
-          <p className="text-destructive text-sm">{error}</p>
+        {loading ? (
+          <div className="space-y-3" aria-busy="true" aria-label="Loading billing snapshot">
+            <Skeleton className="skeleton-shimmer h-8 w-28" />
+            <Skeleton className="skeleton-shimmer h-4 w-40" />
+          </div>
         ) : null}
-        {!loading && !error && !latest ? (
-          <p className="text-muted-foreground rounded-md border border-dashed border-border/60 bg-muted/20 px-3 py-4 text-sm">
-            No invoices yet.
-          </p>
+
+        {!loading && error ? <DashboardStateBlock variant="error" message={error} onRetry={onRetry} /> : null}
+
+        {!loading && !error && !latestInvoice ? (
+          <div className="text-muted-foreground flex items-center gap-3 rounded-md border border-dashed border-border/60 bg-muted/20 px-3 py-4 text-sm">
+            <Receipt size={20} className="shrink-0" />
+            <span>No invoices yet — you&apos;re all settled.</span>
+          </div>
         ) : null}
-        {!loading && !error && latest ? (
-          <div className="space-y-1">
-            <p className="text-sm font-medium">{latest.amountLabel}</p>
-            <p className="text-muted-foreground text-xs">
-              {latest.issuedDate} · <span className="text-foreground/80">{latest.status}</span>
-            </p>
-            <p className="text-muted-foreground pt-1 font-mono text-xs break-all" title={latest.invoiceId}>
-              Invoice {formatInvoiceIdDisplay(latest.invoiceId, 22)}
-            </p>
+
+        {!loading && !error && latestInvoice ? (
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="font-heading text-2xl font-semibold tracking-tight tabular-nums">
+                {latestInvoice.amountLabel}
+              </p>
+              <span
+                className={cn(
+                  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",
+                  invoiceStatusChip(latestInvoice.status),
+                )}
+              >
+                {latestInvoice.status}
+              </span>
+            </div>
+            <p className="text-muted-foreground text-xs">Latest invoice · issued {latestInvoice.issuedDate}</p>
+            {unpaidCount > 0 ? (
+              <p className="text-warning border-warning/25 bg-warning/10 rounded-md border px-3 py-2 text-xs font-medium">
+                {unpaidCount} invoice{unpaidCount === 1 ? "" : "s"} awaiting payment
+              </p>
+            ) : null}
           </div>
         ) : null}
       </CardContent>

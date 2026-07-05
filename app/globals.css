@@ -48,6 +48,25 @@
     --info: #4f8dbd;
     --info-foreground: #eff6ff;
     --gradient-brand: linear-gradient(135deg, #8fa7a8, #9eaa9f);
+
+    /* Layered elevation — replaces flat 1px borders as the primary separator */
+    --shadow-e1: 0 1px 2px rgb(16 24 24 / 0.04), 0 1px 3px rgb(16 24 24 / 0.06);
+    --shadow-e2: 0 2px 4px rgb(16 24 24 / 0.04), 0 6px 16px rgb(16 24 24 / 0.07);
+    --shadow-e3: 0 4px 8px rgb(16 24 24 / 0.05), 0 16px 40px rgb(16 24 24 / 0.10);
+    --shadow-primary-glow: 0 8px 24px rgb(95 168 166 / 0.28);
+
+    /* Glass tokens — hero + sticky surfaces only */
+    --glass-bg: rgb(255 255 255 / 0.72);
+    --glass-border: rgb(255 255 255 / 0.55);
+    --glass-blur: 14px;
+
+    --border-hairline: rgb(26 31 31 / 0.07);
+
+    /* Motion system */
+    --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+    --duration-micro: 150ms;
+    --duration-element: 250ms;
+    --duration-layout: 400ms;
 }
 
 .dark {
@@ -93,6 +112,16 @@
     --info: #76a9d6;
     --info-foreground: #05111d;
     --gradient-brand: linear-gradient(135deg, #8fa7a8, #5fa8a6);
+
+    --shadow-e1: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-e2: 0 2px 4px rgb(0 0 0 / 0.35), 0 6px 16px rgb(0 0 0 / 0.45);
+    --shadow-e3: 0 4px 8px rgb(0 0 0 / 0.4), 0 16px 40px rgb(0 0 0 / 0.55);
+    --shadow-primary-glow: 0 8px 24px rgb(95 168 166 / 0.35);
+
+    --glass-bg: rgb(22 28 29 / 0.66);
+    --glass-border: rgb(255 255 255 / 0.08);
+
+    --border-hairline: rgb(230 236 235 / 0.08);
 }
 
 @theme inline {
@@ -164,6 +193,169 @@
   .bg-brand-gradient {
     background-image: var(--gradient-brand);
   }
+
+  .shadow-e1 {
+    box-shadow: var(--shadow-e1);
+  }
+  .shadow-e2 {
+    box-shadow: var(--shadow-e2);
+  }
+  .shadow-e3 {
+    box-shadow: var(--shadow-e3);
+  }
+  .shadow-primary-glow {
+    box-shadow: var(--shadow-primary-glow);
+  }
+
+  /* Glass surface — use sparingly (hero card, sticky header) */
+  .surface-glass {
+    background-color: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+  }
+
+  /* Small-caps eyebrow label used as demoted card titles */
+  .card-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+}
+
+/* ---- Motion system (all opt-in via media query) ---- */
+@media (prefers-reduced-motion: no-preference) {
+  .interactive-lift {
+    transition:
+      transform var(--duration-micro) var(--ease-out-quint),
+      box-shadow var(--duration-micro) var(--ease-out-quint);
+  }
+  .interactive-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-e2);
+  }
+  .interactive-lift:active {
+    transform: translateY(0) scale(0.99);
+  }
+
+  .press:active {
+    transform: scale(0.98);
+  }
+  .press {
+    transition: transform var(--duration-micro) var(--ease-out-quint);
+  }
+
+  /* Scroll-reveal: fade+rise driven by IntersectionObserver ([data-reveal]) */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity var(--duration-layout) var(--ease-out-quint),
+      transform var(--duration-layout) var(--ease-out-quint);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  [data-reveal="visible"] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Hero media: slow settle from 1.06 scale on load */
+  .hero-media-settle {
+    animation: hero-settle 1.4s var(--ease-out-quint) both;
+  }
+  @keyframes hero-settle {
+    from {
+      transform: scale(1.06);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  /* Hero headline word stagger */
+  .hero-word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(0.6em);
+    animation: hero-word-rise 0.7s var(--ease-out-quint) forwards;
+    animation-delay: calc(var(--word-index, 0) * 60ms);
+  }
+  @keyframes hero-word-rise {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* One-shot glow pulse when the join window opens */
+  .join-live-pulse {
+    animation: join-pulse 0.5s var(--ease-out-quint) 1;
+  }
+  @keyframes join-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgb(95 168 166 / 0.5);
+    }
+    100% {
+      box-shadow: 0 0 0 16px rgb(95 168 166 / 0);
+    }
+  }
+
+  /* Skeleton shimmer (softer than pulse) */
+  .skeleton-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .skeleton-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.35), transparent);
+    animation: shimmer 1.6s infinite;
+  }
+  .dark .skeleton-shimmer::after {
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.06), transparent);
+  }
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
+
+/* Reduced motion: reveal targets render fully visible, no animation */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Public header: flat at top of page, glass + elevation once scrolled */
+[data-public-header] {
+  transition:
+    box-shadow var(--duration-element) var(--ease-out-quint),
+    background-color var(--duration-element) var(--ease-out-quint),
+    border-color var(--duration-element) var(--ease-out-quint);
+}
+[data-public-header][data-scrolled="true"] {
+  background-color: var(--glass-bg);
+  border-color: transparent;
+  box-shadow: var(--shadow-e2);
+}
+
+[data-patient-header] {
+  transition:
+    box-shadow var(--duration-element) var(--ease-out-quint),
+    background-color var(--duration-element) var(--ease-out-quint),
+    border-color var(--duration-element) var(--ease-out-quint);
+}
+[data-patient-header][data-scrolled="true"] {
+  background-color: var(--glass-bg);
+  border-color: transparent;
+  box-shadow: var(--shadow-e1);
 }
 
 /* Driver.js — sit above patient shell (header z-20, modals z-[60]+). */
