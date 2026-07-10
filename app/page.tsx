@@ -14,6 +14,9 @@ import { SplitFeatureSection } from "@/components/marketing/split-feature-sectio
 import { TelehealthRebatesBand } from "@/components/marketing/telehealth-rebates-band"
 import { TrustStats } from "@/components/marketing/trust-stats"
 import { homepageContent } from "@/content/homepage"
+import { homeMetadata } from "@/content/marketing-metadata"
+
+export const metadata = homeMetadata
 
 export default function HomePage() {
   return (

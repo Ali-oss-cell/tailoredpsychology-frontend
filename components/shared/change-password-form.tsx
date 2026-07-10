@@ -2,6 +2,10 @@
 
 import * as React from "react"
 
+import {
+  PortalFormField,
+  PortalTextInput,
+} from "@/components/shared/portal-form-field"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -39,17 +43,28 @@ export function ChangePasswordForm({
   const [newPassword, setNewPassword] = React.useState("")
   const [confirmPassword, setConfirmPassword] = React.useState("")
   const [submitting, setSubmitting] = React.useState(false)
+  const [localError, setLocalError] = React.useState<string | null>(null)
 
   const busy = disabled || submitting
   const canSubmit =
     !busy &&
     Boolean(currentPassword && newPassword && confirmPassword && newPassword === confirmPassword)
 
-  async function handleSubmit(): Promise<void> {
-    if (newPassword !== confirmPassword) {
-      onValidationError?.("New password and confirmation do not match.")
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault()
+    if (newPassword.length < 8) {
+      const message = "New password must be at least 8 characters."
+      setLocalError(message)
+      onValidationError?.(message)
       return
     }
+    if (newPassword !== confirmPassword) {
+      const message = "New password and confirmation do not match."
+      setLocalError(message)
+      onValidationError?.(message)
+      return
+    }
+    setLocalError(null)
     setSubmitting(true)
     try {
       await onSubmit(currentPassword, newPassword)
@@ -68,46 +83,55 @@ export function ChangePasswordForm({
     setCurrentPassword("")
     setNewPassword("")
     setConfirmPassword("")
+    setLocalError(null)
     onCancel?.()
   }
 
   return (
-    <div className={cn("space-y-2 rounded-md border border-border/60 bg-muted/30 p-3", className)}>
-      <label className="block space-y-1 text-xs">
-        <span className="text-muted-foreground">Current password</span>
-        <input
+    <form
+      onSubmit={(event) => void handleSubmit(event)}
+      className={cn("space-y-3 rounded-md border border-border/60 bg-muted/30 p-3", className)}
+    >
+      <PortalFormField id="current-password" label="Current password" required>
+        <PortalTextInput
           type="password"
           autoComplete="current-password"
-          className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
           disabled={busy}
         />
-      </label>
-      <label className="block space-y-1 text-xs">
-        <span className="text-muted-foreground">New password</span>
-        <input
+      </PortalFormField>
+      <PortalFormField
+        id="new-password"
+        label="New password"
+        hint="At least 8 characters."
+        required
+        error={localError && localError.includes("8 characters") ? localError : undefined}
+      >
+        <PortalTextInput
           type="password"
           autoComplete="new-password"
-          className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
           disabled={busy}
         />
-      </label>
-      <label className="block space-y-1 text-xs">
-        <span className="text-muted-foreground">Confirm new password</span>
-        <input
+      </PortalFormField>
+      <PortalFormField
+        id="confirm-password"
+        label="Confirm new password"
+        required
+        error={localError && localError.includes("match") ? localError : undefined}
+      >
+        <PortalTextInput
           type="password"
           autoComplete="new-password"
-          className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           disabled={busy}
         />
-      </label>
+      </PortalFormField>
       <div className="flex flex-wrap gap-2 pt-1">
-        <Button type="button" size="sm" disabled={!canSubmit} onClick={() => void handleSubmit()}>
+        <Button type="submit" size="sm" disabled={!canSubmit}>
           {busy ? "Updating..." : "Update password"}
         </Button>
         {showCancelButton ? (
@@ -116,6 +140,6 @@ export function ChangePasswordForm({
           </Button>
         ) : null}
       </div>
-    </div>
+    </form>
   )
 }

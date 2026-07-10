@@ -3,6 +3,11 @@
 import { useEffect, useMemo, useState } from "react"
 
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { ClientPaginationBar, useClientPagination } from "@/components/shared/client-pagination"
+import {
+  PortalFormField,
+  PortalTextInput,
+} from "@/components/shared/portal-form-field"
 import { useUrlSearchQuery } from "@/components/shared/use-url-search-query"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,6 +17,7 @@ import {
   updateAdminPsychologistUser,
   type AdminPsychologistUser,
 } from "@/src/admin/users/api"
+import { toast } from "@/src/lib/toast"
 
 const emptyDraft = {
   email: "",
@@ -64,8 +70,10 @@ export function AdminPsychologistUsersCard() {
       setRows((prev) => [created, ...prev])
       setDraft(emptyDraft)
       setShowCreateForm(false)
+      toast.success("Psychologist account created.")
     } catch {
       setError("Could not create psychologist account.")
+      toast.error("Could not create psychologist account.")
     } finally {
       setBusyId(null)
     }
@@ -83,8 +91,10 @@ export function AdminPsychologistUsersCard() {
         status: row.status === "active" ? "inactive" : "active",
       })
       setRows((prev) => prev.map((item) => (item.id === updated.id ? updated : item)))
+      toast.success(`Psychologist set to ${updated.status}.`)
     } catch {
       setError("Could not update psychologist status.")
+      toast.error("Could not update psychologist status.")
     } finally {
       setBusyId(null)
     }
@@ -108,6 +118,8 @@ export function AdminPsychologistUsersCard() {
     })
   }, [rows, search])
 
+  const pagination = useClientPagination(filteredRows)
+
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -123,39 +135,43 @@ export function AdminPsychologistUsersCard() {
           </Button>
         </div>
         {showCreateForm ? (
-        <div className="grid gap-2 rounded-md border border-border/60 p-3 md:grid-cols-3">
-          <input
-            className="h-9 rounded border border-border bg-background px-2 text-sm"
-            placeholder="Email"
-            value={draft.email}
-            onChange={(event) => setDraft((prev) => ({ ...prev, email: event.target.value }))}
-          />
-          <input
-            className="h-9 rounded border border-border bg-background px-2 text-sm"
-            placeholder="Display name"
-            value={draft.displayName}
-            onChange={(event) => setDraft((prev) => ({ ...prev, displayName: event.target.value }))}
-          />
-          <input
-            className="h-9 rounded border border-border bg-background px-2 text-sm"
-            placeholder="Registration number"
-            value={draft.registrationNumber}
-            onChange={(event) => setDraft((prev) => ({ ...prev, registrationNumber: event.target.value }))}
-          />
-          <input
-            className="h-9 rounded border border-border bg-background px-2 text-sm"
-            placeholder="Provider number"
-            value={draft.providerNumber}
-            onChange={(event) => setDraft((prev) => ({ ...prev, providerNumber: event.target.value }))}
-          />
-          <input
-            className="h-9 rounded border border-border bg-background px-2 text-sm md:col-span-2"
-            placeholder="Specialties (comma separated)"
-            value={draft.specialties}
-            onChange={(event) => setDraft((prev) => ({ ...prev, specialties: event.target.value }))}
-          />
+        <div className="grid gap-3 rounded-md border border-border/60 p-3 md:grid-cols-2">
+          <PortalFormField id="create-email" label="Email" required>
+            <PortalTextInput
+              type="email"
+              placeholder="clinician@example.com"
+              value={draft.email}
+              onChange={(event) => setDraft((prev) => ({ ...prev, email: event.target.value }))}
+            />
+          </PortalFormField>
+          <PortalFormField id="create-display-name" label="Display name" required>
+            <PortalTextInput
+              placeholder="Dr Alex Smith"
+              value={draft.displayName}
+              onChange={(event) => setDraft((prev) => ({ ...prev, displayName: event.target.value }))}
+            />
+          </PortalFormField>
+          <PortalFormField id="create-registration" label="Registration number" required>
+            <PortalTextInput
+              value={draft.registrationNumber}
+              onChange={(event) => setDraft((prev) => ({ ...prev, registrationNumber: event.target.value }))}
+            />
+          </PortalFormField>
+          <PortalFormField id="create-provider" label="Provider number" required>
+            <PortalTextInput
+              value={draft.providerNumber}
+              onChange={(event) => setDraft((prev) => ({ ...prev, providerNumber: event.target.value }))}
+            />
+          </PortalFormField>
+          <PortalFormField id="create-specialties" label="Specialties (comma separated)" className="md:col-span-2">
+            <PortalTextInput
+              value={draft.specialties}
+              onChange={(event) => setDraft((prev) => ({ ...prev, specialties: event.target.value }))}
+            />
+          </PortalFormField>
           <Button
             size="sm"
+            className="md:col-span-2 md:w-fit"
             disabled={
               busyId === "create" ||
               !draft.email.trim() ||
@@ -172,7 +188,7 @@ export function AdminPsychologistUsersCard() {
         {!loading && !error && search.trim() && filteredRows.length === 0 ? (
           <DashboardStateBlock variant="empty" message="No psychologist users matched your search." />
         ) : null}
-        {filteredRows.map((row) => (
+        {pagination.pageItems.map((row) => (
           <article key={row.id} className="rounded-md border border-border/70 p-3 text-sm">
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -189,6 +205,16 @@ export function AdminPsychologistUsersCard() {
             </p>
           </article>
         ))}
+        <ClientPaginationBar
+          page={pagination.page}
+          totalPages={pagination.totalPages}
+          totalItems={pagination.totalItems}
+          pageSize={pagination.pageSize}
+          canGoPrev={pagination.canGoPrev}
+          canGoNext={pagination.canGoNext}
+          onPrev={() => pagination.setPage((p) => Math.max(1, p - 1))}
+          onNext={() => pagination.setPage((p) => Math.min(pagination.totalPages, p + 1))}
+        />
       </CardContent>
     </Card>
   )

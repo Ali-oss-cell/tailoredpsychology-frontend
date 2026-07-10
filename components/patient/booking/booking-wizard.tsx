@@ -65,6 +65,7 @@ import {
   type BookingFieldErrors,
 } from "@/src/patient/booking/booking-validation"
 import { usePatientBookingEligibility } from "@/src/patient/booking/use-patient-booking-eligibility"
+import { toast } from "@/src/lib/toast"
 
 const STORAGE_KEY = "clink_booking_draft_v1"
 const DEMO_PATIENT_ID = "user_patient_001"
@@ -313,7 +314,14 @@ export function BookingWizard() {
       return next
     })
     if (skipModeStep && activeStep === "mode") {
-      setActiveStep("schedule")
+      const firstVisible = bookingSteps.find((step) => {
+        if (step.id === "mode") return false
+        if (step.id === "referral" && !shouldShowReferralStep) return false
+        return true
+      })
+      if (firstVisible) {
+        setActiveStep(firstVisible.id)
+      }
     }
   }, [
     bookingEligibility.loading,
@@ -322,6 +330,7 @@ export function BookingWizard() {
     bookingEligibility.email,
     skipModeStep,
     activeStep,
+    shouldShowReferralStep,
   ])
 
   React.useEffect(() => {
@@ -492,7 +501,24 @@ export function BookingWizard() {
     }
   }, [draft, hasRemoteHydrated, activeStep, intakePatientId])
 
+  const lastSyncToastRef = React.useRef<"idle" | "conflict" | "error">("idle")
   React.useEffect(() => {
+    if (remoteSyncState === "conflict" && lastSyncToastRef.current !== "conflict") {
+      lastSyncToastRef.current = "conflict"
+      toast.error("Your booking draft could not sync — another version was saved elsewhere. Refresh to continue.")
+    } else if (remoteSyncState === "error" && lastSyncToastRef.current !== "error") {
+      lastSyncToastRef.current = "error"
+      toast.error("Could not save your booking draft to the server. Your progress is still saved on this device.")
+    } else if (remoteSyncState === "saved" || remoteSyncState === "syncing" || remoteSyncState === "idle") {
+      lastSyncToastRef.current = "idle"
+    }
+  }, [remoteSyncState])
+
+  React.useEffect(() => {
+    if (activeStep !== "schedule") {
+      return
+    }
+
     let isCancelled = false
 
     const loadAvailability = async () => {
@@ -561,7 +587,7 @@ export function BookingWizard() {
     return () => {
       isCancelled = true
     }
-  }, [calendarMonth, draft.scheduleSelection.selectedClinicianId, availabilityRetryNonce])
+  }, [activeStep, calendarMonth, draft.scheduleSelection.selectedClinicianId, availabilityRetryNonce])
 
   const stepIndex = visibleSteps.findIndex((item) => item.id === activeStep)
   const isFinalStep = activeStep === "review"
@@ -1525,7 +1551,7 @@ export function BookingWizard() {
   const scheduleStepIndex = visibleSteps.findIndex((step) => step.id === "schedule")
   const showAppointmentChip =
     scheduleStepIndex >= 0 &&
-    stepIndex > scheduleStepIndex &&
+    (activeStep === "schedule" || stepIndex > scheduleStepIndex) &&
     Boolean(draft.scheduleSelection.selectedDate && draft.scheduleSelection.selectedSlotId)
   const chipClinicianName =
     liveClinicians.find((item) => item.id === draft.scheduleSelection.selectedClinicianId)?.name ?? "Your clinician"
@@ -1552,7 +1578,7 @@ export function BookingWizard() {
       title={bookingEligibility.isNewPatient ? "Book your first appointment" : bookingContent.header.title}
       description={
         bookingEligibility.isNewPatient
-          ? "Complete intake and choose a session time. Follow-up booking is available after your first visit."
+          ? "Complete intake questions first, then choose your session time. Follow-up booking is available after your first visit."
           : bookingContent.header.description
       }
       eyebrow="Book care"

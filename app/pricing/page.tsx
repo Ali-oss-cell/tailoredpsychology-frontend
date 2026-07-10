@@ -13,8 +13,11 @@ import { PageHero } from "@/components/marketing/page-hero"
 import { PricingRelatedStrip } from "@/components/marketing/pricing-related-strip"
 import { publicPricing } from "@/content/public-pricing"
 import { pricingCta, pricingFaq, pricingHero } from "@/content/pages/pricing-public"
+import { pricingMetadata } from "@/content/marketing-metadata"
 import { formatAud } from "@/src/lib/format-au"
 import { cn } from "@/lib/utils"
+
+export const metadata = pricingMetadata
 
 export default function PricingPage() {
   return (

@@ -2,11 +2,11 @@ import type { BookingRequestDraft, BookingStep, BookingStepId, ReferralSourceTyp
 
 export const bookingSteps: BookingStep[] = [
   { id: "mode", label: "Booking type", shortLabel: "Type" },
-  { id: "schedule", label: "Clinician and schedule", shortLabel: "Schedule" },
   { id: "reason", label: "Reason and urgency", shortLabel: "Reason" },
   { id: "medicare", label: "Medicare and referral", shortLabel: "Medicare" },
   { id: "clinical", label: "Clinical background", shortLabel: "Clinical" },
   { id: "referral", label: "Referral PDF upload", shortLabel: "Referral" },
+  { id: "schedule", label: "Clinician and schedule", shortLabel: "Schedule" },
   { id: "consent", label: "Consent checklist", shortLabel: "Consent" },
   { id: "review", label: "Review and submit", shortLabel: "Review" },
 ]
@@ -14,23 +14,23 @@ export const bookingSteps: BookingStep[] = [
 /** Approximate time remaining from each step (UX-C3). */
 export const bookingStepTimeEstimates: Record<Exclude<BookingStepId, "submitted">, string> = {
   mode: "~30 sec left",
-  schedule: "~5 min left",
-  reason: "~4 min left",
-  medicare: "~3 min left",
-  clinical: "~2 min left",
-  referral: "~1 min left",
+  reason: "~5 min left",
+  medicare: "~4 min left",
+  clinical: "~3 min left",
+  referral: "~2 min left",
+  schedule: "~2 min left",
   consent: "~1 min left",
   review: "Almost done",
 }
 
 /** One line per step: what the user can expect after this step (Wave 14). */
 export const bookingStepWhatsNext: Record<Exclude<BookingStepId, "submitted">, string> = {
-  mode: "Next: you will choose a clinician and a real available session time.",
-  schedule: "Next: a few questions about your reason for care and contact details.",
+  mode: "Next: a few questions about your reason for care and contact details.",
   reason: "Next: Medicare and referral context to support billing and care matching.",
   medicare: "Next: a bit more clinical background and safety information for telehealth.",
   clinical: "Next: optional referral PDF upload, if you have one ready.",
-  referral: "Next: required consent checkboxes before you review and send your request.",
+  referral: "Next: choose a clinician and a real available session time.",
+  schedule: "Next: required consent checkboxes before you review and send your request.",
   consent: "Next: a final review of your details before we submit your booking request.",
   review: "After submit: you will pay securely, then your appointment is confirmed.",
 }

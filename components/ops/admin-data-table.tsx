@@ -2,6 +2,7 @@
 
 import * as React from "react"
 
+import { ClientPaginationBar, CLIENT_PAGE_SIZE, useClientPagination } from "@/components/shared/client-pagination"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
@@ -24,6 +25,16 @@ type AdminDataTableProps<TItem> = {
   loading: boolean
   error: string | null
   emptyMessage: string
+  pageSize?: number
+}
+
+function ariaSortValue(
+  columnKey: string,
+  sortColumnKey: string | null,
+  sortDirection: SortDirection,
+): "ascending" | "descending" | "none" {
+  if (sortColumnKey !== columnKey) return "none"
+  return sortDirection === "asc" ? "ascending" : "descending"
 }
 
 export function AdminDataTable<TItem>({
@@ -33,6 +44,7 @@ export function AdminDataTable<TItem>({
   loading,
   error,
   emptyMessage,
+  pageSize = CLIENT_PAGE_SIZE,
 }: AdminDataTableProps<TItem>) {
   const [sortColumnKey, setSortColumnKey] = React.useState<string | null>(null)
   const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc")
@@ -50,9 +62,11 @@ export function AdminDataTable<TItem>({
       const bValue = column.sortValue!(b)
       if (aValue === bValue) return 0
       const result = aValue > bValue ? 1 : -1
-      return sortDirection === "asc" ? result : -result
+      return sortDirection === "asc" ? result : -1 * result
     })
   }, [columns, rows, sortColumnKey, sortDirection])
+
+  const pagination = useClientPagination(sortedRows, pageSize)
 
   const handleSort = (column: AdminDataTableColumn<TItem>) => {
     if (!column.sortable || !column.sortValue) return
@@ -64,6 +78,16 @@ export function AdminDataTable<TItem>({
     setSortDirection("asc")
   }
 
+  const handleSortKeyDown = (
+    event: React.KeyboardEvent<HTMLButtonElement>,
+    column: AdminDataTableColumn<TItem>,
+  ) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault()
+      handleSort(column)
+    }
+  }
+
   if (loading) {
     return (
       <div className="overflow-x-auto rounded-md border border-border/70" aria-busy="true" aria-label="Loading data">
@@ -71,7 +95,11 @@ export function AdminDataTable<TItem>({
           <thead className="bg-muted/50">
             <tr>
               {columns.map((column) => (
-                <th key={column.key} className={cn("border-b border-border/70 px-3 py-2 text-left font-medium", column.className)}>
+                <th
+                  key={column.key}
+                  scope="col"
+                  className={cn("border-b border-border/70 px-3 py-2 text-left font-medium", column.className)}
+                >
                   {column.header}
                 </th>
               ))}
@@ -96,37 +124,60 @@ export function AdminDataTable<TItem>({
   if (rows.length === 0) return <DashboardStateBlock variant="empty" message={emptyMessage} />
 
   return (
-    <div className="overflow-x-auto rounded-md border border-border/70">
-      <table className="w-full border-collapse text-sm">
-        <thead className="bg-muted/50">
-          <tr>
-            {columns.map((column) => (
-              <th key={column.key} className={cn("border-b border-border/70 px-3 py-2 text-left font-medium", column.className)}>
-                <button
-                  type="button"
-                  onClick={() => handleSort(column)}
-                  disabled={!column.sortable}
-                  className={cn("inline-flex items-center gap-1", !column.sortable && "cursor-default")}
-                >
-                  {column.header}
-                  {sortColumnKey === column.key ? (sortDirection === "asc" ? "↑" : "↓") : null}
-                </button>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {sortedRows.map((row) => (
-            <tr key={keyExtractor(row)} className="border-b border-border/40 last:border-b-0">
+    <div className="space-y-3">
+      <div className="overflow-x-auto rounded-md border border-border/70">
+        <table className="w-full border-collapse text-sm">
+          <thead className="bg-muted/50">
+            <tr>
               {columns.map((column) => (
-                <td key={`${keyExtractor(row)}:${column.key}`} className={cn("px-3 py-2 align-top", column.className)}>
-                  {column.renderCell(row)}
-                </td>
+                <th
+                  key={column.key}
+                  scope="col"
+                  aria-sort={
+                    column.sortable ? ariaSortValue(column.key, sortColumnKey, sortDirection) : undefined
+                  }
+                  className={cn("border-b border-border/70 px-3 py-2 text-left font-medium", column.className)}
+                >
+                  {column.sortable ? (
+                    <button
+                      type="button"
+                      onClick={() => handleSort(column)}
+                      onKeyDown={(event) => handleSortKeyDown(event, column)}
+                      className="inline-flex items-center gap-1 rounded-sm focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none"
+                    >
+                      {column.header}
+                      {sortColumnKey === column.key ? (sortDirection === "asc" ? "↑" : "↓") : null}
+                    </button>
+                  ) : (
+                    column.header
+                  )}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {pagination.pageItems.map((row) => (
+              <tr key={keyExtractor(row)} className="border-b border-border/40 last:border-b-0">
+                {columns.map((column) => (
+                  <td key={`${keyExtractor(row)}:${column.key}`} className={cn("px-3 py-2 align-top", column.className)}>
+                    {column.renderCell(row)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <ClientPaginationBar
+        page={pagination.page}
+        totalPages={pagination.totalPages}
+        totalItems={pagination.totalItems}
+        pageSize={pagination.pageSize}
+        canGoPrev={pagination.canGoPrev}
+        canGoNext={pagination.canGoNext}
+        onPrev={() => pagination.setPage((p) => Math.max(1, p - 1))}
+        onNext={() => pagination.setPage((p) => Math.min(pagination.totalPages, p + 1))}
+      />
     </div>
   )
 }

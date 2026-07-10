@@ -8,6 +8,9 @@ import { PageHero } from "@/components/marketing/page-hero"
 import { TrustMetricsSection, TrustPrivacySection } from "@/components/marketing/trust-metrics-section"
 import { privacyControls, publicTrustMetrics } from "@/content/public-trust-metrics"
 import { trustCta, trustHero } from "@/content/pages/trust-public"
+import { trustMetadata } from "@/content/marketing-metadata"
+
+export const metadata = trustMetadata
 
 export default function TrustPage() {
   return (

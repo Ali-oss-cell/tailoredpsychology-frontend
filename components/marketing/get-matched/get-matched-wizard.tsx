@@ -10,6 +10,7 @@ import { PageContainer } from "@/components/layout/page-container"
 import { ClinicianPublicProfileHeader } from "@/components/shared/clinician-public-profile-header"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { AuthField } from "@/components/auth/auth-field"
+import { PortalFormField, PortalSelect } from "@/components/shared/portal-form-field"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -238,10 +239,8 @@ export function GetMatchedWizard() {
               <p className="text-muted-foreground text-sm">{content.steps.location.description}</p>
             </CardHeader>
             <CardContent className="space-y-4">
-              <label className="block space-y-1 text-sm">
-                <span className="font-medium">{content.steps.location.stateLabel}</span>
-                <select
-                  className="border-border bg-background h-10 w-full rounded-lg border px-3"
+              <PortalFormField id="match-state" label={content.steps.location.stateLabel}>
+                <PortalSelect
                   value={draft.state}
                   onChange={(e) => patchDraft({ state: e.target.value })}
                 >
@@ -251,12 +250,10 @@ export function GetMatchedWizard() {
                       {s.label}
                     </option>
                   ))}
-                </select>
-              </label>
-              <label className="block space-y-1 text-sm">
-                <span className="font-medium">{content.steps.location.insuranceLabel}</span>
-                <select
-                  className="border-border bg-background h-10 w-full rounded-lg border px-3"
+                </PortalSelect>
+              </PortalFormField>
+              <PortalFormField id="match-insurance" label={content.steps.location.insuranceLabel}>
+                <PortalSelect
                   value={draft.insurance}
                   onChange={(e) => patchDraft({ insurance: e.target.value as MatchQuizDraft["insurance"] })}
                 >
@@ -266,8 +263,8 @@ export function GetMatchedWizard() {
                       {opt.label}
                     </option>
                   ))}
-                </select>
-              </label>
+                </PortalSelect>
+              </PortalFormField>
             </CardContent>
           </Card>
         ) : null}

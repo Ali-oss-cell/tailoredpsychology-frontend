@@ -11,12 +11,9 @@ import { GetMatchedWizard } from "@/components/marketing/get-matched/get-matched
 import { ScrollReveal } from "@/components/marketing/scroll-reveal"
 import { Badge } from "@/components/ui/badge"
 import { getMatchedQuizContent } from "@/content/get-matched-quiz"
+import { getMatchedMetadata } from "@/content/marketing-metadata"
 
-export const metadata = {
-  title: "Find your psychologist | Tailored Psychology",
-  description:
-    "Take a short confidential quiz to find psychologists who fit your state, goals, and preferences at Tailored Psychology.",
-}
+export const metadata = getMatchedMetadata
 
 function GetMatchedIntro() {
   const hero = getMatchedQuizContent.hero

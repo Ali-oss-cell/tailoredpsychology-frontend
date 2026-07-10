@@ -1,4 +1,5 @@
 import { findNextAvailableLabel } from "@/components/patient/booking/booking-wizard"
+import { bookingSteps } from "@/content/patient-booking"
 
 describe("findNextAvailableLabel", () => {
   it("returns earliest available slot across clinicians", () => {
@@ -30,5 +31,19 @@ describe("findNextAvailableLabel", () => {
       },
     ])
     expect(label).toBe("No current slots")
+  })
+})
+
+describe("booking step order (UX-C3)", () => {
+  it("places clinical intake before schedule commitment for new patients", () => {
+    const scheduleIndex = bookingSteps.findIndex((step) => step.id === "schedule")
+    const reasonIndex = bookingSteps.findIndex((step) => step.id === "reason")
+    const medicareIndex = bookingSteps.findIndex((step) => step.id === "medicare")
+    const clinicalIndex = bookingSteps.findIndex((step) => step.id === "clinical")
+
+    expect(reasonIndex).toBeGreaterThan(-1)
+    expect(medicareIndex).toBeGreaterThan(reasonIndex)
+    expect(clinicalIndex).toBeGreaterThan(medicareIndex)
+    expect(scheduleIndex).toBeGreaterThan(clinicalIndex)
   })
 })

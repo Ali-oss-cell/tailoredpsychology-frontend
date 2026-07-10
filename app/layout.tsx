@@ -6,6 +6,7 @@ import { QueryClientProviderWrapper } from "@/components/providers/query-client-
 import { AppSonner } from "@/components/ui/app-sonner"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
+import { DEFAULT_DESCRIPTION, SITE_NAME } from "@/src/lib/site-metadata"
 
 const interHeading = Inter({subsets:['latin'],variable:'--font-heading'});
 
@@ -17,6 +18,18 @@ const fontMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://tailoredpsychology.com.au"),
+  title: {
+    default: `${SITE_NAME} | Australian telehealth psychology`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: DEFAULT_DESCRIPTION,
+  openGraph: {
+    siteName: SITE_NAME,
+    locale: "en_AU",
+    type: "website",
+    description: DEFAULT_DESCRIPTION,
+  },
   icons: {
     icon: "/assets/logo-icon.png",
     apple: "/assets/logo-icon.png",

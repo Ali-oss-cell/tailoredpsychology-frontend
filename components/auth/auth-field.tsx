@@ -2,6 +2,7 @@ import * as React from "react"
 import { Eye, EyeSlash } from "@phosphor-icons/react"
 
 import { cn } from "@/lib/utils"
+import { portalInputClassName } from "@/components/shared/portal-form-field"
 
 type AuthFieldProps = {
   id: string
@@ -38,11 +39,7 @@ export function AuthField({
           id={id}
           type={resolvedType}
           placeholder={placeholder}
-          className={cn(
-            "bg-background text-foreground border-border focus-visible:ring-ring w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition-colors",
-            "focus-visible:ring-2",
-            isPassword && "pr-10",
-          )}
+          className={cn(portalInputClassName(), isPassword && "pr-10")}
           {...inputProps}
         />
         {isPassword ? (

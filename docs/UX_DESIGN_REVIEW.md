@@ -929,3 +929,22 @@ Medicare/MHTP language, indigenous status optional field, telehealth safety, ent
 ---
 
 *Review grounded in codebase state including commit `2b28e49`. Reconcile with counsel-approved copy before production launch per `LAUNCH_AUDIT_REPORT.md`.*
+
+---
+
+## Implementation status (2026-07-10)
+
+Deferred UX roadmap items implemented in `frontend/`:
+
+| ID | Status | Notes |
+|----|--------|-------|
+| UX-M1 | done | Client-side pagination (25/page) on `AdminDataTable`, admin users card, privacy-requests queue |
+| UX-M2 | done | Root + marketing/legal metadata with Open Graph via `content/marketing-metadata.ts` |
+| UX-M5 | done | Toasts on booking draft sync failures, admin mutations, notes, reschedule/cancel, data requests |
+| UX-M6 | done | Mobile tabbed queue/editor layout on psychologist notes |
+| UX-C3 | done | Booking wizard step reorder: intake before schedule |
+| UX-L2 | done | Referral PDF drag-and-drop with progress bar |
+| UX-L3 | done | Sticky appointment chip on schedule step (mobile scroll) |
+| UX-L4 | done | `aria-sort` + keyboard sort on `AdminDataTable` headers |
+| UX-L5 | done | Dark-mode token fixes on touched portal forms (warning panels, inputs) |
+| Portal Form Kit | done | Extended `portal-form-field.tsx`; migrated account, get-matched, admin create-user, change-password; `AuthField` uses shared input tokens |

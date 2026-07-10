@@ -6,6 +6,12 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChangePasswordForm } from "@/components/shared/change-password-form"
+import {
+  PortalFormField,
+  PortalSelect,
+  PortalTextInput,
+  PortalTextarea,
+} from "@/components/shared/portal-form-field"
 import { PatientPortalPage } from "@/components/patient/patient-portal-page"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import {
@@ -248,30 +254,24 @@ export function PatientAccountSettings({
                   Your legal name and date of birth from booking intake stay on file with your referral; update
                   display name and contact details here for day-to-day care coordination.
                 </p>
-                <label className="block space-y-1 text-xs">
-                  <span className="text-muted-foreground">Display name</span>
-                  <input
-                    className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+                <PortalFormField id="profile-display-name" label="Display name">
+                  <PortalTextInput
                     value={displayNameDraft}
                     onChange={(event) => setDisplayNameDraft(event.target.value)}
                     disabled={busy}
                   />
-                </label>
-                <label className="block space-y-1 text-xs">
-                  <span className="text-muted-foreground">Mobile phone</span>
-                  <input
-                    className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+                </PortalFormField>
+                <PortalFormField id="profile-mobile" label="Mobile phone">
+                  <PortalTextInput
                     value={contactDraft.phoneMobile}
                     onChange={(event) => setContactDraft((d) => ({ ...d, phoneMobile: event.target.value }))}
                     disabled={busy}
                     inputMode="tel"
                     autoComplete="tel"
                   />
-                </label>
-                <label className="block space-y-1 text-xs">
-                  <span className="text-muted-foreground">Preferred contact method</span>
-                  <select
-                    className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+                </PortalFormField>
+                <PortalFormField id="profile-contact-method" label="Preferred contact method">
+                  <PortalSelect
                     value={contactDraft.preferredContactMethod}
                     onChange={(event) =>
                       setContactDraft((d) => ({
@@ -284,23 +284,22 @@ export function PatientAccountSettings({
                     <option value="email">Email</option>
                     <option value="sms">SMS</option>
                     <option value="phone">Phone call</option>
-                  </select>
-                </label>
-                <label className="block space-y-1 text-xs">
-                  <span className="text-muted-foreground">Accessibility and session needs (optional)</span>
-                  <textarea
-                    className="min-h-[72px] w-full rounded-md border border-border bg-background px-2 py-2 text-sm"
+                  </PortalSelect>
+                </PortalFormField>
+                <PortalFormField
+                  id="profile-accessibility"
+                  label="Accessibility and session needs (optional)"
+                >
+                  <PortalTextarea
                     value={contactDraft.accessibilityNotes}
                     onChange={(event) => setContactDraft((d) => ({ ...d, accessibilityNotes: event.target.value }))}
                     disabled={busy}
                     placeholder="e.g. captions, interpreter, mobility access"
                   />
-                </label>
+                </PortalFormField>
                 <p className="text-xs font-medium text-foreground">Emergency contact</p>
-                <label className="block space-y-1 text-xs">
-                  <span className="text-muted-foreground">Name</span>
-                  <input
-                    className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+                <PortalFormField id="profile-emergency-name" label="Name">
+                  <PortalTextInput
                     value={contactDraft.emergencyContactName}
                     onChange={(event) =>
                       setContactDraft((d) => ({ ...d, emergencyContactName: event.target.value }))
@@ -308,11 +307,9 @@ export function PatientAccountSettings({
                     disabled={busy}
                     autoComplete="name"
                   />
-                </label>
-                <label className="block space-y-1 text-xs">
-                  <span className="text-muted-foreground">Phone</span>
-                  <input
-                    className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+                </PortalFormField>
+                <PortalFormField id="profile-emergency-phone" label="Phone">
+                  <PortalTextInput
                     value={contactDraft.emergencyContactPhone}
                     onChange={(event) =>
                       setContactDraft((d) => ({ ...d, emergencyContactPhone: event.target.value }))
@@ -321,18 +318,16 @@ export function PatientAccountSettings({
                     inputMode="tel"
                     autoComplete="tel"
                   />
-                </label>
-                <label className="block space-y-1 text-xs">
-                  <span className="text-muted-foreground">Relationship to you</span>
-                  <input
-                    className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+                </PortalFormField>
+                <PortalFormField id="profile-emergency-relationship" label="Relationship to you">
+                  <PortalTextInput
                     value={contactDraft.emergencyContactRelationship}
                     onChange={(event) =>
                       setContactDraft((d) => ({ ...d, emergencyContactRelationship: event.target.value }))
                     }
                     disabled={busy}
                   />
-                </label>
+                </PortalFormField>
                 <div className="flex gap-2">
                   <Button
                     size="sm"

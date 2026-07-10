@@ -5,6 +5,9 @@ import { PublicMarketingAmbient } from "@/components/marketing/public-marketing-
 import { PageHero } from "@/components/marketing/page-hero"
 import { legalPublication } from "@/content/legal/legal-publication"
 import { termsOfServiceEffectiveDate, termsOfServiceSections } from "@/content/legal/terms-of-service-au"
+import { termsMetadata } from "@/content/marketing-metadata"
+
+export const metadata = termsMetadata
 
 export default function TermsOfServicePage() {
   return (

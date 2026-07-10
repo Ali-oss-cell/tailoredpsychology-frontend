@@ -11,6 +11,7 @@ import { formatDateTimeAu } from "@/src/lib/format-au"
 import { getAppointmentDetails, postManageAppointment, type AppointmentDetailsResponse } from "@/src/patient/booking/api"
 import { invalidatePatientAppointments } from "@/src/patient/queries/invalidate"
 import { RESCHEDULE_LOCK_BEFORE_START_MS, RESCHEDULE_RULE_LINES } from "@/src/patient/booking/reschedule-policy"
+import { toast } from "@/src/lib/toast"
 
 type AppointmentManagePanelProps = {
   appointmentId: string
@@ -70,8 +71,11 @@ export function AppointmentManagePanel({ appointmentId, onAppointmentUpdated }: 
       setDetails(next)
       await invalidatePatientAppointments(queryClient)
       onAppointmentUpdated?.()
+      toast.success("Appointment cancelled.")
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not cancel appointment.")
+      const message = err instanceof Error ? err.message : "Could not cancel appointment."
+      setError(message)
+      toast.error(message)
     } finally {
       setIsSubmitting(false)
     }
@@ -90,8 +94,11 @@ export function AppointmentManagePanel({ appointmentId, onAppointmentUpdated }: 
       setRescheduleAt(toLocalInputValue(next.scheduledStartAt))
       await invalidatePatientAppointments(queryClient)
       onAppointmentUpdated?.()
+      toast.success("Appointment rescheduled.")
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not reschedule appointment.")
+      const message = err instanceof Error ? err.message : "Could not reschedule appointment."
+      setError(message)
+      toast.error(message)
     } finally {
       setIsSubmitting(false)
     }

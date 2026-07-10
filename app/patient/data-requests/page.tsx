@@ -15,6 +15,7 @@ import {
 } from "@/content/patient-privacy-requests"
 import { cn } from "@/lib/utils"
 import { createPatientDataRequest, getMyPatientDataRequests, type PatientDataRequest } from "@/src/privacy-requests/api"
+import { toast } from "@/src/lib/toast"
 
 export default function PatientDataRequestsPage() {
   const [rows, setRows] = useState<PatientDataRequest[]>([])
@@ -55,8 +56,10 @@ export default function PatientDataRequestsPage() {
       setError(null)
       setPendingRequestType(null)
       setRequestDetails("")
+      toast.success("Your request has been submitted.")
     } catch {
       setError(copy.list.submitError)
+      toast.error(copy.list.submitError)
     } finally {
       setSubmitting(false)
     }

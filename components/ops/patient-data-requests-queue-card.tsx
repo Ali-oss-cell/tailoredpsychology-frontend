@@ -3,9 +3,11 @@
 import * as React from "react"
 
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { ClientPaginationBar, useClientPagination } from "@/components/shared/client-pagination"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatDateTimeAu } from "@/src/lib/format-au"
 import { getOpsPatientDataRequests, submitOpsPatientDataRequestAction, type PatientDataRequest } from "@/src/privacy-requests/api"
+import { toast } from "@/src/lib/toast"
 
 const ACTIONS: Array<"assign" | "start_review" | "fulfill" | "reject"> = ["assign", "start_review", "fulfill", "reject"]
 
@@ -37,12 +39,16 @@ export function PatientDataRequestsQueueCard({ title = "Patient data requests qu
       })
       setRows((prev) => prev.map((item) => (item.requestId === updated.requestId ? updated : item)))
       setError(null)
+      toast.success("Request updated.")
     } catch {
       setError("Action failed. Please retry.")
+      toast.error("Action failed. Please retry.")
     } finally {
       setActingId(null)
     }
   }
+
+  const pagination = useClientPagination(rows)
 
   return (
     <Card>
@@ -53,7 +59,7 @@ export function PatientDataRequestsQueueCard({ title = "Patient data requests qu
         {loading ? <DashboardStateBlock variant="loading" message="Loading data..." /> : null}
         {!loading && error ? <DashboardStateBlock variant="error" message={error} /> : null}
         {!loading && !error && rows.length === 0 ? <DashboardStateBlock variant="empty" message="No requests in queue." /> : null}
-        {rows.map((row) => (
+        {pagination.pageItems.map((row) => (
           <article key={row.requestId} className="space-y-2 rounded-md border border-border/70 p-3 text-xs">
             <div className="flex items-center justify-between">
               <p className="font-medium">{row.requestId}</p>
@@ -78,6 +84,16 @@ export function PatientDataRequestsQueueCard({ title = "Patient data requests qu
             </div>
           </article>
         ))}
+        <ClientPaginationBar
+          page={pagination.page}
+          totalPages={pagination.totalPages}
+          totalItems={pagination.totalItems}
+          pageSize={pagination.pageSize}
+          canGoPrev={pagination.canGoPrev}
+          canGoNext={pagination.canGoNext}
+          onPrev={() => pagination.setPage((p) => Math.max(1, p - 1))}
+          onNext={() => pagination.setPage((p) => Math.min(pagination.totalPages, p + 1))}
+        />
       </CardContent>
     </Card>
   )

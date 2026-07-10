@@ -2,14 +2,20 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { PsychologistPortalPage } from "@/components/psychologist/psychologist-portal-page"
 import { PortalListRow } from "@/components/shared/portal-list-row"
+import {
+  PortalFormField,
+  PortalSelect,
+  PortalTextarea,
+} from "@/components/shared/portal-form-field"
 import { psychologistNotesContent } from "@/content/psychologist-notes"
 import { formatDateTimeAu } from "@/src/lib/format-au"
+import { toast } from "@/src/lib/toast"
 import {
   createPsychologistNote,
   getPsychologistNote,
@@ -21,8 +27,10 @@ import {
 import { usePsychologistId } from "@/src/psychologist/queries/use-current-user"
 import { getNoteSessionChoices, type NoteSessionChoice } from "@/src/psychologist/note-session-choices"
 import { getPsychologistPatientContext } from "@/src/psychologist/workspace/api"
+import { cn } from "@/lib/utils"
 
 type AutosaveStatus = "idle" | "saving" | "saved" | "error"
+type MobileNotesTab = "queue" | "editor"
 
 function statusBadgeVariant(status: PsychologistNote["status"]): "default" | "secondary" | "outline" {
   if (status === "signed") return "default"
@@ -41,6 +49,7 @@ export default function PsychologistNotesPage() {
   const [sessionChoices, setSessionChoices] = useState<NoteSessionChoice[]>([])
   const [selectedSessionId, setSelectedSessionId] = useState("")
   const [autosaveStatus, setAutosaveStatus] = useState<AutosaveStatus>("idle")
+  const [mobileTab, setMobileTab] = useState<MobileNotesTab>("queue")
   const editorScopeRef = useRef<string | null>(null)
 
   useEffect(() => {
@@ -101,6 +110,7 @@ export default function PsychologistNotesPage() {
           window.setTimeout(() => setAutosaveStatus((s) => (s === "saved" ? "idle" : s)), 2500)
         } catch {
           setAutosaveStatus("error")
+          toast.error("Autosave failed — use Save draft or try again.")
         }
       })()
     }, 750)
@@ -124,8 +134,12 @@ export default function PsychologistNotesPage() {
       })
       setNotes((prev) => [created, ...prev])
       setError(null)
+      setSelectedNoteId(created.noteId)
+      setMobileTab("editor")
+      toast.success("Note created.")
     } catch {
       setError("Could not create note.")
+      toast.error("Could not create note.")
     }
   }
 
@@ -133,8 +147,10 @@ export default function PsychologistNotesPage() {
     try {
       const updated = await signPsychologistNote(psychologistId, noteId)
       setNotes((prev) => prev.map((item) => (item.noteId === noteId ? updated : item)))
+      toast.success("Note signed.")
     } catch {
       setError("Could not sign note.")
+      toast.error("Could not sign note.")
     }
   }
 
@@ -146,12 +162,17 @@ export default function PsychologistNotesPage() {
       setError(null)
       setAutosaveStatus("saved")
       window.setTimeout(() => setAutosaveStatus("idle"), 2000)
+      toast.success("Note saved.")
     } catch {
       setError("Could not save note changes.")
+      toast.error("Could not save note changes.")
     }
   }, [editorBody, psychologistId, selectedNoteId])
 
   const activeNote = selectedNoteId ? notes.find((n) => n.noteId === selectedNoteId) : undefined
+
+  const showQueuePanel = mobileTab === "queue"
+  const showEditorPanel = Boolean(selectedNoteId) && mobileTab === "editor"
 
   return (
     <PsychologistPortalPage
@@ -160,17 +181,49 @@ export default function PsychologistNotesPage() {
         eyebrow="Documentation"
         tutorialId="psychologist.page.notes"
       >
-        <Card className="interactive-lift">
+        <div
+          className="bg-muted/40 border-border/60 flex gap-1 rounded-lg border p-1 md:hidden"
+          role="tablist"
+          aria-label="Notes sections"
+        >
+          <Button
+            type="button"
+            size="sm"
+            variant={mobileTab === "queue" ? "default" : "ghost"}
+            className="flex-1"
+            role="tab"
+            aria-selected={mobileTab === "queue"}
+            onClick={() => setMobileTab("queue")}
+          >
+            Queue
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={mobileTab === "editor" ? "default" : "ghost"}
+            className="flex-1"
+            role="tab"
+            aria-selected={mobileTab === "editor"}
+            disabled={!selectedNoteId}
+            onClick={() => setMobileTab("editor")}
+          >
+            Note
+          </Button>
+        </div>
+
+        <Card className={cn("interactive-lift", !showQueuePanel && "hidden md:block")}>
           <CardHeader className="pb-3">
             <p className="card-eyebrow">Queue</p>
             <CardTitle className="text-lg">Notes queue</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-end">
-              <label className="flex min-w-0 flex-1 flex-col gap-1 text-xs sm:max-w-md">
-                <span className="text-muted-foreground">Attach to session</span>
-                <select
-                  className="h-9 rounded-md border border-border bg-background px-2 text-sm"
+              <PortalFormField
+                id="note-session"
+                label="Attach to session"
+                className="min-w-0 flex-1 sm:max-w-md"
+              >
+                <PortalSelect
                   value={selectedSessionId}
                   onChange={(event) => setSelectedSessionId(event.target.value)}
                   disabled={loading || sessionChoices.length === 0}
@@ -184,8 +237,8 @@ export default function PsychologistNotesPage() {
                       </option>
                     ))
                   )}
-                </select>
-              </label>
+                </PortalSelect>
+              </PortalFormField>
               <Button
                 size="sm"
                 className="shrink-0"
@@ -213,7 +266,14 @@ export default function PsychologistNotesPage() {
                   {item.status.replace(/_/g, " ")}
                 </Badge>
                 <p className="text-muted-foreground text-sm">{formatDateTimeAu(item.updatedAt)}</p>
-                <Button size="sm" variant="outline" onClick={() => setSelectedNoteId(item.noteId)}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setSelectedNoteId(item.noteId)
+                    setMobileTab("editor")
+                  }}
+                >
                   Open
                 </Button>
                 <Button size="sm" variant="outline" disabled={item.status === "signed"} onClick={() => void onSign(item.noteId)}>
@@ -224,7 +284,7 @@ export default function PsychologistNotesPage() {
           </CardContent>
         </Card>
         {selectedNoteId ? (
-          <Card className="interactive-lift">
+          <Card className={cn("interactive-lift", !showEditorPanel && "hidden md:block")}>
             <CardHeader className="pb-3">
               <p className="card-eyebrow">Editor</p>
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -246,24 +306,32 @@ export default function PsychologistNotesPage() {
               </p>
             </CardHeader>
             <CardContent className="space-y-3">
-              <textarea
-                value={editorBody}
-                onChange={(event) => setEditorBody(event.target.value)}
-                rows={6}
-                disabled={activeNote?.status === "signed"}
-                aria-label="Therapist note body"
-                className="w-full rounded border border-border px-2 py-2 text-sm disabled:opacity-60"
-              />
+              <PortalFormField id="note-body" label="Therapist note body">
+                <PortalTextarea
+                  value={editorBody}
+                  onChange={(event) => setEditorBody(event.target.value)}
+                  rows={6}
+                  disabled={activeNote?.status === "signed"}
+                  aria-label="Therapist note body"
+                />
+              </PortalFormField>
               <div className="flex gap-2">
                 <Button size="sm" onClick={() => void onSaveSelected()} disabled={activeNote?.status === "signed"}>
                   Save draft
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => setSelectedNoteId(null)}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setSelectedNoteId(null)
+                    setMobileTab("queue")
+                  }}
+                >
                   Close
                 </Button>
               </div>
               {activeNote && activeNote.status !== "signed" ? (
-                <div className="rounded border border-amber-200/80 bg-amber-50/80 px-3 py-2 text-xs text-amber-950 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100">
+                <div className="border-warning/30 bg-warning/10 text-foreground rounded-lg border px-3 py-2 text-xs">
                   <p className="font-medium">Before you sign</p>
                   <ul className="text-muted-foreground mt-1 list-inside list-disc space-y-0.5">
                     <li>Confirm the note reflects this session and your clinical judgement.</li>
@@ -273,7 +341,7 @@ export default function PsychologistNotesPage() {
                 </div>
               ) : null}
               {selectedContext ? (
-                <div className="rounded border border-border/60 p-3 text-xs text-muted-foreground">
+                <div className="border-border/60 bg-muted/30 rounded-lg border p-3 text-xs text-muted-foreground">
                   patient: {selectedContext.patientDisplayName} · risk: {selectedContext.riskLevel} · referral:{" "}
                   {selectedContext.referralStatus}
                 </div>

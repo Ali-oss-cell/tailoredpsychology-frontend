@@ -5,6 +5,9 @@ import { PublicMarketingAmbient } from "@/components/marketing/public-marketing-
 import { PageHero } from "@/components/marketing/page-hero"
 import { PrivacyPolicyDocument } from "@/components/legal/privacy-policy-document"
 import { privacyPolicySections } from "@/content/legal/privacy-policy-au"
+import { privacyPolicyMetadata } from "@/content/marketing-metadata"
+
+export const metadata = privacyPolicyMetadata
 
 export default function PrivacyPolicyPage() {
   return (
