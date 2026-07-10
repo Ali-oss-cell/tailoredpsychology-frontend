@@ -1,6 +1,6 @@
 import type { SessionSummary } from "@/src/sessions/api"
 
-import { filterSessionsScheduledToday } from "./session-filters"
+import { filterSessionsScheduledToday, filterSessionsScheduledOnDay } from "./session-filters"
 
 describe("filterSessionsScheduledToday", () => {
   it("keeps only sessions on the same local calendar day as the anchor instant", () => {
@@ -22,5 +22,33 @@ describe("filterSessionsScheduledToday", () => {
     }
     const out = filterSessionsScheduledToday([sameDay, otherDay], anchor.getTime())
     expect(out.map((s) => s.sessionId)).toEqual(["s1"])
+  })
+})
+
+describe("filterSessionsScheduledOnDay", () => {
+  it("filters sessions for an explicit selected day", () => {
+    const targetDay = new Date(2026, 4, 5, 0, 0, 0)
+    const onDay = new Date(2026, 4, 5, 11, 0, 0).toISOString()
+    const otherDay = new Date(2026, 4, 6, 11, 0, 0).toISOString()
+    const sessions: SessionSummary[] = [
+      {
+        sessionId: "s1",
+        scheduledStartAt: onDay,
+        scheduledEndAt: onDay,
+        status: "scheduled",
+        clinicianId: "c1",
+        patientId: "p1",
+      },
+      {
+        sessionId: "s2",
+        scheduledStartAt: otherDay,
+        scheduledEndAt: otherDay,
+        status: "scheduled",
+        clinicianId: "c1",
+        patientId: "p2",
+      },
+    ]
+
+    expect(filterSessionsScheduledOnDay(sessions, targetDay).map((row) => row.sessionId)).toEqual(["s1"])
   })
 })
