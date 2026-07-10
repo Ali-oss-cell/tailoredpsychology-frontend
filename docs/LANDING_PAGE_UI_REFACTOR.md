@@ -145,4 +145,4 @@ Headings use `font-heading`; body stays on sans stack.
 
 ## Completion summary
 
-Homepage redesigned with premium healthcare layout, preserved teal brand, dashboard-aligned tokens, scroll reveals, and expanded footer. Build and tests passing. Commit: _(updated after push)_.
+Homepage redesigned with premium healthcare layout, preserved teal brand, dashboard-aligned tokens, scroll reveals, and expanded footer. Build and tests passing. Commit: `227a99a`.
