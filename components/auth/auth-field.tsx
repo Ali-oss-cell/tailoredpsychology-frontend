@@ -2,7 +2,11 @@ import * as React from "react"
 import { Eye, EyeSlash } from "@phosphor-icons/react"
 
 import { cn } from "@/lib/utils"
-import { portalInputClassName } from "@/components/shared/portal-form-field"
+import {
+  PortalFormField,
+  PortalTextInput,
+  type PortalTextInputProps,
+} from "@/components/shared/portal-form-field"
 
 type AuthFieldProps = {
   id: string
@@ -10,8 +14,9 @@ type AuthFieldProps = {
   type?: React.HTMLInputTypeAttribute
   placeholder?: string
   hint?: string
+  error?: string
   rightLabel?: React.ReactNode
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "id" | "type" | "placeholder">
+} & Omit<PortalTextInputProps, "id" | "type" | "placeholder" | "hasError">
 
 export function AuthField({
   id,
@@ -19,7 +24,9 @@ export function AuthField({
   type = "text",
   placeholder,
   hint,
+  error,
   rightLabel,
+  className,
   ...inputProps
 }: AuthFieldProps) {
   const [showPassword, setShowPassword] = React.useState(false)
@@ -27,7 +34,7 @@ export function AuthField({
   const resolvedType = isPassword && showPassword ? "text" : type
 
   return (
-    <div className="space-y-2">
+    <div className={cn("space-y-2", className)}>
       <div className="flex items-center justify-between gap-2">
         <label htmlFor={id} className="text-sm font-medium">
           {label}
@@ -35,11 +42,14 @@ export function AuthField({
         {rightLabel}
       </div>
       <div className="relative">
-        <input
+        <PortalTextInput
           id={id}
           type={resolvedType}
           placeholder={placeholder}
-          className={cn(portalInputClassName(), isPassword && "pr-10")}
+          hasError={Boolean(error)}
+          className={cn(isPassword && "pr-10")}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
           {...inputProps}
         />
         {isPassword ? (
@@ -53,7 +63,16 @@ export function AuthField({
           </button>
         ) : null}
       </div>
-      {hint ? <p className="text-muted-foreground text-xs">{hint}</p> : null}
+      {hint ? (
+        <p id={`${id}-hint`} className="text-muted-foreground text-xs">
+          {hint}
+        </p>
+      ) : null}
+      {error ? (
+        <p id={`${id}-error`} className="text-destructive text-xs" role="alert">
+          {error}
+        </p>
+      ) : null}
     </div>
   )
 }

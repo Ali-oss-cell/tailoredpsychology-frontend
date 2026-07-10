@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -30,22 +30,22 @@ export function PsychologistNotificationPrefsCard() {
   const [loadError, setLoadError] = useState(false)
   const [busy, setBusy] = useState(false)
 
-  useEffect(() => {
-    let cancelled = false
-    void getNotificationPreferences()
-      .then((next) => {
-        if (!cancelled) setPrefs(next)
-      })
-      .catch(() => {
-        if (!cancelled) setLoadError(true)
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false)
-      })
-    return () => {
-      cancelled = true
+  const loadPrefs = useCallback(async (): Promise<void> => {
+    setLoading(true)
+    setLoadError(false)
+    try {
+      const next = await getNotificationPreferences()
+      setPrefs(next)
+    } catch {
+      setLoadError(true)
+    } finally {
+      setLoading(false)
     }
   }, [])
+
+  useEffect(() => {
+    void loadPrefs()
+  }, [loadPrefs])
 
   async function save(): Promise<void> {
     setBusy(true)
@@ -71,7 +71,7 @@ export function PsychologistNotificationPrefsCard() {
       <CardContent className="space-y-3">
         {loading ? <DashboardStateBlock variant="loading" message="Loading preferences..." /> : null}
         {loadError ? (
-          <p className="text-destructive text-sm">Could not load notification preferences. Refresh and try again.</p>
+          <DashboardStateBlock variant="error" message="Could not load notification preferences." onRetry={() => void loadPrefs()} />
         ) : null}
         {!loading && !loadError ? (
           <>

@@ -2,7 +2,7 @@
 
 import type * as React from "react"
 import Link from "next/link"
-import { CalendarDots, ChatCircleDots, House, NotePencil, SignOut, UsersThree, UserCircleGear, VideoCamera } from "@phosphor-icons/react/dist/ssr"
+import { SignOut } from "@phosphor-icons/react/dist/ssr"
 
 import { LogoutLink } from "@/components/auth/logout-link"
 import { ClinkLogo } from "@/components/brand/clink-logo"
@@ -31,28 +31,15 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { NavIcon } from "@/src/routes/nav-icons"
+import { getShellNavItems } from "@/src/routes/nav-utils"
 
 type PsychologistShellProps = {
   children: React.ReactNode
-  activeRoute?:
-    | "dashboard"
-    | "schedule"
-    | "patients"
-    | "messages"
-    | "notes"
-    | "profile"
-    | "recordings"
+  activeRoute?: string
 }
 
-const navItems = [
-  { key: "dashboard", href: "/psychologist/dashboard", label: "Dashboard", icon: House },
-  { key: "schedule", href: "/psychologist/schedule", label: "Schedule", icon: CalendarDots },
-  { key: "patients", href: "/psychologist/patients", label: "Patients", icon: UsersThree },
-  { key: "messages", href: "/psychologist/messages", label: "Messages", icon: ChatCircleDots },
-  { key: "notes", href: "/psychologist/notes", label: "Notes", icon: NotePencil },
-  { key: "profile", href: "/psychologist/profile", label: "Profile", icon: UserCircleGear },
-  { key: "recordings", href: "/psychologist/recordings", label: "Recordings", icon: VideoCamera },
-]
+const navItems = getShellNavItems("psychologist")
 
 export function PsychologistShell({
   children,
@@ -67,19 +54,16 @@ export function PsychologistShell({
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>
-              {navItems.map((item) => {
-                const Icon = item.icon
-                return (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton asChild isActive={item.key === activeRoute}>
-                      <Link href={item.href} title={item.label}>
-                        <Icon size={18} />
-                        <span className="group-data-[state=collapsed]/sidebar:sr-only">{item.label}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-              })}
+              {navItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton asChild isActive={item.key === activeRoute}>
+                    <Link href={item.href} title={item.label}>
+                      {item.icon ? <NavIcon icon={item.icon} /> : null}
+                      <span className="group-data-[state=collapsed]/sidebar:sr-only">{item.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter className="space-y-2 border-t border-border/60 pt-4">

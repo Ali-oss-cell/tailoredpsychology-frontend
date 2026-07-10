@@ -53,6 +53,12 @@ export function ReferralActionCard({ mode }: ReferralActionCardProps) {
   const title = mode === "manager" ? "Referral approvals" : "Referral governance"
   const href = mode === "manager" ? "/manager/referrals" : "/admin/referrals"
 
+  const retryLoad = () => {
+    setIsLoading(true)
+    setError(null)
+    load()
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -60,7 +66,7 @@ export function ReferralActionCard({ mode }: ReferralActionCardProps) {
       </CardHeader>
       <CardContent className="space-y-3 text-xs">
         {isLoading ? <DashboardStateBlock variant="loading" message="Loading data..." /> : null}
-        {!isLoading && error ? <DashboardStateBlock variant="error" message={error} onRetry={load} /> : null}
+        {!isLoading && error ? <DashboardStateBlock variant="error" message={error} onRetry={retryLoad} /> : null}
         {!isLoading && !error ? (
           <>
             <div className="grid grid-cols-2 gap-2">

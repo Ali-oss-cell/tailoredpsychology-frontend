@@ -46,7 +46,7 @@ export function ChatAvatar({ name, id, imageUrl, isOnline = false, size = "md", 
       )}
       {isOnline ? (
         <span
-          className={`${dotSizeClasses[size]} absolute right-0 bottom-0 rounded-full border-card bg-emerald-500`}
+          className={`${dotSizeClasses[size]} absolute right-0 bottom-0 rounded-full border-card bg-success`}
           aria-label="Online"
         />
       ) : null}

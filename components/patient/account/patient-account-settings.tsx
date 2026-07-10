@@ -34,6 +34,7 @@ import {
   updateNotificationPreferences,
   type NotificationPreferences,
 } from "@/src/notifications/api"
+import { formatDateTimeAu } from "@/src/lib/format-au"
 import { toast } from "@/src/lib/toast"
 
 type ProfileRow = { label: string; value: string }
@@ -224,15 +225,18 @@ export function PatientAccountSettings({
         before a video visit.
       </p>
 
-      {loadError ? <DashboardStateBlock variant="error" message={loadError} /> : null}
+      {loadError ? <DashboardStateBlock variant="error" message={loadError} onRetry={() => void loadUser()} /> : null}
       {formError ? <p className="text-destructive text-sm">{formError}</p> : null}
-      {formSuccess ? <p className="text-sm text-emerald-700">{formSuccess}</p> : null}
+      {formSuccess ? <p className="text-success text-sm">{formSuccess}</p> : null}
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="interactive-lift">
           <CardHeader className="pb-3">
             <p className="card-eyebrow">Profile</p>
             <CardTitle className="text-lg">Profile</CardTitle>
+            {user?.updatedAt ? (
+              <p className="text-muted-foreground text-xs">Last updated: {formatDateTimeAu(user.updatedAt)}</p>
+            ) : null}
           </CardHeader>
           <CardContent className="space-y-2">
             {!user && !loadError ? <DashboardStateBlock variant="loading" message="Loading profile..." /> : null}
@@ -242,7 +246,17 @@ export function PatientAccountSettings({
                 className="flex items-center justify-between border-b border-border/40 py-2 text-sm last:border-b-0"
               >
                 <span className="text-muted-foreground">{field.label}</span>
-                <span className="max-w-[55%] text-right">{field.value}</span>
+                <span className="max-w-[55%] text-right">
+                  {field.value}
+                  {field.label === "Date of birth" && field.value !== "—" ? (
+                    <span className="text-muted-foreground block text-[11px]">
+                      Need a correction?{" "}
+                      <Link href="/patient/data-requests" className="text-primary font-medium hover:underline">
+                        Request an update
+                      </Link>
+                    </span>
+                  ) : null}
+                </span>
               </div>
             ))}
             <Button size="sm" className="mt-3" type="button" onClick={() => togglePanel("profile")}>
@@ -252,7 +266,8 @@ export function PatientAccountSettings({
               <div className="space-y-3 rounded-md border border-border/60 bg-muted/30 p-3">
                 <p className="text-muted-foreground text-xs">
                   Your legal name and date of birth from booking intake stay on file with your referral; update
-                  display name and contact details here for day-to-day care coordination.
+                  display name and contact details here for day-to-day care coordination. Emergency contact details
+                  also appear in booking intake — changes here apply to your account profile.
                 </p>
                 <PortalFormField id="profile-display-name" label="Display name">
                   <PortalTextInput

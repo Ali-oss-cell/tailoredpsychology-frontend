@@ -23,6 +23,7 @@ export default function PatientDataRequestsPage() {
   const [error, setError] = useState<string | null>(null)
   const [pendingRequestType, setPendingRequestType] = useState<"access" | "correction" | null>(null)
   const [requestDetails, setRequestDetails] = useState("")
+  const [detailsError, setDetailsError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
   const copy = patientPrivacyRequestsContent
@@ -44,7 +45,11 @@ export default function PatientDataRequestsPage() {
   }, [loadRequests])
 
   const createRequest = async () => {
-    if (!pendingRequestType || !requestDetails.trim()) return
+    if (!pendingRequestType) return
+    if (!requestDetails.trim()) {
+      setDetailsError("Please describe your request before sending.")
+      return
+    }
     try {
       setSubmitting(true)
       const created = await createPatientDataRequest({
@@ -56,6 +61,7 @@ export default function PatientDataRequestsPage() {
       setError(null)
       setPendingRequestType(null)
       setRequestDetails("")
+      setDetailsError(null)
       toast.success("Your request has been submitted.")
     } catch {
       setError(copy.list.submitError)
@@ -149,6 +155,7 @@ export default function PatientDataRequestsPage() {
         onCancel={() => {
           setPendingRequestType(null)
           setRequestDetails("")
+          setDetailsError(null)
         }}
         onConfirm={() => void createRequest()}
       >
@@ -156,11 +163,15 @@ export default function PatientDataRequestsPage() {
           <span className="text-foreground font-medium">{dialogCopy.fieldLabel}</span>
           <textarea
             value={requestDetails}
-            onChange={(event) => setRequestDetails(event.target.value)}
+            onChange={(event) => {
+              setRequestDetails(event.target.value)
+              if (detailsError) setDetailsError(null)
+            }}
             rows={4}
             className="border-border/70 focus-visible:ring-ring mt-2 w-full rounded-xl border px-3 py-2.5 text-sm shadow-sm outline-none focus-visible:ring-2"
             placeholder={dialogCopy.placeholder}
           />
+          {detailsError ? <p className="text-destructive mt-2 text-xs">{detailsError}</p> : null}
         </label>
       </ConfirmDialog>
     </PatientPortalPage>

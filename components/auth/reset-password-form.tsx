@@ -9,6 +9,7 @@ import { AuthField } from "@/components/auth/auth-field"
 import { AuthShell } from "@/components/auth/auth-shell"
 import { Button } from "@/components/ui/button"
 import { authContent } from "@/content/auth"
+import { PASSWORD_HINT } from "@/src/auth/password-policy"
 import { completePasswordReset } from "@/src/auth/password-reset-api"
 
 export function ResetPasswordForm() {
@@ -75,17 +76,20 @@ export function ResetPasswordForm() {
             onChange={(event) => setNewPassword(event.target.value)}
             disabled={busy}
             required
+            hint={PASSWORD_HINT}
+            autoComplete="new-password"
           />
           <AuthField
             id="confirmPassword"
             label="Confirm Password"
             type="password"
             placeholder="Confirm new password"
-            hint="Use at least 8 characters with letters and numbers."
+            hint={PASSWORD_HINT}
             value={confirmPassword}
             onChange={(event) => setConfirmPassword(event.target.value)}
             disabled={busy}
             required
+            autoComplete="new-password"
           />
           {error ? <p className="text-destructive text-sm">{error}</p> : null}
           <Button type="submit" className="w-full" disabled={busy}>

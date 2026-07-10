@@ -10,7 +10,7 @@ export function PrivacyPolicyDocument({ sections }: PrivacyPolicyDocumentProps) 
   return (
     <article className="max-w-none">
       {!legalPublication.privacyPolicyApproved ? (
-        <p className="text-muted-foreground rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm leading-relaxed">
+        <p className="text-muted-foreground rounded-lg border border-warning bg-warning/10 px-4 py-3 text-sm leading-relaxed">
           <strong>Pending legal sign-off.</strong> This policy currently names{" "}
           <code className="rounded bg-muted px-1 py-0.5 text-xs">{ENTITY_NAME}</code>. Confirm legal owner, privacy
           officer contact details, and approval status in `frontend/docs/LEGAL_SIGNOFF_TRACKER.md` before treating this

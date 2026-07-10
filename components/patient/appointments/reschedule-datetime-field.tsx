@@ -4,6 +4,7 @@ import * as React from "react"
 import { Clock } from "@phosphor-icons/react"
 
 import { CompactDatePicker, dateKey as toYmdKey } from "@/components/patient/booking/compact-date-picker"
+import { australianEasternTimezoneLabel } from "@/src/lib/format-au"
 import { RESCHEDULE_MAX_DAYS, RESCHEDULE_MIN_LEAD_MS } from "@/src/patient/booking/reschedule-policy"
 
 const MINUTE_STEPS = [0, 15, 30, 45] as const
@@ -221,6 +222,7 @@ export function RescheduleDatetimeField({ id, value, onChange, disabled }: Resch
           <Clock size={14} className="shrink-0 opacity-80" aria-hidden />
           <span>
             Selected: <span className="font-medium text-foreground">{displaySummary}</span>
+            <span className="text-muted-foreground"> · {australianEasternTimezoneLabel(value ? new Date(value) : new Date())}</span>
           </span>
         </p>
       ) : null}

@@ -7,6 +7,7 @@ import { ChatAvatar } from "@/components/session/chat/chat-avatar"
 import { ChatMessageBubble } from "@/components/session/chat/chat-message-bubble"
 import { Button } from "@/components/ui/button"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { EmptyState } from "@/components/shared/empty-state"
 import type { ChatMessageResponse } from "@/src/session/chat-api"
 import { useSessionChatRoom } from "@/src/session/use-session-chat-room"
 
@@ -126,7 +127,7 @@ function ChatConversationActive({
           {error ?? "You don't have access to this appointment's chat."}
         </p>
       ) : isDegradedMode ? (
-        <p className="border-amber-200/80 bg-amber-50/90 text-amber-900 shrink-0 border-b px-4 py-2 text-xs">
+        <p className="border-warning/80 bg-warning/10 text-warning-foreground shrink-0 border-b px-4 py-2 text-xs">
           Live updates unavailable — syncing every few seconds. Messages still send normally.
         </p>
       ) : null}
@@ -143,11 +144,18 @@ function ChatConversationActive({
       <div
         ref={scrollRef}
         className={`chat-scroll min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4 md:px-5 ${compact ? "max-h-52" : ""}`}
+        aria-live="polite"
+        aria-relevant="additions"
+        aria-atomic="false"
       >
         {isConnecting && messages.length === 0 ? (
           <DashboardStateBlock variant="loading" message="Loading conversation…" />
         ) : messages.length === 0 ? (
-          <DashboardStateBlock variant="empty" message="No messages yet. Say hello." />
+          <EmptyState
+            className="border-none bg-transparent py-6"
+            title="No messages yet"
+            description="Say hello when you're ready."
+          />
         ) : (
           messages.map((message) => (
             <ChatMessageBubble
@@ -166,8 +174,9 @@ function ChatConversationActive({
             variant="ghost"
             size="icon"
             className="text-muted-foreground hover:text-foreground shrink-0 rounded-full"
-            disabled={status !== "open"}
-            aria-label="Attach file"
+            disabled
+            aria-label="Attach file (not available)"
+            title="File attachments are not available in chat yet"
           >
             <Paperclip size={20} />
           </Button>
@@ -195,6 +204,9 @@ function ChatConversationActive({
           </Button>
         </div>
         {error ? <p className="text-destructive mt-2 px-1 text-xs">{error}</p> : null}
+        <p className="text-muted-foreground mt-2 px-1 text-[11px]">
+          Press Enter to send. Attachments are not supported in chat — share files through your clinician if needed.
+        </p>
       </footer>
     </div>
   )

@@ -1,4 +1,5 @@
 import type { BookingRequestDraft, BookingStepId } from "@/src/patient/booking/types"
+import { AU_MOBILE_INVALID_MESSAGE, isValidAuMobile } from "@/src/lib/au-mobile"
 
 export type BookingFieldErrors = Partial<Record<string, string>>
 
@@ -53,6 +54,8 @@ export function validateBookingStep(
     }
     if (!draft.patientIdentity.mobile.trim()) {
       pushField(fieldErrors, summaryErrors, "mobile", "Mobile number is required.")
+    } else if (!isValidAuMobile(draft.patientIdentity.mobile)) {
+      pushField(fieldErrors, summaryErrors, "mobile", AU_MOBILE_INVALID_MESSAGE)
     }
     if (isInitial && !draft.patientIdentity.suburb.trim()) {
       pushField(fieldErrors, summaryErrors, "suburb", "Suburb is required.")
@@ -103,6 +106,8 @@ export function validateBookingStep(
     }
     if (!draft.telehealthSafety.emergencyContactPhone.trim()) {
       pushField(fieldErrors, summaryErrors, "emergencyContactPhone", "Emergency contact phone is required.")
+    } else if (!isValidAuMobile(draft.telehealthSafety.emergencyContactPhone)) {
+      pushField(fieldErrors, summaryErrors, "emergencyContactPhone", AU_MOBILE_INVALID_MESSAGE)
     }
   }
 

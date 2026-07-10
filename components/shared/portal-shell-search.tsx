@@ -4,6 +4,7 @@ import * as React from "react"
 import { useRouter } from "next/navigation"
 
 import { cn } from "@/lib/utils"
+import { PortalSearchInput } from "@/components/shared/portal-form-field"
 
 type PortalShellSearchProps = {
   /** Destination route for submitted queries, e.g. `/admin/patients` or `/patient/appointments`. */
@@ -35,14 +36,14 @@ export function PortalShellSearch({
 
   return (
     <form onSubmit={handleSubmit} className={cn("hidden min-w-0 md:block", className)}>
-      <input
-        type="search"
+      <PortalSearchInput
+        rounded="full"
         value={value}
         onChange={(event) => setValue(event.target.value)}
         placeholder={placeholder}
         aria-label={placeholder}
         data-tutorial={dataTutorial}
-        className="bg-muted/60 border-border focus-visible:ring-ring w-80 max-w-full rounded-full border px-4 py-2 text-sm outline-none focus-visible:ring-2 lg:w-96"
+        className="bg-muted/60 w-80 max-w-full lg:w-96"
       />
     </form>
   )

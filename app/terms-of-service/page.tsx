@@ -24,7 +24,7 @@ export default function TermsOfServicePage() {
           <div className="mx-auto max-w-3xl px-4 py-10 md:px-6 md:py-14">
             <article className="max-w-none">
               {!legalPublication.termsOfServiceApproved ? (
-                <p className="text-muted-foreground rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm leading-relaxed">
+                <p className="text-muted-foreground rounded-lg border border-warning bg-warning/10 px-4 py-3 text-sm leading-relaxed">
                   <strong>Pending legal sign-off.</strong> Confirm final counsel approval in
                   `frontend/docs/LEGAL_SIGNOFF_TRACKER.md` before production publication.
                 </p>

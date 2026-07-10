@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 
 import { AppointmentManagePanel } from "@/components/patient/appointments/appointment-manage-panel"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { EmptyState, EmptyStateAction } from "@/components/shared/empty-state"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -101,21 +102,16 @@ export function NextSessionHero({ session, loading = false, error = null, onRetr
   if (!session) {
     return (
       <Card className="min-h-[13rem] shadow-e2">
-        <CardContent className="flex flex-col items-start gap-4 pt-6">
+        <CardContent className="space-y-4 pt-6">
           <p className="card-eyebrow">Next session</p>
-          <div className="space-y-1">
-            <h2 className="font-heading text-2xl font-semibold tracking-tight">Ready when you are</h2>
-            <p className="text-muted-foreground max-w-md text-sm">
-              You have no upcoming sessions. Take the next step in your care whenever it feels right.
-            </p>
-          </div>
           <div data-tutorial="patient.dashboard.hero-book">
-            <Button asChild size="lg" className="press">
-              <Link href="/patient/book-appointment">
-                <CalendarPlus size={18} />
-                Book New Session
-              </Link>
-            </Button>
+            <EmptyState
+              className="items-start border-none bg-transparent px-0 py-0 text-left"
+              title="Ready when you are"
+              description="You have no upcoming sessions. Take the next step in your care whenever it feels right."
+              icon={<CalendarPlus size={24} weight="duotone" />}
+              action={<EmptyStateAction href="/patient/book-appointment" label="Book New Session" />}
+            />
           </div>
         </CardContent>
       </Card>

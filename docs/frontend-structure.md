@@ -1,71 +1,55 @@
-# Frontend Structure Blueprint
+# Frontend Structure
 
-Use this structure to keep the codebase clean as pages and roles grow.
+Current layout after the A–D refactor (July 2026). The `app/` router stays thin; feature logic lives under `components/`, `src/`, and `content/`.
 
-## Target Folder Structure
+## Key folders
 
 ```text
-src/
-  app/                         # Next app router entry and route segments
-  routes/
-    AppRoutes.tsx              # Runtime route registration
-    route-config.ts            # Single source of truth for paths/roles/shell/nav
-  auth/
-    access-control.ts          # Roles, permissions, role->permission mapping
-    guards/
-      ProtectedRoute.tsx
-  features/
-    public/
-      pages/
-      components/
-      api/
-      types/
-    auth/
-      pages/
-      components/
-      api/
-      types/
-    patient/
-      pages/
-      components/
-      api/
-      types/
-    psychologist/
-      pages/
-      components/
-      api/
-      types/
-    manager/
-      pages/
-      components/
-      api/
-      types/
-    admin/
-      pages/
-      components/
-      api/
-      types/
+app/                              # Next.js routes (thin page wrappers)
+components/
+  auth/                           # AuthField, shells, forgot/reset forms
+  ops/
+    pages/                        # Shared manager/admin list pages
+  patient/booking/
+    steps/                        # Booking wizard step components
+    booking-wizard.tsx            # Orchestrator (~150 lines)
+    use-booking-wizard.ts         # Wizard state, sync, navigation
+  psychologist/                   # *-workspace.tsx heavy UI
   shared/
-    layout/                    # App shells and common page wrappers
-    ui/                        # shadcn wrappers (PageHeader, DataTableShell, etc.)
-    hooks/
-    lib/
-    types/
+    portal-form-field.tsx         # Portal Form Kit
+    empty-state.tsx, step-intro.tsx, what-happens-next.tsx
+  ui/                             # shadcn-style primitives (Button, Input, Alert, …)
+content/
+  fixtures/                       # Seed/demo data (not user copy)
+  ops-pages.ts, patient-booking.ts
+src/
+  routes/
+    route-config.ts               # Single source: paths, RBAC, nav metadata
+    nav-utils.ts, nav-icons.tsx   # Shell nav resolution
+  auth/                           # access-control, session, guards
+  admin/ops/queries/              # React Query hooks for ops lists
+  patient/booking/                # types, validation, API, schedule utils
+proxy.ts                          # RBAC middleware (reads APP_ROUTES)
 ```
 
-## Organization Rules
+## Rules
 
-1. Route definitions live in `src/routes/route-config.ts`; avoid hardcoding route metadata elsewhere.
-2. Each feature owns its pages, feature-specific components, API client calls, and types.
-3. Shared UI patterns go in `src/shared/ui`, not copied into role folders.
-4. Guard logic and permission checks live in `src/auth`, never duplicated in page components.
-5. Any route/role change must update:
-   - `src/routes/route-config.ts`
-   - `docs/routes-overview.md`
-   - `docs/role-matrix.md`
+1. **Routes & RBAC** — Add or change portal paths in `src/routes/route-config.ts` (`navLabel`, `navIcon`, `navKey`, `showInNav`). `proxy.ts` enforces `allowedRoles` + `requiredPermissions`.
+2. **Navigation** — Shells (`patient-shell`, `psychologist-shell`, `ops-shell`) render nav from `getShellNavItems()`; do not hardcode nav arrays.
+3. **Forms** — Portal flows use `components/shared/portal-form-field.tsx` (`PortalTextInput`, `PortalSelect`, `PortalFileUpload`, …). Auth uses `AuthField` on top of the kit.
+4. **Ops lists** — Shared UI in `components/ops/pages/`; data via `src/admin/ops/queries/*`.
+5. **Booking** — Steps in `components/patient/booking/steps/`; orchestration in `use-booking-wizard.ts`.
+6. **Copy vs fixtures** — User-facing strings in `content/`; seed schedules/clinicians in `content/fixtures/`.
 
-## Why this scales
+## Shell nav groups
 
-- New role pages become predictable to place and review.
-- Shared shell/layout changes apply everywhere without touching each page.
-- Route security and navigation remain centralized and auditable.
+| Shell        | Config field   | Groups                          |
+|-------------|----------------|---------------------------------|
+| patient     | `navGroup`     | main, care, account             |
+| psychologist| `navGroup`     | main, care                      |
+| ops         | `navGroup`     | management (manager), admin     |
+
+## Related docs
+
+- `docs/REFACTOR_STATUS.md` — refactor checklist
+- `docs/UX_DESIGN_REVIEW.md` — UX north star

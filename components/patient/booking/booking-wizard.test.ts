@@ -1,4 +1,4 @@
-import { findNextAvailableLabel } from "@/components/patient/booking/booking-wizard"
+import { findNextAvailableLabel } from "@/src/patient/booking/booking-schedule-utils"
 import { bookingSteps } from "@/content/patient-booking"
 
 describe("findNextAvailableLabel", () => {

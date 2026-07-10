@@ -1,5 +1,4 @@
-"use client"
-
+import { formatDateTimeAu } from "@/src/lib/format-au"
 import { getPsychologistSessions } from "@/src/sessions/api"
 
 import { getPsychologistPatientContext, getPsychologistWorkspace } from "./workspace/api"
@@ -41,7 +40,7 @@ export async function getNoteSessionChoices(psychologistId: string): Promise<Not
       return {
         patientId: item.patientId,
         sessionId: item.appointmentId,
-        label: `${name} · ${new Date(item.startsAt).toLocaleString()}`,
+        label: `${name} · ${formatDateTimeAu(item.startsAt)}`,
       }
     })
   }
@@ -58,7 +57,7 @@ export async function getNoteSessionChoices(psychologistId: string): Promise<Not
     return {
       patientId: session.patientId,
       sessionId: session.sessionId,
-      label: `${name} · ${new Date(session.scheduledStartAt).toLocaleString()} (${session.status})`,
+      label: `${name} · ${formatDateTimeAu(session.scheduledStartAt)} (${session.status})`,
     }
   })
 }

@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { EmptyState } from "@/components/shared/empty-state"
 import { ClientPaginationBar, useClientPagination } from "@/components/shared/client-pagination"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatDateTimeAu } from "@/src/lib/format-au"
@@ -17,17 +18,36 @@ export function PatientDataRequestsQueueCard({ title = "Patient data requests qu
   const [error, setError] = React.useState<string | null>(null)
   const [actingId, setActingId] = React.useState<string | null>(null)
 
-  React.useEffect(() => {
+  const loadRows = React.useCallback(() => {
+    let cancelled = false
     void (async () => {
       try {
-        setRows(await getOpsPatientDataRequests())
+        const next = await getOpsPatientDataRequests()
+        if (!cancelled) {
+          setRows(next)
+          setError(null)
+        }
       } catch {
-        setError("We couldn't load requests. Try again.")
+        if (!cancelled) setError("We couldn't load requests. Try again.")
       } finally {
-        setLoading(false)
+        if (!cancelled) setLoading(false)
       }
     })()
+    return () => {
+      cancelled = true
+    }
   }, [])
+
+  React.useEffect(() => {
+    setLoading(true)
+    loadRows()
+  }, [loadRows])
+
+  const retryLoad = () => {
+    setLoading(true)
+    setError(null)
+    loadRows()
+  }
 
   const runAction = async (requestId: string, action: "assign" | "start_review" | "fulfill" | "reject") => {
     try {
@@ -41,8 +61,9 @@ export function PatientDataRequestsQueueCard({ title = "Patient data requests qu
       setError(null)
       toast.success("Request updated.")
     } catch {
-      setError("Action failed. Please retry.")
-      toast.error("Action failed. Please retry.")
+      const message = "Action failed. Please retry."
+      setError(message)
+      toast.error(message)
     } finally {
       setActingId(null)
     }
@@ -57,8 +78,10 @@ export function PatientDataRequestsQueueCard({ title = "Patient data requests qu
       </CardHeader>
       <CardContent className="space-y-3">
         {loading ? <DashboardStateBlock variant="loading" message="Loading data..." /> : null}
-        {!loading && error ? <DashboardStateBlock variant="error" message={error} /> : null}
-        {!loading && !error && rows.length === 0 ? <DashboardStateBlock variant="empty" message="No requests in queue." /> : null}
+        {!loading && error ? <DashboardStateBlock variant="error" message={error} onRetry={retryLoad} /> : null}
+        {!loading && !error && rows.length === 0 ? (
+          <EmptyState title="No requests in queue." description="Patient access and correction requests will appear here." />
+        ) : null}
         {pagination.pageItems.map((row) => (
           <article key={row.requestId} className="space-y-2 rounded-md border border-border/70 p-3 text-xs">
             <div className="flex items-center justify-between">

@@ -1,6 +1,6 @@
 import { CalendarBlank } from "@phosphor-icons/react"
 
-import { formatDateAu } from "@/src/lib/format-au"
+import { formatDateAu, getAustralianEasternTzAbbreviation } from "@/src/lib/format-au"
 
 type BookingAppointmentSummaryChipProps = {
   clinicianName: string
@@ -23,7 +23,10 @@ export function BookingAppointmentSummaryChip({
       <CalendarBlank size={18} className="text-primary shrink-0" aria-hidden />
       <p className="min-w-0 truncate text-xs sm:text-sm">
         <span className="font-medium">{clinicianName}</span>
-        <span className="text-muted-foreground"> · {formatDateAu(`${dateIso}T12:00:00`)} · {timeLabel}</span>
+        <span className="text-muted-foreground">
+          {" "}
+          · {formatDateAu(`${dateIso}T12:00:00`)} · {timeLabel} ({getAustralianEasternTzAbbreviation(`${dateIso}T12:00:00`)})
+        </span>
       </p>
     </div>
   )

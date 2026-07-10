@@ -1,5 +1,23 @@
 const LOCALE = "en-AU"
 
+/** Default IANA zone for Australian telehealth scheduling in this product. */
+export const AU_BOOKING_TIMEZONE = "Australia/Sydney"
+
+/** e.g. AEST or AEDT for Australia/Sydney at the given instant. */
+export function getAustralianEasternTzAbbreviation(value: string | Date = new Date()): string {
+  const date = typeof value === "string" ? new Date(value) : value
+  const parts = new Intl.DateTimeFormat(LOCALE, {
+    timeZone: AU_BOOKING_TIMEZONE,
+    timeZoneName: "short",
+  }).formatToParts(date)
+  return parts.find((part) => part.type === "timeZoneName")?.value ?? "AEST"
+}
+
+/** Human label for schedule and reschedule surfaces. */
+export function australianEasternTimezoneLabel(value: string | Date = new Date()): string {
+  return `Australian Eastern Time (${getAustralianEasternTzAbbreviation(value)})`
+}
+
 function toDate(value: string | Date): Date {
   return typeof value === "string" ? new Date(value) : value
 }

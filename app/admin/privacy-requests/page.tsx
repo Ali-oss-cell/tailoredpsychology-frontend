@@ -1,15 +1,5 @@
-import { PatientDataRequestsQueueCard } from "@/components/ops/patient-data-requests-queue-card"
-import { OpsPortalPage } from "@/components/ops/ops-portal-page"
+import { OpsPrivacyRequestsPage } from "@/components/ops/pages/ops-privacy-requests-page"
 
 export default function AdminPrivacyRequestsPage() {
-  return (
-    <OpsPortalPage
-      title="Patient Data Requests"
-      description="Triage patient access and correction requests with SLA-aware workflow."
-      eyebrow="Administration"
-      tutorialId="admin.page.privacy-requests"
-    >
-      <PatientDataRequestsQueueCard />
-    </OpsPortalPage>
-  )
+  return <OpsPrivacyRequestsPage role="admin" />
 }

@@ -1,21 +1,38 @@
-import type { Permission, Role } from "@/src/auth/access-control";
+import type { Permission, Role } from "@/src/auth/access-control"
+import type { NavIconKey } from "@/src/routes/nav-icons"
 
-export type AppShell = "public" | "patient" | "psychologist" | "ops";
+export type AppShell = "public" | "patient" | "psychologist" | "ops"
 
 export type AppRoute = {
-  path: string;
-  component: string;
-  shell: AppShell;
-  allowGuests: boolean;
-  allowedRoles: Role[];
-  requiredPermissions: Permission[];
-  navLabel?: string;
-  navGroup?: "main" | "care" | "management" | "admin" | "account";
-};
+  path: string
+  component: string
+  shell: AppShell
+  allowGuests: boolean
+  allowedRoles: Role[]
+  requiredPermissions: Permission[]
+  navLabel?: string
+  navGroup?: "main" | "care" | "management" | "admin" | "account"
+  navIcon?: NavIconKey
+  /** Stable key for active nav highlighting (defaults to path). */
+  navKey?: string
+  /** Sidebar order within shell (lower first). */
+  navOrder?: number
+  /** When false, route is guarded but omitted from shell nav. Default: true when navLabel is set. */
+  showInNav?: boolean
+  /** Patient tutorial target for sidebar items. */
+  tutorialId?: string
+}
+
+function nav(route: AppRoute): AppRoute {
+  return {
+    ...route,
+    showInNav: route.showInNav ?? Boolean(route.navLabel),
+  }
+}
 
 export const APP_ROUTES: AppRoute[] = [
   // Public marketing
-  {
+  nav({
     path: "/",
     component: "Homepage",
     shell: "public",
@@ -24,8 +41,9 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["marketing.read"],
     navLabel: "Home",
     navGroup: "main",
-  },
-  {
+    navOrder: 1,
+  }),
+  nav({
     path: "/about",
     component: "AboutPage",
     shell: "public",
@@ -34,8 +52,9 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["marketing.read"],
     navLabel: "About",
     navGroup: "main",
-  },
-  {
+    navOrder: 2,
+  }),
+  nav({
     path: "/services",
     component: "ServicesPage",
     shell: "public",
@@ -44,8 +63,9 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["marketing.read"],
     navLabel: "Services",
     navGroup: "main",
-  },
-  {
+    navOrder: 3,
+  }),
+  nav({
     path: "/why-clink",
     component: "WhyClinkPage",
     shell: "public",
@@ -54,8 +74,9 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["marketing.read"],
     navLabel: "Why Tailored Psychology",
     navGroup: "main",
-  },
-  {
+    navOrder: 4,
+  }),
+  nav({
     path: "/pricing",
     component: "PricingPage",
     shell: "public",
@@ -64,8 +85,9 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["marketing.read"],
     navLabel: "Pricing",
     navGroup: "main",
-  },
-  {
+    navOrder: 5,
+  }),
+  nav({
     path: "/trust",
     component: "TrustPage",
     shell: "public",
@@ -74,7 +96,8 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["marketing.read"],
     navLabel: "Trust",
     navGroup: "main",
-  },
+    navOrder: 6,
+  }),
   {
     path: "/privacy-policy",
     component: "PrivacyPolicyPage",
@@ -92,6 +115,38 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["marketing.read"],
   },
   {
+    path: "/telehealth-requirements",
+    component: "TelehealthRequirementsPage",
+    shell: "public",
+    allowGuests: true,
+    allowedRoles: ["guest", "patient", "psychologist", "practice_manager", "admin"],
+    requiredPermissions: ["marketing.read"],
+  },
+  {
+    path: "/contact",
+    component: "ContactPage",
+    shell: "public",
+    allowGuests: true,
+    allowedRoles: ["guest", "patient", "psychologist", "practice_manager", "admin"],
+    requiredPermissions: ["marketing.read"],
+  },
+  {
+    path: "/get-matched",
+    component: "GetMatchedPage",
+    shell: "public",
+    allowGuests: true,
+    allowedRoles: ["guest", "patient", "psychologist", "practice_manager", "admin"],
+    requiredPermissions: ["marketing.read"],
+  },
+  {
+    path: "/medicare-rebates",
+    component: "MedicareRebatesPage",
+    shell: "public",
+    allowGuests: true,
+    allowedRoles: ["guest", "patient", "psychologist", "practice_manager", "admin"],
+    requiredPermissions: ["marketing.read"],
+  },
+  nav({
     path: "/conditions",
     component: "ConditionsIndexPage",
     shell: "public",
@@ -100,10 +155,19 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["marketing.read"],
     navLabel: "Conditions",
     navGroup: "main",
-  },
+    navOrder: 7,
+  }),
   {
     path: "/conditions/:slug",
     component: "ConditionPage",
+    shell: "public",
+    allowGuests: true,
+    allowedRoles: ["guest", "patient", "psychologist", "practice_manager", "admin"],
+    requiredPermissions: ["marketing.read"],
+  },
+  {
+    path: "/resources",
+    component: "PublicResourcesPage",
     shell: "public",
     allowGuests: true,
     allowedRoles: ["guest", "patient", "psychologist", "practice_manager", "admin"],
@@ -126,8 +190,24 @@ export const APP_ROUTES: AppRoute[] = [
     allowedRoles: ["guest"],
     requiredPermissions: ["auth.guest-only"],
   },
-  // Patient
   {
+    path: "/forgot-password",
+    component: "ForgotPasswordPage",
+    shell: "public",
+    allowGuests: true,
+    allowedRoles: ["guest"],
+    requiredPermissions: ["auth.guest-only"],
+  },
+  {
+    path: "/reset-password",
+    component: "ResetPasswordPage",
+    shell: "public",
+    allowGuests: true,
+    allowedRoles: ["guest"],
+    requiredPermissions: ["auth.guest-only"],
+  },
+  // Patient
+  nav({
     path: "/patient/dashboard",
     component: "PatientDashboardPage",
     shell: "patient",
@@ -136,8 +216,12 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["patient.portal.read"],
     navLabel: "Dashboard",
     navGroup: "main",
-  },
-  {
+    navIcon: "house",
+    navKey: "dashboard",
+    navOrder: 1,
+    tutorialId: "shell.sidebar.dashboard",
+  }),
+  nav({
     path: "/patient/appointments",
     component: "PatientAppointmentsPage",
     shell: "patient",
@@ -146,8 +230,12 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["patient.portal.read"],
     navLabel: "Appointments",
     navGroup: "care",
-  },
-  {
+    navIcon: "calendar",
+    navKey: "appointments",
+    navOrder: 2,
+    tutorialId: "shell.sidebar.appointments",
+  }),
+  nav({
     path: "/patient/my-clinician",
     component: "PatientMyClinicianPage",
     shell: "patient",
@@ -156,8 +244,40 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["patient.portal.read"],
     navLabel: "My clinician",
     navGroup: "care",
-  },
-  {
+    navIcon: "stethoscope",
+    navKey: "my-clinician",
+    navOrder: 3,
+    tutorialId: "shell.sidebar.my-clinician",
+  }),
+  nav({
+    path: "/patient/invoices",
+    component: "PatientInvoicesPage",
+    shell: "patient",
+    allowGuests: false,
+    allowedRoles: ["patient"],
+    requiredPermissions: ["patient.portal.read"],
+    navLabel: "Billing",
+    navGroup: "care",
+    navIcon: "creditCard",
+    navKey: "invoices",
+    navOrder: 4,
+    tutorialId: "shell.sidebar.billing",
+  }),
+  nav({
+    path: "/patient/resources",
+    component: "PatientResourcesPage",
+    shell: "patient",
+    allowGuests: false,
+    allowedRoles: ["patient"],
+    requiredPermissions: ["patient.portal.read"],
+    navLabel: "Resources",
+    navGroup: "care",
+    navIcon: "books",
+    navKey: "resources",
+    navOrder: 5,
+    tutorialId: "shell.sidebar.resources",
+  }),
+  nav({
     path: "/patient/data-requests",
     component: "PatientDataRequestsPage",
     shell: "patient",
@@ -166,6 +286,34 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["patient.portal.read"],
     navLabel: "Privacy Requests",
     navGroup: "account",
+    navIcon: "shield",
+    navKey: "privacy-requests",
+    navOrder: 6,
+    tutorialId: "shell.sidebar.privacy-requests",
+  }),
+  nav({
+    path: "/patient/account",
+    component: "PatientAccountPage",
+    shell: "patient",
+    allowGuests: false,
+    allowedRoles: ["patient"],
+    requiredPermissions: ["patient.portal.read"],
+    navLabel: "Account",
+    navGroup: "account",
+    navIcon: "user",
+    navKey: "account",
+    navOrder: 7,
+    tutorialId: "shell.sidebar.account",
+  }),
+  {
+    path: "/patient/onboarding",
+    component: "PatientOnboardingPage",
+    shell: "patient",
+    allowGuests: false,
+    allowedRoles: ["patient"],
+    requiredPermissions: ["patient.portal.read"],
+    navKey: "onboarding",
+    showInNav: false,
   },
   {
     path: "/patient/recordings",
@@ -174,8 +322,8 @@ export const APP_ROUTES: AppRoute[] = [
     allowGuests: false,
     allowedRoles: ["patient"],
     requiredPermissions: ["recordings.read"],
-    navLabel: "Recordings",
-    navGroup: "care",
+    navKey: "resources",
+    showInNav: false,
   },
   {
     path: "/patient/book-appointment",
@@ -184,8 +332,18 @@ export const APP_ROUTES: AppRoute[] = [
     allowGuests: false,
     allowedRoles: ["patient"],
     requiredPermissions: ["patient.booking.create"],
-    navLabel: "Book Appointment",
-    navGroup: "care",
+    navKey: "appointments",
+    showInNav: false,
+  },
+  {
+    path: "/patient/book-appointment/payment-success",
+    component: "PatientBookingPaymentSuccessPage",
+    shell: "patient",
+    allowGuests: false,
+    allowedRoles: ["patient"],
+    requiredPermissions: ["patient.booking.create"],
+    navKey: "appointments",
+    showInNav: false,
   },
   {
     path: "/patient/video-setup",
@@ -194,9 +352,10 @@ export const APP_ROUTES: AppRoute[] = [
     allowGuests: false,
     allowedRoles: ["patient"],
     requiredPermissions: ["patient.portal.read"],
+    showInNav: false,
   },
   // Psychologist
-  {
+  nav({
     path: "/psychologist/dashboard",
     component: "PsychologistDashboardPage",
     shell: "psychologist",
@@ -205,46 +364,11 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["psychologist.portal.read"],
     navLabel: "Dashboard",
     navGroup: "main",
-  },
-  {
-    path: "/psychologist/patients",
-    component: "PsychologistPatientsPage",
-    shell: "psychologist",
-    allowGuests: false,
-    allowedRoles: ["psychologist"],
-    requiredPermissions: ["psychologist.portal.read"],
-    navLabel: "Patients",
-    navGroup: "care",
-  },
-  {
-    path: "/psychologist/patients/:patientId",
-    component: "PsychologistPatientProfilePage",
-    shell: "psychologist",
-    allowGuests: false,
-    allowedRoles: ["psychologist"],
-    requiredPermissions: ["psychologist.portal.read"],
-  },
-  {
-    path: "/psychologist/notes",
-    component: "PsychologistNotesPage",
-    shell: "psychologist",
-    allowGuests: false,
-    allowedRoles: ["psychologist"],
-    requiredPermissions: ["psychologist.portal.read"],
-    navLabel: "Notes",
-    navGroup: "care",
-  },
-  {
-    path: "/psychologist/profile",
-    component: "PsychologistProfilePage",
-    shell: "psychologist",
-    allowGuests: false,
-    allowedRoles: ["psychologist"],
-    requiredPermissions: ["psychologist.portal.read"],
-    navLabel: "Profile",
-    navGroup: "care",
-  },
-  {
+    navIcon: "house",
+    navKey: "dashboard",
+    navOrder: 1,
+  }),
+  nav({
     path: "/psychologist/schedule",
     component: "PsychologistSchedulePage",
     shell: "psychologist",
@@ -253,8 +377,73 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["psychologist.portal.read"],
     navLabel: "Schedule",
     navGroup: "care",
-  },
+    navIcon: "calendar",
+    navKey: "schedule",
+    navOrder: 2,
+  }),
+  nav({
+    path: "/psychologist/patients",
+    component: "PsychologistPatientsPage",
+    shell: "psychologist",
+    allowGuests: false,
+    allowedRoles: ["psychologist"],
+    requiredPermissions: ["psychologist.portal.read"],
+    navLabel: "Patients",
+    navGroup: "care",
+    navIcon: "users",
+    navKey: "patients",
+    navOrder: 3,
+  }),
   {
+    path: "/psychologist/patients/:patientId",
+    component: "PsychologistPatientProfilePage",
+    shell: "psychologist",
+    allowGuests: false,
+    allowedRoles: ["psychologist"],
+    requiredPermissions: ["psychologist.portal.read"],
+    navKey: "patients",
+    showInNav: false,
+  },
+  nav({
+    path: "/psychologist/messages",
+    component: "PsychologistMessagesPage",
+    shell: "psychologist",
+    allowGuests: false,
+    allowedRoles: ["psychologist"],
+    requiredPermissions: ["psychologist.portal.read"],
+    navLabel: "Messages",
+    navGroup: "care",
+    navIcon: "chat",
+    navKey: "messages",
+    navOrder: 4,
+  }),
+  nav({
+    path: "/psychologist/notes",
+    component: "PsychologistNotesPage",
+    shell: "psychologist",
+    allowGuests: false,
+    allowedRoles: ["psychologist"],
+    requiredPermissions: ["psychologist.portal.read"],
+    navLabel: "Notes",
+    navGroup: "care",
+    navIcon: "notes",
+    navKey: "notes",
+    navOrder: 5,
+  }),
+  nav({
+    path: "/psychologist/profile",
+    component: "PsychologistProfilePage",
+    shell: "psychologist",
+    allowGuests: false,
+    allowedRoles: ["psychologist"],
+    requiredPermissions: ["psychologist.portal.read"],
+    navLabel: "Profile",
+    navGroup: "care",
+    navIcon: "profile",
+    navKey: "profile",
+    navOrder: 6,
+  }),
+  nav({
     path: "/psychologist/recordings",
     component: "PsychologistRecordingsPage",
     shell: "psychologist",
@@ -263,39 +452,90 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["recordings.read"],
     navLabel: "Recordings",
     navGroup: "care",
-  },
-  // Practice manager and admin shared ops
-  {
+    navIcon: "video",
+    navKey: "recordings",
+    navOrder: 7,
+  }),
+  // Practice manager ops
+  nav({
     path: "/manager/dashboard",
     component: "PracticeManagerDashboardPage",
     shell: "ops",
     allowGuests: false,
     allowedRoles: ["practice_manager", "admin"],
     requiredPermissions: ["manager.portal.read"],
-    navLabel: "Dashboard",
+    navLabel: "Manager Dashboard",
     navGroup: "management",
-  },
-  {
-    path: "/manager/resources",
-    component: "ManagerResourcesPage",
+    navIcon: "house",
+    navKey: "manager-dashboard",
+    navOrder: 1,
+  }),
+  nav({
+    path: "/manager/staff",
+    component: "ManagerStaffPage",
     shell: "ops",
     allowGuests: false,
-    allowedRoles: ["psychologist", "practice_manager", "admin"],
-    requiredPermissions: ["resources.manage"],
-    navLabel: "Resources",
+    allowedRoles: ["practice_manager", "admin"],
+    requiredPermissions: ["manager.portal.read"],
+    navLabel: "Manager Staff",
     navGroup: "management",
-  },
-  {
+    navIcon: "users",
+    navKey: "manager-staff",
+    navOrder: 2,
+  }),
+  nav({
+    path: "/manager/patients",
+    component: "ManagerPatientsPage",
+    shell: "ops",
+    allowGuests: false,
+    allowedRoles: ["practice_manager", "admin"],
+    requiredPermissions: ["manager.portal.read"],
+    navLabel: "Manager Patients",
+    navGroup: "management",
+    navIcon: "clipboard",
+    navKey: "manager-patients",
+    navOrder: 3,
+  }),
+  nav({
+    path: "/manager/appointments",
+    component: "ManagerAppointmentsPage",
+    shell: "ops",
+    allowGuests: false,
+    allowedRoles: ["practice_manager", "admin"],
+    requiredPermissions: ["manager.portal.read"],
+    navLabel: "Manager Appointments",
+    navGroup: "management",
+    navIcon: "calendar",
+    navKey: "manager-appointments",
+    navOrder: 4,
+  }),
+  nav({
+    path: "/manager/billing",
+    component: "ManagerBillingPage",
+    shell: "ops",
+    allowGuests: false,
+    allowedRoles: ["practice_manager", "admin"],
+    requiredPermissions: ["manager.portal.read"],
+    navLabel: "Manager Billing",
+    navGroup: "management",
+    navIcon: "currency",
+    navKey: "manager-billing",
+    navOrder: 5,
+  }),
+  nav({
     path: "/manager/referrals",
     component: "ManagerReferralsPage",
     shell: "ops",
     allowGuests: false,
     allowedRoles: ["practice_manager", "admin"],
     requiredPermissions: ["referrals.verify"],
-    navLabel: "Referrals",
+    navLabel: "Manager Referrals",
     navGroup: "management",
-  },
-  {
+    navIcon: "search",
+    navKey: "manager-referrals",
+    navOrder: 6,
+  }),
+  nav({
     path: "/manager/privacy-requests",
     component: "ManagerPrivacyRequestsPage",
     shell: "ops",
@@ -304,9 +544,25 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["privacy.requests.manage"],
     navLabel: "Privacy Requests",
     navGroup: "management",
-  },
-  // Admin
-  {
+    navIcon: "shield",
+    navKey: "manager-privacy-requests",
+    navOrder: 7,
+  }),
+  nav({
+    path: "/manager/resources",
+    component: "ManagerResourcesPage",
+    shell: "ops",
+    allowGuests: false,
+    allowedRoles: ["psychologist", "practice_manager", "admin"],
+    requiredPermissions: ["resources.manage"],
+    navLabel: "Manager Resources",
+    navGroup: "management",
+    navIcon: "database",
+    navKey: "manager-resources",
+    navOrder: 8,
+  }),
+  // Admin ops
+  nav({
     path: "/admin/dashboard",
     component: "AdminDashboardPage",
     shell: "ops",
@@ -315,8 +571,115 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["admin.portal.read"],
     navLabel: "Admin Dashboard",
     navGroup: "admin",
-  },
-  {
+    navIcon: "buildings",
+    navKey: "admin-dashboard",
+    navOrder: 1,
+  }),
+  nav({
+    path: "/admin/users",
+    component: "AdminUsersPage",
+    shell: "ops",
+    allowGuests: false,
+    allowedRoles: ["admin"],
+    requiredPermissions: ["admin.portal.read"],
+    navLabel: "Admin Users",
+    navGroup: "admin",
+    navIcon: "users",
+    navKey: "admin-users",
+    navOrder: 2,
+  }),
+  nav({
+    path: "/admin/appointments",
+    component: "AdminAppointmentsPage",
+    shell: "ops",
+    allowGuests: false,
+    allowedRoles: ["admin"],
+    requiredPermissions: ["admin.portal.read"],
+    navLabel: "Admin Appointments",
+    navGroup: "admin",
+    navIcon: "calendar",
+    navKey: "admin-appointments",
+    navOrder: 3,
+  }),
+  nav({
+    path: "/admin/patients",
+    component: "AdminPatientsPage",
+    shell: "ops",
+    allowGuests: false,
+    allowedRoles: ["admin"],
+    requiredPermissions: ["admin.portal.read"],
+    navLabel: "Admin Patients",
+    navGroup: "admin",
+    navIcon: "clipboard",
+    navKey: "admin-patients",
+    navOrder: 4,
+  }),
+  nav({
+    path: "/admin/staff",
+    component: "AdminStaffPage",
+    shell: "ops",
+    allowGuests: false,
+    allowedRoles: ["admin"],
+    requiredPermissions: ["admin.portal.read"],
+    navLabel: "Admin Staff",
+    navGroup: "admin",
+    navIcon: "users",
+    navKey: "admin-staff",
+    navOrder: 5,
+  }),
+  nav({
+    path: "/admin/billing",
+    component: "AdminBillingPage",
+    shell: "ops",
+    allowGuests: false,
+    allowedRoles: ["admin"],
+    requiredPermissions: ["admin.portal.read"],
+    navLabel: "Admin Billing",
+    navGroup: "admin",
+    navIcon: "currency",
+    navKey: "admin-billing",
+    navOrder: 6,
+  }),
+  nav({
+    path: "/admin/settings",
+    component: "AdminSettingsPage",
+    shell: "ops",
+    allowGuests: false,
+    allowedRoles: ["admin"],
+    requiredPermissions: ["admin.portal.read"],
+    navLabel: "Admin Settings",
+    navGroup: "admin",
+    navIcon: "gear",
+    navKey: "admin-settings",
+    navOrder: 7,
+  }),
+  nav({
+    path: "/admin/analytics",
+    component: "AdminAnalyticsPage",
+    shell: "ops",
+    allowGuests: false,
+    allowedRoles: ["admin"],
+    requiredPermissions: ["admin.portal.read"],
+    navLabel: "Admin Analytics",
+    navGroup: "admin",
+    navIcon: "chart",
+    navKey: "admin-analytics",
+    navOrder: 8,
+  }),
+  nav({
+    path: "/admin/audit-logs",
+    component: "AdminAuditLogsPage",
+    shell: "ops",
+    allowGuests: false,
+    allowedRoles: ["admin"],
+    requiredPermissions: ["admin.portal.read"],
+    navLabel: "Admin Audit Logs",
+    navGroup: "admin",
+    navIcon: "shield",
+    navKey: "admin-audit-logs",
+    navOrder: 9,
+  }),
+  nav({
     path: "/admin/security-incidents",
     component: "AdminSecurityIncidentsPage",
     shell: "ops",
@@ -325,8 +688,11 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["admin.portal.read"],
     navLabel: "Security Incidents",
     navGroup: "admin",
-  },
-  {
+    navIcon: "shield",
+    navKey: "admin-security-incidents",
+    navOrder: 10,
+  }),
+  nav({
     path: "/admin/data-deletion",
     component: "AdminDataDeletionPage",
     shell: "ops",
@@ -335,8 +701,11 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["privacy.requests.manage"],
     navLabel: "Data Deletion",
     navGroup: "admin",
-  },
-  {
+    navIcon: "database",
+    navKey: "admin-data-deletion",
+    navOrder: 11,
+  }),
+  nav({
     path: "/admin/privacy-requests",
     component: "AdminPrivacyRequestsPage",
     shell: "ops",
@@ -345,8 +714,11 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["privacy.requests.manage"],
     navLabel: "Privacy Requests",
     navGroup: "admin",
-  },
-  {
+    navIcon: "shield",
+    navKey: "admin-privacy-requests",
+    navOrder: 12,
+  }),
+  nav({
     path: "/admin/referrals",
     component: "AdminReferralsPage",
     shell: "ops",
@@ -355,9 +727,25 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["referrals.verify"],
     navLabel: "Referrals",
     navGroup: "admin",
-  },
+    navIcon: "search",
+    navKey: "admin-referrals",
+    navOrder: 13,
+  }),
+  nav({
+    path: "/admin/resources",
+    component: "AdminResourcesPage",
+    shell: "ops",
+    allowGuests: false,
+    allowedRoles: ["psychologist", "practice_manager", "admin"],
+    requiredPermissions: ["resources.manage"],
+    navLabel: "Admin Resources",
+    navGroup: "admin",
+    navIcon: "database",
+    navKey: "admin-resources",
+    navOrder: 14,
+  }),
   // Shared clinical routes
-  {
+  nav({
     path: "/recordings",
     component: "RecordingsPage",
     shell: "ops",
@@ -366,7 +754,9 @@ export const APP_ROUTES: AppRoute[] = [
     requiredPermissions: ["recordings.read"],
     navLabel: "Recordings",
     navGroup: "care",
-  },
+    navIcon: "video",
+    showInNav: false,
+  }),
   {
     path: "/video-session/:appointmentId",
     component: "VideoCallPage",
@@ -374,6 +764,7 @@ export const APP_ROUTES: AppRoute[] = [
     allowGuests: false,
     allowedRoles: ["patient", "psychologist", "practice_manager", "admin"],
     requiredPermissions: ["video-session.join"],
+    showInNav: false,
   },
   {
     path: "/notification/:notificationId",
@@ -382,5 +773,15 @@ export const APP_ROUTES: AppRoute[] = [
     allowGuests: false,
     allowedRoles: ["patient", "psychologist", "practice_manager", "admin"],
     requiredPermissions: ["video-session.join"],
+    showInNav: false,
   },
-];
+  {
+    path: "/appointments/book-appointment",
+    component: "LegacyBookAppointmentPage",
+    shell: "public",
+    allowGuests: true,
+    allowedRoles: ["guest", "patient", "psychologist", "practice_manager", "admin"],
+    requiredPermissions: ["marketing.read"],
+    showInNav: false,
+  },
+]

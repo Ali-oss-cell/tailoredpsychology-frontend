@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { getBookingRequestStatus, type BookingRequestStatusResponse } from "@/src/patient/booking/api"
+import { buildPaymentSuccessAppointmentSummary } from "@/src/patient/booking/payment-success-summary"
+import { australianEasternTimezoneLabel } from "@/src/lib/format-au"
 import { invalidatePatientBookingConfirmation } from "@/src/patient/queries/invalidate"
 
 const MAX_POLL_ATTEMPTS = 24
@@ -94,6 +96,7 @@ export function BookingPaymentSuccessPanel() {
   }
 
   const confirmed = status?.state === "appointment_confirmed"
+  const appointmentSummary = confirmed && status ? buildPaymentSuccessAppointmentSummary(status) : null
 
   return (
     <PatientPortalPage
@@ -122,12 +125,25 @@ export function BookingPaymentSuccessPanel() {
               <CheckCircle size={16} className="text-primary" aria-hidden />
               Appointment confirmed
             </p>
+            {appointmentSummary ? (
+              <div className="rounded-lg border border-border/50 bg-background/80 p-3 text-sm">
+                <p>
+                  <span className="font-medium">{appointmentSummary.clinicianName}</span>
+                </p>
+                <p className="text-muted-foreground mt-1">
+                  {appointmentSummary.whenLabel} · {australianEasternTimezoneLabel()}
+                </p>
+              </div>
+            ) : null}
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Your dashboard and journey will update automatically. A receipt is available under Billing. Join your session
-              from Appointments when the chat window opens.
+              Your dashboard and journey will update automatically. Test your camera and microphone before the session,
+              then join from Appointments when the chat window opens.
             </p>
             <div className="flex flex-wrap gap-2 pt-1">
               <Button asChild size="sm">
+                <Link href="/patient/video-setup">Set up video</Link>
+              </Button>
+              <Button asChild size="sm" variant="outline">
                 <Link href="/patient/dashboard">Go to dashboard</Link>
               </Button>
               <Button asChild size="sm" variant="outline">

@@ -4,6 +4,7 @@ import Link from "next/link"
 import { ArrowRight, Receipt } from "@phosphor-icons/react/dist/ssr"
 
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { EmptyState } from "@/components/shared/empty-state"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
@@ -57,10 +58,11 @@ export function BillingSnapshotCard({
         {!loading && error ? <DashboardStateBlock variant="error" message={error} onRetry={onRetry} /> : null}
 
         {!loading && !error && !latestInvoice ? (
-          <div className="text-muted-foreground flex items-center gap-3 rounded-md border border-dashed border-border/60 bg-muted/20 px-3 py-4 text-sm">
-            <Receipt size={20} className="shrink-0" />
-            <span>No invoices yet — you&apos;re all settled.</span>
-          </div>
+          <EmptyState
+            title="All settled"
+            description="No invoices yet — you're all settled."
+            icon={<Receipt size={22} weight="duotone" />}
+          />
         ) : null}
 
         {!loading && !error && latestInvoice ? (

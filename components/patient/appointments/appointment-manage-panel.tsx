@@ -7,7 +7,7 @@ import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { RescheduleDatetimeField } from "@/components/patient/appointments/reschedule-datetime-field"
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { formatDateTimeAu } from "@/src/lib/format-au"
+import { formatDateTimeAu, australianEasternTimezoneLabel } from "@/src/lib/format-au"
 import { getAppointmentDetails, postManageAppointment, type AppointmentDetailsResponse } from "@/src/patient/booking/api"
 import { invalidatePatientAppointments } from "@/src/patient/queries/invalidate"
 import { RESCHEDULE_LOCK_BEFORE_START_MS, RESCHEDULE_RULE_LINES } from "@/src/patient/booking/reschedule-policy"
@@ -115,6 +115,7 @@ export function AppointmentManagePanel({ appointmentId, onAppointmentUpdated }: 
           <p className="text-muted-foreground">
             Scheduled start:{" "}
             <span className="font-medium text-foreground">{formatDateTimeAu(details.scheduledStartAt)}</span>
+            <span className="text-muted-foreground"> · {australianEasternTimezoneLabel(details.scheduledStartAt)}</span>
           </p>
           {!canManage ? <p className="text-muted-foreground">You cannot manage this appointment.</p> : null}
         </>

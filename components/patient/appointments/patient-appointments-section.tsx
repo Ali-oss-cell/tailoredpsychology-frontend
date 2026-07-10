@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { EmptyState, EmptyStateAction } from "@/components/shared/empty-state"
 import { PortalListRow } from "@/components/shared/portal-list-row"
 import { useUrlSearchQuery } from "@/components/shared/use-url-search-query"
 import { formatSessionRange } from "@/src/patient/appointments/format-session-range"
@@ -102,9 +103,18 @@ export function PatientAppointmentsSection() {
             <DashboardStateBlock variant="error" message={error} onRetry={refreshAppointments} />
           ) : null}
           {!loading && !error && filteredUpcoming.length === 0 ? (
-            <DashboardStateBlock
-              variant="empty"
-              message={searchTerm ? "No upcoming appointments matched your search." : "No upcoming appointments."}
+            <EmptyState
+              title={searchTerm ? "No matches" : "No upcoming appointments"}
+              description={
+                searchTerm
+                  ? "No upcoming appointments matched your search."
+                  : "Book a session when you're ready."
+              }
+              action={
+                searchTerm ? undefined : (
+                  <EmptyStateAction href="/patient/book-appointment" label="Book a session" />
+                )
+              }
             />
           ) : null}
           {!loading && !error
@@ -164,9 +174,11 @@ export function PatientAppointmentsSection() {
         <CardContent className="space-y-2">
           {loading ? <DashboardStateBlock variant="loading" message="Loading session history..." /> : null}
           {!loading && !error && filteredPast.length === 0 ? (
-            <DashboardStateBlock
-              variant="empty"
-              message={searchTerm ? "No past sessions matched your search." : "No past sessions yet."}
+            <EmptyState
+              title={searchTerm ? "No matches" : "No past sessions"}
+              description={
+                searchTerm ? "No past sessions matched your search." : "No past sessions yet."
+              }
             />
           ) : null}
           {!loading && !error

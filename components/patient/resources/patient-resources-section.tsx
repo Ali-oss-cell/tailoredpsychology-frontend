@@ -4,6 +4,7 @@ import * as React from "react"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { EmptyState } from "@/components/shared/empty-state"
 import { useUrlSearchQuery } from "@/components/shared/use-url-search-query"
 import { patientResourcesContent } from "@/content/patient-resources"
 
@@ -22,7 +23,7 @@ export function PatientResourcesSection() {
   return (
     <>
       {term && categories.length === 0 ? (
-        <DashboardStateBlock variant="empty" message="No resources matched your search." />
+        <EmptyState title="No resources matched your search." description="Try different keywords or browse all categories." />
       ) : null}
       <div className="grid gap-4 md:grid-cols-3">
         {categories.map((category) => (

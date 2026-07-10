@@ -57,6 +57,8 @@ export type CurrentUser = {
   email: string
   displayName: string
   role: "patient" | "psychologist" | "practice_manager" | "admin"
+  /** ISO timestamp when the account record was last updated. */
+  updatedAt?: string
   /** False for new patients until POST /auth/onboarding-complete; omitted legacy responses treated as complete. */
   accountSetupComplete: boolean
   /** Present for patient accounts from the API. */
@@ -104,6 +106,7 @@ export function parseCurrentUser(payload: unknown): CurrentUser {
     displayName: row.displayName,
     role: row.role,
     accountSetupComplete: row.accountSetupComplete !== false,
+    ...(typeof row.updatedAt === "string" ? { updatedAt: row.updatedAt } : {}),
     ...(row.role === "patient"
       ? {
           patientContactProfile: parsedPatient ?? emptyPatientContactProfile(),

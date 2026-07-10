@@ -59,6 +59,11 @@ export const opsPagesContent = {
       { referral: "REF-892", source: "GP Portal", state: "Approved", action: "Open" },
     ],
   },
+  managerPrivacyRequests: {
+    title: "Patient Data Requests",
+    description: "Review and process patient access and correction requests in queue.",
+    eyebrow: "Operations",
+  },
   managerResources: {
     title: "Manager Resources",
     description: "Content governance and resource publication operations.",
@@ -178,6 +183,11 @@ export const opsPagesContent = {
       { referral: "REF-897", source: "Upload", state: "Review", action: "Open" },
       { referral: "REF-892", source: "GP Portal", state: "Approved", action: "Open" },
     ],
+  },
+  adminPrivacyRequests: {
+    title: "Patient Data Requests",
+    description: "Triage patient access and correction requests with SLA-aware workflow.",
+    eyebrow: "Administration",
   },
   adminResources: {
     title: "Admin Resources",

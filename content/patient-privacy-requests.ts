@@ -7,7 +7,7 @@ export const patientPrivacyRequestsContent = {
   newRequest: {
     title: "What do you need help with?",
     intro:
-      "We handle these requests carefully under Australian privacy law. Choose an option below and tell us a bit more — we'll reach out if we need anything else.",
+      "We handle these requests carefully under Australian privacy law. Under the Australian Privacy Principles, we aim to respond within 30 days. Choose an option below and tell us a bit more — we'll reach out if we need anything else.",
     access: {
       label: "Get a copy of my records",
       hint: "Request the health information we hold about you.",

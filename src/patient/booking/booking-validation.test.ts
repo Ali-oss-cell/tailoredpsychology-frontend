@@ -44,6 +44,25 @@ describe("validateBookingStep", () => {
     expect(fieldErrors.treatmentAccepted).toBeDefined()
   })
 
+  it("rejects invalid Australian mobile on reason step", () => {
+    const draft = draftWith({
+      patientIdentity: {
+        ...initialBookingDraft.patientIdentity,
+        mobile: "0312345678",
+        suburb: "Parramatta",
+        state: "NSW",
+        preferredContactMethod: "sms",
+      },
+      careContext: {
+        ...initialBookingDraft.careContext,
+        presentingConcerns: "Anxiety",
+      },
+    })
+
+    const { fieldErrors } = validateBookingStep("reason", draft)
+    expect(fieldErrors.mobile).toBeDefined()
+  })
+
   it("skips medicare validation for unchanged follow-up", () => {
     const draft = draftWith({
       bookingMeta: { bookingType: "follow_up", changesSinceLastVisit: "no" },

@@ -10,6 +10,8 @@ import { PageContainer } from "@/components/layout/page-container"
 import { ClinicianPublicProfileHeader } from "@/components/shared/clinician-public-profile-header"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { AuthField } from "@/components/auth/auth-field"
+import { WhatHappensNext } from "@/components/shared/what-happens-next"
+import { PASSWORD_HINT, isPasswordLongEnough } from "@/src/auth/password-policy"
 import { PortalFormField, PortalSelect } from "@/components/shared/portal-form-field"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -29,10 +31,21 @@ import { registerWithBackend } from "@/src/auth/api"
 import { getCurrentUser } from "@/src/auth/current-user"
 import { rankMatchedClinicians } from "@/src/get-matched/match-clinicians"
 import { pushMatchQuizToIntakeDraft } from "@/src/get-matched/push-match-quiz-intake"
-import { loadMatchQuizSession, saveMatchQuizDraft } from "@/src/get-matched/storage"
-import type { MatchQuizDraft, MatchQuizStep, MatchedClinician } from "@/src/get-matched/types"
+import {
+  MATCH_QUIZ_STORAGE_KEY,
+  deserializeMatchQuizSession,
+  migrateLegacyMatchQuizSession,
+  type MatchQuizSession,
+} from "@/src/get-matched/storage"
+import type { MatchConcern, MatchQuizDraft, MatchQuizStep, MatchedClinician } from "@/src/get-matched/types"
+import { useWizardDraft } from "@/src/patient/booking/use-wizard-draft"
 
 const STEP_ORDER: MatchQuizStep[] = ["location", "concerns", "audience", "preferences", "account", "results"]
+
+const INITIAL_SESSION: MatchQuizSession = {
+  draft: initialMatchQuizDraft,
+  step: "location",
+}
 
 function stepIndex(step: MatchQuizStep): number {
   return STEP_ORDER.indexOf(step)
@@ -53,7 +66,7 @@ function validateStep(step: MatchQuizStep, draft: MatchQuizDraft, acceptedTerms:
   if (step === "account") {
     if (!draft.firstName.trim() || !draft.lastName.trim()) errors.push("Please enter your name.")
     if (!draft.email.trim()) errors.push("Please enter your email.")
-    if (draft.password.length < 8) errors.push("Password must be at least 8 characters.")
+    if (!isPasswordLongEnough(draft.password)) errors.push("Password must be at least 8 characters.")
     if (!acceptedTerms) errors.push("Please accept the terms and privacy policy.")
   }
   return errors
@@ -62,30 +75,56 @@ function validateStep(step: MatchQuizStep, draft: MatchQuizDraft, acceptedTerms:
 export function GetMatchedWizard() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [step, setStep] = React.useState<MatchQuizStep>("location")
-  const [draft, setDraft] = React.useState<MatchQuizDraft>(initialMatchQuizDraft)
+  const [persistPaused, setPersistPaused] = React.useState(() => {
+    if (typeof window === "undefined") return false
+    migrateLegacyMatchQuizSession()
+    const raw = window.localStorage.getItem(MATCH_QUIZ_STORAGE_KEY)
+    const restored = raw ? deserializeMatchQuizSession(raw) : null
+    return restored?.step === "results"
+  })
+  const {
+    draft: session,
+    setDraft: setSession,
+  } = useWizardDraft<MatchQuizSession>({
+    storageKey: MATCH_QUIZ_STORAGE_KEY,
+    initialValue: INITIAL_SESSION,
+    paused: persistPaused,
+    deserialize: (raw) => deserializeMatchQuizSession(raw) ?? migrateLegacyMatchQuizSession(),
+  })
+  const step = session.step
+  const draft = session.draft
   const [errors, setErrors] = React.useState<string[]>([])
   const [matches, setMatches] = React.useState<MatchedClinician[]>([])
   const [isPatientLoggedIn, setIsPatientLoggedIn] = React.useState(false)
   const [authChecked, setAuthChecked] = React.useState(false)
+  const [hydrated, setHydrated] = React.useState(false)
   const [submitting, setSubmitting] = React.useState(false)
   const [acceptedTerms, setAcceptedTerms] = React.useState(false)
 
   React.useEffect(() => {
-    const restored = loadMatchQuizSession()
-    if (restored) {
-      setDraft(restored.draft)
-      if (restored.step === "results") {
-        setMatches(rankMatchedClinicians(restored.draft))
-      }
-      setStep(restored.step)
+    migrateLegacyMatchQuizSession()
+    if (session.step === "results") {
+      setPersistPaused(true)
+      setMatches(rankMatchedClinicians(session.draft))
     }
     const seeded = searchParams.get("condition")
-    if (seeded && !restored) {
-      setDraft((d) => ({
-        ...d,
-        concerns: d.concerns.length ? d.concerns : ["exploring"],
-      }))
+    if (seeded) {
+      const validConcerns = new Set(concernOptions.map((option) => option.value))
+      const slug = seeded as MatchConcern
+      if (validConcerns.has(slug)) {
+        setSession((current) => {
+          if (current.step !== "location" || current.draft.concerns.length > 0) {
+            return current
+          }
+          return {
+            ...current,
+            draft: {
+              ...current.draft,
+              concerns: [slug],
+            },
+          }
+        })
+      }
     }
     void (async () => {
       try {
@@ -93,26 +132,26 @@ export function GetMatchedWizard() {
         setIsPatientLoggedIn(user.role === "patient")
         if (user.role === "patient" && user.email) {
           const parts = user.displayName.trim().split(/\s+/)
-          setDraft((d) => ({
-            ...d,
-            email: d.email || user.email,
-            firstName: d.firstName || parts[0] || "",
-            lastName: d.lastName || parts.slice(1).join(" ") || "",
+          setSession((current) => ({
+            ...current,
+            draft: {
+              ...current.draft,
+              email: current.draft.email || user.email,
+              firstName: current.draft.firstName || parts[0] || "",
+              lastName: current.draft.lastName || parts.slice(1).join(" ") || "",
+            },
           }))
         }
       } catch {
         setIsPatientLoggedIn(false)
       } finally {
         setAuthChecked(true)
+        setHydrated(true)
       }
     })()
-  }, [searchParams])
-
-  React.useEffect(() => {
-    if (step !== "results") {
-      saveMatchQuizDraft(draft, step)
-    }
-  }, [draft, step])
+    // Run once on mount for legacy migration, URL seeding, and auth hydration.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const visibleSteps = React.useMemo(
     () => (isPatientLoggedIn ? STEP_ORDER.filter((s) => s !== "account") : STEP_ORDER),
@@ -124,7 +163,12 @@ export function GetMatchedWizard() {
   const progressTotal = progressSteps.length
 
   function patchDraft(patch: Partial<MatchQuizDraft>) {
-    setDraft((d) => ({ ...d, ...patch }))
+    setSession((current) => ({ ...current, draft: { ...current.draft, ...patch } }))
+  }
+
+  function setStep(next: MatchQuizStep) {
+    setPersistPaused(next === "results")
+    setSession((current) => ({ ...current, step: next }))
   }
 
   function goNext() {
@@ -193,7 +237,7 @@ export function GetMatchedWizard() {
 
   const content = getMatchedQuizContent
 
-  if (!authChecked && step !== "results") {
+  if ((!authChecked || !hydrated) && step !== "results") {
     return (
       <PageContainer className="py-12">
         <DashboardStateBlock variant="loading" message="Loading matching flow…" />
@@ -342,6 +386,10 @@ export function GetMatchedWizard() {
             <CardHeader>
               <CardTitle>{content.steps.account.title}</CardTitle>
               <p className="text-muted-foreground text-sm">{content.steps.account.description}</p>
+              <WhatHappensNext className="mt-3 border-0 bg-transparent p-0">
+                We will show 2–3 psychologists who fit what you shared. You can book immediately or take time to decide —
+                no payment until you continue to booking.
+              </WhatHappensNext>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
@@ -374,7 +422,7 @@ export function GetMatchedWizard() {
                 type="password"
                 value={draft.password}
                 onChange={(e) => patchDraft({ password: e.target.value })}
-                hint="At least 8 characters."
+                hint={PASSWORD_HINT}
                 autoComplete="new-password"
               />
               <label className="text-muted-foreground flex items-start gap-2 rounded-lg border border-border/60 bg-muted/40 p-3 text-xs leading-5">
@@ -469,6 +517,18 @@ export function GetMatchedWizard() {
               </Link>{" "}
               — Medicare details, referral upload, and consent.
             </p>
+            {matches[0] ? (
+              <div className="border-primary/30 bg-background/95 fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-lg items-center justify-between gap-3 rounded-full border px-4 py-2.5 shadow-e2 backdrop-blur-sm md:hidden">
+                <p className="min-w-0 truncate text-xs">
+                  Best match: <span className="font-medium">{matches[0].name.split(" ")[0]}</span>
+                </p>
+                <Button asChild size="sm" className="shrink-0 rounded-full">
+                  <Link href={`/patient/book-appointment?clinician=${encodeURIComponent(matches[0].id)}&source=match`}>
+                    Book now
+                  </Link>
+                </Button>
+              </div>
+            ) : null}
           </section>
         ) : null}
 

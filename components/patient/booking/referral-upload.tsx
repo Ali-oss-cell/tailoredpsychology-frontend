@@ -4,6 +4,7 @@ import * as React from "react"
 import { FileArrowUp, FilePdf, Trash } from "@phosphor-icons/react"
 
 import { Button } from "@/components/ui/button"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { cn } from "@/lib/utils"
 import { uploadReferralDocument } from "@/src/patient/booking/api"
 import type { ReferralFileDraft } from "@/src/patient/booking/types"
@@ -68,6 +69,7 @@ export function ReferralUpload({ value, onChange }: ReferralUploadProps) {
   const [isUploading, setIsUploading] = React.useState(false)
   const [uploadProgress, setUploadProgress] = React.useState(0)
   const [isDragging, setIsDragging] = React.useState(false)
+  const [removeConfirmOpen, setRemoveConfirmOpen] = React.useState(false)
   const inputRef = React.useRef<HTMLInputElement>(null)
 
   const processFile = async (selected: File | undefined) => {
@@ -171,7 +173,7 @@ export function ReferralUpload({ value, onChange }: ReferralUploadProps) {
               </span>
             ) : null}
           </p>
-          <Button type="button" size="sm" variant="ghost" onClick={clearFile} disabled={isUploading}>
+          <Button type="button" size="sm" variant="ghost" onClick={() => (value.documentId ? setRemoveConfirmOpen(true) : clearFile())} disabled={isUploading}>
             <Trash size={14} />
             Remove
           </Button>
@@ -183,6 +185,19 @@ export function ReferralUpload({ value, onChange }: ReferralUploadProps) {
           {error}
         </p>
       ) : null}
+
+      <ConfirmDialog
+        open={removeConfirmOpen}
+        variant="danger"
+        title="Remove uploaded referral?"
+        description="This removes the linked document from your booking draft. You can upload a new PDF if needed."
+        confirmLabel="Remove file"
+        onCancel={() => setRemoveConfirmOpen(false)}
+        onConfirm={() => {
+          setRemoveConfirmOpen(false)
+          clearFile()
+        }}
+      />
     </div>
   )
 }

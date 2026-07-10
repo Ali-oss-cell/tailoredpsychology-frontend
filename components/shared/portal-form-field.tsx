@@ -64,7 +64,7 @@ export function portalInputClassName(hasError?: boolean) {
   )
 }
 
-type PortalTextInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "className"> & {
+export type PortalTextInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "className"> & {
   hasError?: boolean
   className?: string
 }
@@ -102,6 +102,70 @@ export const PortalTextarea = React.forwardRef<HTMLTextAreaElement, PortalTextar
   ref,
 ) {
   return <textarea ref={ref} className={cn(portalInputClassName(hasError), "min-h-[5rem]", className)} {...props} />
+})
+
+type PortalFileUploadProps = {
+  id: string
+  label: string
+  accept?: string
+  hint?: string
+  error?: string
+  fileName?: string
+  disabled?: boolean
+  onFileSelect: (file: File | null) => void
+  className?: string
+}
+
+export function PortalFileUpload({
+  id,
+  label,
+  accept,
+  hint,
+  error,
+  fileName,
+  disabled,
+  onFileSelect,
+  className,
+}: PortalFileUploadProps) {
+  return (
+    <PortalFormField id={id} label={label} hint={hint} error={error} className={className}>
+      <input
+        type="file"
+        accept={accept}
+        disabled={disabled}
+        className={cn(
+          portalInputClassName(Boolean(error)),
+          "file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-1.5 file:text-xs",
+        )}
+        onChange={(event) => onFileSelect(event.target.files?.[0] ?? null)}
+      />
+      {fileName ? <p className="text-muted-foreground text-xs">Selected: {fileName}</p> : null}
+    </PortalFormField>
+  )
+}
+
+export type PortalSearchInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "className" | "type"> & {
+  className?: string
+  rounded?: "xl" | "full"
+}
+
+/** Unified search field styling for portal shell and ops filter bars. */
+export const PortalSearchInput = React.forwardRef<HTMLInputElement, PortalSearchInputProps>(function PortalSearchInput(
+  { className, rounded = "xl", ...props },
+  ref,
+) {
+  return (
+    <input
+      ref={ref}
+      type="search"
+      className={cn(
+        portalInputClassName(),
+        rounded === "full" ? "rounded-full py-2" : "py-2",
+        className,
+      )}
+      {...props}
+    />
+  )
 })
 
 type PortalCheckboxFieldProps = {

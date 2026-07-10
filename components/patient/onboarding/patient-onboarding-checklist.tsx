@@ -16,6 +16,7 @@ import * as React from "react"
 
 import { PatientTutorialOnboardingCta } from "@/components/tutorials/patient-tutorial-onboarding-cta"
 import { PatientPortalPage } from "@/components/patient/patient-portal-page"
+import { EmptyState, EmptyStateAction } from "@/components/shared/empty-state"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -192,22 +193,22 @@ export function PatientOnboardingChecklist() {
             className={cn(
               "relative mt-6 flex items-start gap-3 rounded-xl border p-4 text-sm md:mt-8 md:p-5",
               complete
-                ? "border-emerald-500/25 bg-emerald-500/[0.06] text-emerald-950 dark:text-emerald-50"
-                : "border-amber-500/30 bg-amber-500/[0.06] text-amber-950 dark:text-amber-50",
+                ? "border-success/25 bg-success/10"
+                : "border-warning/30 bg-warning/10",
             )}
             role="status"
             aria-live="polite"
           >
             {complete ? (
-              <SealCheck className="mt-0.5 shrink-0 text-emerald-600 dark:text-emerald-400" size={22} weight="fill" aria-hidden />
+              <SealCheck className="text-success mt-0.5 shrink-0" size={22} weight="fill" aria-hidden />
             ) : (
-              <CheckCircle className="mt-0.5 shrink-0 text-amber-600 dark:text-amber-400" size={22} weight="duotone" aria-hidden />
+              <CheckCircle className="text-warning mt-0.5 shrink-0" size={22} weight="duotone" aria-hidden />
             )}
             <div className="min-w-0 space-y-1 leading-relaxed">
               <p className="font-medium text-foreground">
                 {complete ? "Account setup looks complete from the server." : "Intake still in progress"}
               </p>
-              <p className={complete ? "text-emerald-900/85 dark:text-emerald-100/90" : "text-amber-950/85 dark:text-amber-100/85"}>
+              <p className="text-muted-foreground">
                 {complete
                   ? "You can move on to appointments, billing, and session chat when your window opens."
                   : "Use the checklist below, save your booking intake, then tap Refresh status so we can confirm."}
@@ -247,8 +248,8 @@ export function PatientOnboardingChecklist() {
                   <Card
                     className={cn(
                       "overflow-hidden transition-shadow duration-200 hover:shadow-md",
-                      highlightIncomplete && "ring-2 ring-amber-500/35 border-amber-500/25",
-                      doneAll && "border-emerald-500/20",
+                      highlightIncomplete && "ring-2 ring-warning/35 border-warning",
+                      doneAll && "border-success/20",
                     )}
                   >
                     <CardContent className="p-0">
@@ -274,13 +275,13 @@ export function PatientOnboardingChecklist() {
                                 Step {index + 1}
                               </span>
                               {doneAll ? (
-                                <span className="text-emerald-600 dark:text-emerald-400 inline-flex items-center gap-1 text-xs font-medium">
+                                <span className="text-success inline-flex items-center gap-1 text-xs font-medium">
                                   <CheckCircle size={14} weight="fill" aria-hidden />
                                   Done
                                 </span>
                               ) : null}
                               {highlightIncomplete ? (
-                                <span className="text-amber-700 dark:text-amber-300 text-xs font-medium">Recommended next</span>
+                                <span className="text-warning text-xs font-medium">Recommended next</span>
                               ) : null}
                             </div>
                             <p className="font-heading text-lg font-semibold tracking-tight">{step.title}</p>
@@ -316,23 +317,14 @@ export function PatientOnboardingChecklist() {
           </Card>
 
           <Card className="border-dashed border-border/80">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <ChatCircle className="text-primary" size={20} aria-hidden />
-                Session chat
-              </CardTitle>
-              <CardDescription className="text-muted-foreground leading-relaxed">
-                Chat unlocks when you have an upcoming appointment and the pre-session window is active. Until then, use
-                notifications and your dashboard quick actions.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <Button asChild variant="link" className="h-auto px-0 text-sm">
-                <Link href="/patient/dashboard">
-                  View dashboard
-                  <ArrowRight className="ml-1" size={14} weight="bold" aria-hidden />
-                </Link>
-              </Button>
+            <CardContent className="pt-6">
+              <EmptyState
+                className="border-none bg-transparent px-0 py-0"
+                icon={<ChatCircle className="text-primary" size={24} weight="duotone" aria-hidden />}
+                title="Session chat"
+                description="Chat unlocks when you have an upcoming appointment and the pre-session window is active. Until then, use notifications and your dashboard quick actions."
+                action={<EmptyStateAction href="/patient/dashboard" label="View dashboard" />}
+              />
             </CardContent>
           </Card>
         </aside>

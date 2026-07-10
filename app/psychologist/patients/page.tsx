@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PsychologistPortalPage } from "@/components/psychologist/psychologist-portal-page"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { EmptyState } from "@/components/shared/empty-state"
 import { PortalListRow } from "@/components/shared/portal-list-row"
 import { psychologistPatientsContent } from "@/content/psychologist-patients"
 import { usePsychologistId } from "@/src/psychologist/queries/use-current-user"
@@ -53,7 +54,12 @@ export default function PsychologistPatientsPage() {
           {loading ? <DashboardStateBlock variant="loading" message="Loading live caseload..." /> : null}
           {error ? <DashboardStateBlock variant="error" message={error} onRetry={() => void caseloadQuery.refetch()} /> : null}
           {!loading && !error && filteredRows.length === 0 ? (
-            <DashboardStateBlock variant="empty" message={search ? "No patients matched your search." : "No assigned patients yet."} />
+            <EmptyState
+              title={search ? "No patients matched your search." : "No assigned patients yet."}
+              description={
+                search ? "Try a different name or patient ID." : "Patients appear here once assigned to your caseload."
+              }
+            />
           ) : null}
           {filteredRows.map((patient) => (
             <PortalListRow key={patient.id} highlight={patient.needsPrep} className="md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_auto_auto]">
@@ -61,7 +67,7 @@ export default function PsychologistPatientsPage() {
                 <p className="text-sm font-medium">{patient.name}</p>
                 <div className="flex flex-wrap gap-1">
                   {patient.needsPrep ? (
-                    <Badge variant="outline" className="border-amber-400/80 bg-amber-50 text-[11px] text-amber-950">
+                    <Badge variant="outline" className="border-warning/80 bg-warning/10 text-[11px] text-warning-foreground">
                       Prep needed
                     </Badge>
                   ) : null}

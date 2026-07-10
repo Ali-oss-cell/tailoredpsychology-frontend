@@ -11,6 +11,7 @@ import {
 import { useUrlSearchQuery } from "@/components/shared/use-url-search-query"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import {
   createAdminPsychologistUser,
   getAdminPsychologistUsers,
@@ -28,6 +29,20 @@ const emptyDraft = {
   status: "active" as const,
 }
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const AHPRA_PATTERN = /^[A-Z]{3}\d{10}$/i
+
+function validateCreateDraft(draft: typeof emptyDraft): string | null {
+  if (!EMAIL_PATTERN.test(draft.email.trim())) return "Enter a valid email address."
+  if (!AHPRA_PATTERN.test(draft.registrationNumber.trim())) {
+    return "AHPRA registration is usually 3 letters followed by 10 digits (e.g. PSY0001234567)."
+  }
+  if (!/^\d{6,8}$/.test(draft.providerNumber.trim())) {
+    return "Medicare provider number is usually 6–8 digits."
+  }
+  return null
+}
+
 export function AdminPsychologistUsersCard() {
   const [rows, setRows] = useState<AdminPsychologistUser[]>([])
   const [loading, setLoading] = useState(true)
@@ -35,6 +50,8 @@ export function AdminPsychologistUsersCard() {
   const [busyId, setBusyId] = useState<string | null>(null)
   const [draft, setDraft] = useState(emptyDraft)
   const [showCreateForm, setShowCreateForm] = useState(false)
+  const [createConfirmOpen, setCreateConfirmOpen] = useState(false)
+  const [createValidationError, setCreateValidationError] = useState<string | null>(null)
   const [search] = useUrlSearchQuery()
 
   async function load(): Promise<void> {
@@ -136,12 +153,15 @@ export function AdminPsychologistUsersCard() {
         </div>
         {showCreateForm ? (
         <div className="grid gap-3 rounded-md border border-border/60 p-3 md:grid-cols-2">
-          <PortalFormField id="create-email" label="Email" required>
+          <PortalFormField id="create-email" label="Email" required error={createValidationError && createValidationError.includes("email") ? createValidationError : undefined}>
             <PortalTextInput
               type="email"
               placeholder="clinician@example.com"
               value={draft.email}
-              onChange={(event) => setDraft((prev) => ({ ...prev, email: event.target.value }))}
+              onChange={(event) => {
+                setCreateValidationError(null)
+                setDraft((prev) => ({ ...prev, email: event.target.value }))
+              }}
             />
           </PortalFormField>
           <PortalFormField id="create-display-name" label="Display name" required>
@@ -151,16 +171,34 @@ export function AdminPsychologistUsersCard() {
               onChange={(event) => setDraft((prev) => ({ ...prev, displayName: event.target.value }))}
             />
           </PortalFormField>
-          <PortalFormField id="create-registration" label="Registration number" required>
+          <PortalFormField
+            id="create-registration"
+            label="Registration number"
+            hint="AHPRA format: 3 letters + 10 digits (e.g. PSY0001234567)"
+            required
+            error={createValidationError && createValidationError.includes("AHPRA") ? createValidationError : undefined}
+          >
             <PortalTextInput
               value={draft.registrationNumber}
-              onChange={(event) => setDraft((prev) => ({ ...prev, registrationNumber: event.target.value }))}
+              onChange={(event) => {
+                setCreateValidationError(null)
+                setDraft((prev) => ({ ...prev, registrationNumber: event.target.value }))
+              }}
             />
           </PortalFormField>
-          <PortalFormField id="create-provider" label="Provider number" required>
+          <PortalFormField
+            id="create-provider"
+            label="Provider number"
+            hint="Medicare provider number — usually 6–8 digits"
+            required
+            error={createValidationError && createValidationError.includes("provider") ? createValidationError : undefined}
+          >
             <PortalTextInput
               value={draft.providerNumber}
-              onChange={(event) => setDraft((prev) => ({ ...prev, providerNumber: event.target.value }))}
+              onChange={(event) => {
+                setCreateValidationError(null)
+                setDraft((prev) => ({ ...prev, providerNumber: event.target.value }))
+              }}
             />
           </PortalFormField>
           <PortalFormField id="create-specialties" label="Specialties (comma separated)" className="md:col-span-2">
@@ -169,6 +207,9 @@ export function AdminPsychologistUsersCard() {
               onChange={(event) => setDraft((prev) => ({ ...prev, specialties: event.target.value }))}
             />
           </PortalFormField>
+          {createValidationError && !createValidationError.includes("email") && !createValidationError.includes("AHPRA") && !createValidationError.includes("provider") ? (
+            <p className="text-destructive md:col-span-2 text-xs">{createValidationError}</p>
+          ) : null}
           <Button
             size="sm"
             className="md:col-span-2 md:w-fit"
@@ -179,11 +220,23 @@ export function AdminPsychologistUsersCard() {
               !draft.registrationNumber.trim() ||
               !draft.providerNumber.trim()
             }
-            onClick={() => void onCreate()}
+            onClick={() => {
+              const validationError = validateCreateDraft(draft)
+              if (validationError) {
+                setCreateValidationError(validationError)
+                return
+              }
+              setCreateConfirmOpen(true)
+            }}
           >
             {busyId === "create" ? "Creating..." : "Create psychologist"}
           </Button>
         </div>
+        ) : null}
+        {!loading && !error && search.trim() ? (
+          <p className="text-muted-foreground text-xs">
+            {filteredRows.length} psychologist{filteredRows.length === 1 ? "" : "s"} matched your search
+          </p>
         ) : null}
         {!loading && !error && search.trim() && filteredRows.length === 0 ? (
           <DashboardStateBlock variant="empty" message="No psychologist users matched your search." />
@@ -216,6 +269,18 @@ export function AdminPsychologistUsersCard() {
           onNext={() => pagination.setPage((p) => Math.min(pagination.totalPages, p + 1))}
         />
       </CardContent>
+      <ConfirmDialog
+        open={createConfirmOpen}
+        title="Create psychologist account?"
+        description={`This will create a portal account for ${draft.displayName.trim() || "this clinician"} at ${draft.email.trim()}.`}
+        confirmLabel="Create account"
+        isLoading={busyId === "create"}
+        onCancel={() => setCreateConfirmOpen(false)}
+        onConfirm={() => {
+          setCreateConfirmOpen(false)
+          void onCreate()
+        }}
+      />
     </Card>
   )
 }

@@ -10,7 +10,7 @@ import {
   yesNoLabels,
 } from "@/content/patient-booking"
 import { australianStates } from "@/content/get-matched-quiz"
-import { formatDateAu } from "@/src/lib/format-au"
+import { formatDateAu, australianEasternTimezoneLabel } from "@/src/lib/format-au"
 import type { BookingRequestDraft } from "@/src/patient/booking/types"
 
 type BookingReviewSummaryProps = {
@@ -49,7 +49,7 @@ export function BookingReviewSummary({
         <p className="text-muted-foreground mt-1 text-xs leading-relaxed">
           {bookingTypeLabels[draft.bookingMeta.bookingType]} · {clinicianName} ·{" "}
           {slotDate ? formatDateAu(`${slotDate}T12:00:00`) : "Date not selected"} ·{" "}
-          {slotTimeLabel || "Time not selected"}
+          {slotTimeLabel || "Time not selected"} · {australianEasternTimezoneLabel(`${slotDate || new Date().toISOString()}T12:00:00`)}
         </p>
       </div>
       <div className="rounded-lg border border-border/60 p-3">
@@ -100,6 +100,21 @@ export function BookingReviewSummary({
         <p className="text-muted-foreground mt-1 text-xs">
           Format: {modalityLabel} · Clinician gender: {genderLabel}
           {draft.preferences.preferredLanguage ? ` · Language: ${draft.preferences.preferredLanguage}` : ""}
+        </p>
+      </div>
+      <div className="rounded-lg border border-border/60 p-3">
+        <p className="text-sm font-medium">Telehealth safety</p>
+        <p className="text-muted-foreground mt-1 text-xs">
+          Session location: {draft.telehealthSafety.currentSessionLocation || "—"}
+        </p>
+        <p className="text-muted-foreground mt-1 text-xs">
+          Emergency contact: {draft.telehealthSafety.emergencyContactName || "—"}
+          {draft.telehealthSafety.emergencyContactPhone
+            ? ` · ${draft.telehealthSafety.emergencyContactPhone}`
+            : ""}
+          {draft.telehealthSafety.emergencyContactRelationship
+            ? ` (${draft.telehealthSafety.emergencyContactRelationship})`
+            : ""}
         </p>
       </div>
       <div className="rounded-lg border border-border/60 p-3">

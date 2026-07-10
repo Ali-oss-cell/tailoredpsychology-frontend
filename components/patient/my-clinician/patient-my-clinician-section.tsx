@@ -5,6 +5,7 @@ import Link from "next/link"
 
 import { ClinicianPublicProfileHeader } from "@/components/shared/clinician-public-profile-header"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { EmptyState, EmptyStateAction } from "@/components/shared/empty-state"
 import { PortalListRow } from "@/components/shared/portal-list-row"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -129,7 +130,11 @@ export function PatientMyClinicianSection() {
         {loading ? <CareTeamLoadingSkeleton /> : null}
         {error ? <DashboardStateBlock variant="error" message={error} onRetry={() => void load()} /> : null}
         {!loading && !error && team.length === 0 ? (
-          <DashboardStateBlock variant="empty" message={patientMyClinicianContent.emptyTeam} />
+          <EmptyState
+            title="No clinicians yet"
+            description="When you have a scheduled session, your psychologist will appear here."
+            action={<EmptyStateAction href="/patient/book-appointment" label="Book a session" />}
+          />
         ) : null}
       </div>
 
@@ -178,12 +183,21 @@ export function PatientMyClinicianSection() {
                         <div className="space-y-2">
                           <p className="text-foreground font-medium">Upcoming</p>
                           {upcoming.length === 0 ? (
-                            <p className="text-muted-foreground text-xs">
-                              No upcoming appointments with this clinician.
-                              {clinician.nextSessionAt ? (
-                                <> Next from schedule: {formatSummaryWhen(clinician.nextSessionAt)}.</>
-                              ) : null}
-                            </p>
+                            <EmptyState
+                              className="px-4 py-5"
+                              title="No upcoming sessions"
+                              description={
+                                clinician.nextSessionAt
+                                  ? `Next from schedule: ${formatSummaryWhen(clinician.nextSessionAt)}.`
+                                  : "No upcoming appointments with this clinician."
+                              }
+                              action={
+                                <EmptyStateAction
+                                  href={`/patient/book-appointment?clinician=${encodeURIComponent(clinician.clinicianId)}`}
+                                  label={patientMyClinicianContent.bookWithClinician}
+                                />
+                              }
+                            />
                           ) : (
                             upcoming.map((item) => {
                               const { date, time } = formatSessionRange(item.scheduledStartAt, item.scheduledEndAt)
@@ -212,7 +226,11 @@ export function PatientMyClinicianSection() {
                         <div className="space-y-2">
                           <p className="text-foreground font-medium">Recent sessions</p>
                           {past.length === 0 ? (
-                            <p className="text-muted-foreground text-xs">No past sessions in your history yet.</p>
+                            <EmptyState
+                              className="px-4 py-5"
+                              title="No session history"
+                              description="No past sessions in your history yet."
+                            />
                           ) : (
                             past.slice(0, 5).map((item) => {
                               const { date } = formatSessionRange(item.scheduledStartAt, item.scheduledEndAt)

@@ -10,6 +10,7 @@ type BookingDraftStatusProps = {
   syncState: BookingDraftSyncState
   localMessage: string
   className?: string
+  onRefreshDraft?: () => void
 }
 
 function syncLabel(syncState: BookingDraftSyncState): string | null {
@@ -19,15 +20,15 @@ function syncLabel(syncState: BookingDraftSyncState): string | null {
     case "saved":
       return "Saved across devices"
     case "conflict":
-      return "Version conflict detected. Refresh to merge latest draft."
+      return "Another device saved a newer draft. Refresh to load it and keep going."
     case "error":
-      return "Cloud draft unavailable. Local save still active."
+      return "We could not save to the cloud. Your progress is still on this device."
     default:
       return null
   }
 }
 
-export function BookingDraftStatus({ syncState, localMessage, className }: BookingDraftStatusProps) {
+export function BookingDraftStatus({ syncState, localMessage, className, onRefreshDraft }: BookingDraftStatusProps) {
   const isSyncing = syncState === "syncing"
   const isError = syncState === "conflict" || syncState === "error"
   const isSaved = syncState === "saved"
@@ -44,7 +45,7 @@ export function BookingDraftStatus({ syncState, localMessage, className }: Booki
       {isSyncing ? (
         <ArrowsClockwise size={13} className="mt-0.5 shrink-0 animate-spin text-primary" aria-hidden />
       ) : isError ? (
-        <WarningCircle size={13} className="mt-0.5 shrink-0 text-amber-600" aria-hidden />
+        <WarningCircle size={13} className="text-warning mt-0.5 shrink-0" aria-hidden />
       ) : isSaved ? (
         <CheckCircle size={13} className="text-primary mt-0.5 shrink-0" aria-hidden />
       ) : (
@@ -53,6 +54,15 @@ export function BookingDraftStatus({ syncState, localMessage, className }: Booki
       <span>
         {syncLine ? <span className="text-foreground/75 block font-medium">{syncLine}</span> : null}
         <span className="text-muted-foreground/90">{localMessage}</span>
+        {isError && onRefreshDraft ? (
+          <button
+            type="button"
+            onClick={onRefreshDraft}
+            className="text-primary mt-1 block font-medium underline-offset-2 hover:underline"
+          >
+            Refresh draft
+          </button>
+        ) : null}
       </span>
     </div>
   )

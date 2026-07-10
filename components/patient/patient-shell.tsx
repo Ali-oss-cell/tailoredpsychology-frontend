@@ -2,17 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import {
-  Books,
-  CalendarDots,
-  CalendarPlus,
-  CreditCard,
-  House,
-  ShieldCheck,
-  SignOut,
-  Stethoscope,
-  User,
-} from "@phosphor-icons/react/dist/ssr"
+import { CalendarPlus, SignOut } from "@phosphor-icons/react/dist/ssr"
 
 import { LogoutLink } from "@/components/auth/logout-link"
 import { ClinkLogo } from "@/components/brand/clink-logo"
@@ -36,6 +26,8 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { NavIcon } from "@/src/routes/nav-icons"
+import { getShellNavItems } from "@/src/routes/nav-utils"
 import { TUTORIAL_EXPAND_PATIENT_SIDEBAR } from "@/src/tutorials/events"
 
 function PatientShellTutorialSidebarSync() {
@@ -50,40 +42,12 @@ function PatientShellTutorialSidebarSync() {
   return null
 }
 
-export type PatientShellActiveRoute =
-  | "dashboard"
-  | "appointments"
-  | "invoices"
-  | "resources"
-  | "privacy-requests"
-  | "account"
-  | "onboarding"
-  | "my-clinician"
-
 type PatientShellProps = {
   children: React.ReactNode
-  activeRoute?: PatientShellActiveRoute
+  activeRoute?: string
 }
 
-const navItems = [
-  { key: "dashboard" as const, href: "/patient/dashboard", label: "Dashboard", icon: House },
-  { key: "appointments" as const, href: "/patient/appointments", label: "Appointments", icon: CalendarDots },
-  { key: "my-clinician" as const, href: "/patient/my-clinician", label: "My clinician", icon: Stethoscope },
-  { key: "invoices" as const, href: "/patient/invoices", label: "Billing", icon: CreditCard },
-  { key: "resources" as const, href: "/patient/resources", label: "Resources", icon: Books },
-  { key: "privacy-requests" as const, href: "/patient/data-requests", label: "Privacy Requests", icon: ShieldCheck },
-  { key: "account" as const, href: "/patient/account", label: "Account", icon: User },
-]
-
-const navTutorial: Record<(typeof navItems)[number]["key"], string> = {
-  dashboard: "shell.sidebar.dashboard",
-  appointments: "shell.sidebar.appointments",
-  "my-clinician": "shell.sidebar.my-clinician",
-  invoices: "shell.sidebar.billing",
-  resources: "shell.sidebar.resources",
-  "privacy-requests": "shell.sidebar.privacy-requests",
-  account: "shell.sidebar.account",
-}
+const navItems = getShellNavItems("patient")
 
 export function PatientShell({ children, activeRoute = "dashboard" }: PatientShellProps) {
   return (
@@ -97,14 +61,12 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
           <SidebarContent>
             <SidebarMenu>
               {navItems.map((item) => {
-                const Icon = item.icon
-                const tutorialId = navTutorial[item.key]
-                const tutorialAttr = tutorialId ? { "data-tutorial": tutorialId } : {}
+                const tutorialAttr = item.tutorialId ? { "data-tutorial": item.tutorialId } : {}
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton asChild isActive={item.key === activeRoute}>
                       <Link href={item.href} title={item.label} {...tutorialAttr}>
-                        <Icon size={18} />
+                        {item.icon ? <NavIcon icon={item.icon} /> : null}
                         <span className="group-data-[state=collapsed]/sidebar:sr-only">{item.label}</span>
                       </Link>
                     </SidebarMenuButton>

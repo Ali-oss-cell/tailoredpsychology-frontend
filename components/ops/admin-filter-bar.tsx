@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { Badge } from "@/components/ui/badge"
+import { PortalSearchInput, PortalSelect } from "@/components/shared/portal-form-field"
 
 type FilterOption = {
   label: string
@@ -23,6 +24,8 @@ type AdminFilterBarProps = {
   selects?: FilterSelect[]
   onSelectChange?: (key: string, value: string) => void
   onClear?: () => void
+  resultCount?: number
+  resultLabel?: string
 }
 
 export function AdminFilterBar({
@@ -32,6 +35,8 @@ export function AdminFilterBar({
   selects = [],
   onSelectChange,
   onClear,
+  resultCount,
+  resultLabel = "results",
 }: AdminFilterBarProps) {
   const activeChips = React.useMemo(() => {
     const chips: { key: string; label: string }[] = []
@@ -50,31 +55,29 @@ export function AdminFilterBar({
 
   return (
     <div className="space-y-2">
-    <div className="flex flex-wrap items-end gap-3 rounded-md border border-border/70 p-3">
+    <div className="bg-background/95 lg:sticky lg:top-0 lg:z-20 flex flex-wrap items-end gap-3 rounded-md border border-border/70 p-3 backdrop-blur-sm">
       <label className="flex min-w-64 flex-1 flex-col gap-1 text-xs">
         <span className="text-muted-foreground">Search</span>
-        <input
+        <PortalSearchInput
           value={searchValue}
           onChange={(event) => onSearchChange(event.target.value)}
           placeholder={searchPlaceholder}
-          className="rounded border border-border px-2 py-1 text-sm"
         />
       </label>
 
       {selects.map((select) => (
         <label key={select.key} className="flex min-w-40 flex-col gap-1 text-xs">
           <span className="text-muted-foreground">{select.label}</span>
-          <select
+          <PortalSelect
             value={select.value}
             onChange={(event) => onSelectChange?.(select.key, event.target.value)}
-            className="rounded border border-border bg-background px-2 py-1 text-sm"
           >
             {select.options.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
             ))}
-          </select>
+          </PortalSelect>
         </label>
       ))}
 
@@ -84,6 +87,11 @@ export function AdminFilterBar({
         </button>
       ) : null}
     </div>
+    {typeof resultCount === "number" ? (
+      <p className="text-muted-foreground px-1 text-xs">
+        {resultCount} {resultLabel}
+      </p>
+    ) : null}
     {activeChips.length > 0 ? (
       <div className="flex flex-wrap items-center gap-2 px-1">
         <span className="text-muted-foreground text-xs font-medium">Active filters</span>

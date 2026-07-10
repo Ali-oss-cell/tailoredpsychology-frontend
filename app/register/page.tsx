@@ -10,6 +10,7 @@ import { AuthShell } from "@/components/auth/auth-shell"
 import { Button } from "@/components/ui/button"
 import { authContent } from "@/content/auth"
 import { registerWithBackend } from "@/src/auth/api"
+import { PASSWORD_HINT, isPasswordLongEnough } from "@/src/auth/password-policy"
 import { getDefaultRouteForRole } from "@/src/auth/session"
 
 export default function RegisterPage() {
@@ -26,6 +27,11 @@ export default function RegisterPage() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError("")
+
+    if (!isPasswordLongEnough(password)) {
+      setError("Password must be at least 8 characters.")
+      return
+    }
 
     if (password !== confirmPassword) {
       setError("Passwords do not match.")
@@ -80,11 +86,11 @@ export default function RegisterPage() {
       >
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="grid gap-4 sm:grid-cols-2">
-            <AuthField id="firstName" label="First Name" placeholder="Sarah" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-            <AuthField id="lastName" label="Last Name" placeholder="Chen" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+            <AuthField id="firstName" label="First Name" placeholder="Sarah" value={firstName} onChange={(e) => setFirstName(e.target.value)} autoComplete="given-name" required />
+            <AuthField id="lastName" label="Last Name" placeholder="Chen" value={lastName} onChange={(e) => setLastName(e.target.value)} autoComplete="family-name" required />
           </div>
           <AuthField id="email" label="Email Address" type="email" placeholder="sarah@example.com" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required />
-          <AuthField id="password" label="Password" type="password" placeholder="Create a password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" required />
+          <AuthField id="password" label="Password" type="password" placeholder="Create a password" value={password} onChange={(e) => setPassword(e.target.value)} hint={PASSWORD_HINT} autoComplete="new-password" required />
           <AuthField
             id="confirmPassword"
             label="Confirm Password"
@@ -92,6 +98,7 @@ export default function RegisterPage() {
             placeholder="Confirm your password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            hint={PASSWORD_HINT}
             autoComplete="new-password"
             required
           />

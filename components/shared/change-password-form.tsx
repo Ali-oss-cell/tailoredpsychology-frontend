@@ -92,6 +92,9 @@ export function ChangePasswordForm({
       onSubmit={(event) => void handleSubmit(event)}
       className={cn("space-y-3 rounded-md border border-border/60 bg-muted/30 p-3", className)}
     >
+      <div className="sr-only" aria-live="polite">
+        {localError}
+      </div>
       <PortalFormField id="current-password" label="Current password" required>
         <PortalTextInput
           type="password"

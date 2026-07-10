@@ -101,7 +101,7 @@ export function JoinSessionGate({ appointmentId, readiness, role, onRunChecks }:
       </div>
 
       {decision?.reasons.length ? (
-        <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+        <p className="border-warning bg-warning/10 text-warning-foreground rounded-md border px-3 py-2 text-xs">
           {warningCopyFromReasons(decision.reasons)}
         </p>
       ) : null}

@@ -224,6 +224,28 @@
     text-transform: uppercase;
     color: var(--muted-foreground);
   }
+
+  .text-success {
+    color: var(--success);
+  }
+  .text-warning {
+    color: var(--warning);
+  }
+  .border-success {
+    border-color: color-mix(in oklab, var(--success) 40%, transparent);
+  }
+  .border-warning {
+    border-color: color-mix(in oklab, var(--warning) 40%, transparent);
+  }
+  .bg-success\/10 {
+    background-color: color-mix(in oklab, var(--success) 10%, transparent);
+  }
+  .bg-warning\/10 {
+    background-color: color-mix(in oklab, var(--warning) 10%, transparent);
+  }
+  .text-warning-foreground {
+    color: var(--warning-foreground);
+  }
 }
 
 /* ---- Motion system (all opt-in via media query) ---- */

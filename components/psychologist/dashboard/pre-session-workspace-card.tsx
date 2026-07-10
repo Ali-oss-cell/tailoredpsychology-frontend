@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useQuery } from "@tanstack/react-query"
 
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { EmptyState } from "@/components/shared/empty-state"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { getCurrentUser } from "@/src/auth/current-user"
@@ -45,10 +46,10 @@ export function PreSessionWorkspaceCard() {
 
   const readinessBadgeClass = (status: PsychologistWorkspaceItem["readinessStatus"]) => {
     if (status === "ready") {
-      return "rounded-full border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700"
+      return "rounded-full border border-success/30 bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success"
     }
     if (status === "attention") {
-      return "rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700"
+      return "rounded-full border border-warning/30 bg-warning/10 px-2 py-0.5 text-[11px] font-medium text-warning"
     }
     return "rounded-full border border-slate-300 bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-700"
   }
@@ -124,7 +125,10 @@ export function PreSessionWorkspaceCard() {
         {isLoading ? <DashboardStateBlock variant="loading" message="Loading data..." /> : null}
         {!isLoading && error ? <DashboardStateBlock variant="error" message={error} onRetry={retryLoadWorkspace} /> : null}
         {!isLoading && !error && displayedItems.length === 0 ? (
-          <DashboardStateBlock variant="empty" message={prepOnly ? "No items with open prep tasks." : "No items yet."} />
+          <EmptyState
+            title={prepOnly ? "No items with open prep tasks." : "No upcoming prep items."}
+            description="Sessions needing preparation will appear here as appointments are scheduled."
+          />
         ) : null}
         {!isLoading && !error && displayedItems.length > 0 ? (
           <div className="space-y-2">

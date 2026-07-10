@@ -60,8 +60,8 @@ export function PreSessionReadinessCard({ appointmentId, onReadinessChange, reru
 
   const statusBadgeClass = (status: "pass" | "review") =>
     status === "pass"
-      ? "rounded-full border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700"
-      : "rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700"
+      ? "rounded-full border border-success/30 bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success"
+      : "rounded-full border border-warning/30 bg-warning/10 px-2 py-0.5 text-[11px] font-medium text-warning"
 
   const loadReadiness = React.useCallback(() => {
     let cancelled = false

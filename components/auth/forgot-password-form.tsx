@@ -64,9 +64,15 @@ export function ForgotPasswordForm() {
             onChange={(event) => setEmail(event.target.value)}
             disabled={busy}
             required
+            autoComplete="email"
           />
           {error ? <p className="text-destructive text-sm">{error}</p> : null}
-          {message ? <p className="text-sm text-emerald-700">{message}</p> : null}
+          {message ? (
+            <div className="text-success space-y-1 text-sm">
+              <p>{message}</p>
+              <p>Check your inbox and spam or junk folder — the link can take a few minutes to arrive.</p>
+            </div>
+          ) : null}
           {process.env.NODE_ENV === "development" && devResetUrl ? (
             <p className="text-muted-foreground rounded-md border border-border/60 bg-muted/40 p-3 text-xs">
               Email delivery is not configured in this environment. Use this link to reset:{" "}
