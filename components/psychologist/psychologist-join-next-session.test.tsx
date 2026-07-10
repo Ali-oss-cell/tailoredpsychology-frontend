@@ -1,20 +1,32 @@
-import { render, screen, waitFor } from "@testing-library/react"
+import { screen, waitFor } from "@testing-library/react"
 
-jest.mock("@/src/auth/current-user", () => ({
-  getCurrentUser: jest.fn(),
+import { renderWithQueryClient } from "@/src/patient/queries/test-utils"
+
+jest.mock("@/src/psychologist/queries/use-current-user", () => ({
+  usePsychologistCurrentUser: jest.fn(),
 }))
 
-jest.mock("@/src/psychologist/workspace/api", () => ({
-  getPsychologistWorkspace: jest.fn(),
+jest.mock("@/src/psychologist/queries/use-psychologist-workspace", () => ({
+  usePsychologistWorkspace: jest.fn(),
 }))
 
-import { getCurrentUser } from "@/src/auth/current-user"
-import { getPsychologistWorkspace } from "@/src/psychologist/workspace/api"
+import { usePsychologistCurrentUser } from "@/src/psychologist/queries/use-current-user"
+import { usePsychologistWorkspace } from "@/src/psychologist/queries/use-psychologist-workspace"
 
 import { PsychologistJoinNextSession } from "./psychologist-join-next-session"
 
-const mockedGetCurrentUser = getCurrentUser as jest.MockedFunction<typeof getCurrentUser>
-const mockedGetWorkspace = getPsychologistWorkspace as jest.MockedFunction<typeof getPsychologistWorkspace>
+const mockedUsePsychologistCurrentUser = usePsychologistCurrentUser as jest.MockedFunction<
+  typeof usePsychologistCurrentUser
+>
+const mockedUsePsychologistWorkspace = usePsychologistWorkspace as jest.MockedFunction<typeof usePsychologistWorkspace>
+
+const psychologistUser = {
+  id: "user_psychologist_001",
+  email: "psychologist@clink.test",
+  displayName: "Psych",
+  role: "psychologist" as const,
+  accountSetupComplete: true,
+}
 
 describe("PsychologistJoinNextSession", () => {
   beforeEach(() => {
@@ -23,19 +35,30 @@ describe("PsychologistJoinNextSession", () => {
 
   it("renders link when workspace has a future session", async () => {
     const future = new Date(Date.now() + 60 * 60 * 1000).toISOString()
-    mockedGetCurrentUser.mockResolvedValue({
-      id: "user_psychologist_001",
-      email: "psychologist@clink.test",
-      displayName: "Psych",
-      role: "psychologist",
-      accountSetupComplete: true,
-    })
-    mockedGetWorkspace.mockResolvedValue({
-      psychologistId: "user_psychologist_001",
-      items: [{ appointmentId: "appt_next", patientId: "p1", startsAt: future, risk: "none", referralStatus: "missing_referral", intakeState: "committed", readinessStatus: "ready", actions: [] }],
-    })
+    mockedUsePsychologistCurrentUser.mockReturnValue({
+      data: psychologistUser,
+      isLoading: false,
+    } as ReturnType<typeof usePsychologistCurrentUser>)
+    mockedUsePsychologistWorkspace.mockReturnValue({
+      data: {
+        psychologistId: psychologistUser.id,
+        items: [
+          {
+            appointmentId: "appt_next",
+            patientId: "p1",
+            startsAt: future,
+            risk: "none",
+            referralStatus: "missing_referral",
+            intakeState: "committed",
+            readinessStatus: "ready",
+            actions: [],
+          },
+        ],
+      },
+      isLoading: false,
+    } as ReturnType<typeof usePsychologistWorkspace>)
 
-    render(<PsychologistJoinNextSession />)
+    renderWithQueryClient(<PsychologistJoinNextSession />)
 
     await waitFor(() => {
       const link = screen.getByRole("link", { name: /join next session/i })
@@ -44,19 +67,19 @@ describe("PsychologistJoinNextSession", () => {
   })
 
   it("renders disabled control when no upcoming session", async () => {
-    mockedGetCurrentUser.mockResolvedValue({
-      id: "user_psychologist_001",
-      email: "psychologist@clink.test",
-      displayName: "Psych",
-      role: "psychologist",
-      accountSetupComplete: true,
-    })
-    mockedGetWorkspace.mockResolvedValue({
-      psychologistId: "user_psychologist_001",
-      items: [],
-    })
+    mockedUsePsychologistCurrentUser.mockReturnValue({
+      data: psychologistUser,
+      isLoading: false,
+    } as ReturnType<typeof usePsychologistCurrentUser>)
+    mockedUsePsychologistWorkspace.mockReturnValue({
+      data: {
+        psychologistId: psychologistUser.id,
+        items: [],
+      },
+      isLoading: false,
+    } as ReturnType<typeof usePsychologistWorkspace>)
 
-    render(<PsychologistJoinNextSession />)
+    renderWithQueryClient(<PsychologistJoinNextSession />)
 
     await waitFor(() => {
       expect(screen.queryByRole("link", { name: /join next session/i })).toBeNull()

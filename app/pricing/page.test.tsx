@@ -8,6 +8,12 @@ jest.mock("@/components/layout/public-header", () => ({
 jest.mock("@/components/layout/public-footer", () => ({
   PublicFooter: () => <div>Footer</div>,
 }))
+jest.mock("@/components/layout/public-page-enter", () => ({
+  PublicPageEnter: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}))
+jest.mock("@/components/marketing/scroll-reveal", () => ({
+  ScrollReveal: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}))
 describe("PricingPage", () => {
   it("renders pricing and Medicare examples", () => {
     render(<PricingPage />)
