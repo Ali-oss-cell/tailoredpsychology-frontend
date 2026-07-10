@@ -1,3 +1,49 @@
+import { conditionPages } from "@/content/conditions"
+import { matchClinicianCatalog } from "@/content/get-matched-quiz"
+
+export type HomeTrustIndicator = {
+  label: string
+  icon: "medicare" | "ahpra" | "telehealth" | "australia" | "privacy"
+}
+
+export type HomeTrustBarItem = {
+  title: string
+  description: string
+  icon: "evidence" | "licensed" | "video" | "matching" | "australia" | "privacy"
+}
+
+export type HomeHowItWorksStep = {
+  title: string
+  description: string
+  icon: "questions" | "match" | "book"
+}
+
+export type HomeServiceCard = {
+  slug: string
+  title: string
+  description: string
+}
+
+export type HomeWhyChooseItem = {
+  eyebrow: string
+  title: string
+  description: string
+  imageSrc: string
+  imageAlt: string
+}
+
+export type HomeTestimonial = {
+  quote: string
+  name: string
+  context: string
+}
+
+export type HomeHeroStat = {
+  value: string
+  label: string
+  disclaimer?: string
+}
+
 export type HomePageContent = {
   hero: {
     badge: string
@@ -7,80 +53,37 @@ export type HomePageContent = {
     imageSrc: string
     imageAlt: string
     primaryAction: { href: string; label: string }
-    secondaryAction: {
-      href: string
-      label: string
-      variant: "outline" | "ghost" | "secondary" | "default"
-    }
+    secondaryAction: { href: string; label: string }
+    tertiaryAction: { href: string; label: string }
+    trustIndicators: HomeTrustIndicator[]
+    floatingStats: HomeHeroStat[]
   }
-  trustStats: Array<{ value: string; label: string }>
-  wellbeingIntro: {
-    eyebrow?: string
+  trustBar: HomeTrustBarItem[]
+  howItWorks: {
     title: string
     description: string
-    imageSrc: string
-    imageAlt: string
-    imageOnLeft?: boolean
-    action?: { href: string; label: string }
+    steps: HomeHowItWorksStep[]
   }
-  guidedCare: {
-    eyebrow?: string
+  services: {
     title: string
     description: string
-    imageSrc: string
-    imageAlt: string
-    imageOnLeft?: boolean
-    action?: { href: string; label: string }
+    items: HomeServiceCard[]
   }
-  servicesPreview: {
+  featuredPsychologists: {
     title: string
     description: string
-    items: Array<{ title: string; description: string }>
+    disclaimer: string
   }
-  trustConnection: {
-    eyebrow?: string
+  whyChooseUs: {
     title: string
     description: string
-    imageSrc: string
-    imageAlt: string
-    imageOnLeft?: boolean
-    action?: { href: string; label: string }
+    items: HomeWhyChooseItem[]
   }
-  carePath: {
+  testimonials: {
     title: string
     description: string
-    steps: Array<{ title: string; body: string }>
-    imageSrc: string
-    imageAlt: string
-  }
-  telehealthBand: {
-    title: string
-    description: string
-    items: Array<{
-      title: string
-      description: string
-      icon: "telehealth" | "medicare"
-    }>
-  }
-  teamSnapshot: {
-    eyebrow?: string
-    title: string
-    description: string
-    imageSrc: string
-    imageAlt: string
-    imageOnLeft?: boolean
-    action?: { href: string; label: string }
-  }
-  moments: {
-    title: string
-    description: string
-    items: Array<{ src: string; alt: string; caption: string }>
-  }
-  clinicalBand: {
-    title: string
-    description: string
-    clinic: { src: string; alt: string; caption: string }
-    team: { src: string; alt: string; caption: string }
+    disclaimer: string
+    items: HomeTestimonial[]
   }
   faq: {
     title: string
@@ -96,169 +99,211 @@ export type HomePageContent = {
   }
 }
 
+const featuredConditionSlugs = [
+  "anxiety",
+  "depression",
+  "adhd",
+  "trauma-ptsd",
+  "stress-burnout",
+  "sleep",
+] as const
+
 export const homepageContent: HomePageContent = {
   hero: {
-    badge: "Available for new patients",
+    badge: "Available Australia wide",
     title: "Find the right psychologist for",
-    titleAccent: "your situation",
+    titleAccent: "your journey",
     description:
       "Answer a few quick questions — about 2 minutes — and we will suggest psychologists who fit your state, goals, and preferences. Warm, evidence-based care when you are ready to book.",
     imageSrc: "/assets/hero-consultation-CPVmFEx5.webp",
-    imageAlt: "A psychologist and client talking together in a bright, comfortable consultation space.",
-    primaryAction: { href: "/get-matched", label: "Find your right psychologist" },
-    secondaryAction: {
-      href: "/services",
-      label: "View Services",
-      variant: "outline",
-    },
-  },
-  trustStats: [
-    { value: "4.9/5", label: "Patient satisfaction" },
-    { value: "15+", label: "Clinical psychologists" },
-    { value: "100%", label: "Confidential care" },
-  ],
-  wellbeingIntro: {
-    eyebrow: "Whole-person care",
-    title: "Wellbeing is more than a checklist",
-    description:
-      "Sleep, stress, relationships, and physical health all shape mental health. We hold space for the full picture so your plan feels realistic—not like another rigid program.",
-    imageSrc: "/assets/auth-wellness-Cy4YmFxd.webp",
-    imageAlt: "Person in a quiet, restorative moment suggesting balance and self-care.",
-    action: { href: "/register", label: "Create an account" },
-  },
-  guidedCare: {
-    eyebrow: "Guided support",
-    title: "Care that adapts to your pace and priorities",
-    description:
-      "Whether you are navigating anxiety, burnout, or a major life change, sessions are structured around clear goals, regular check-ins, and practical strategies you can use between appointments.",
-    imageSrc: "/assets/home-guided-support-rzFm5cPb.jpg",
-    imageAlt: "Clinician reviewing notes with a warm, collaborative tone in session.",
-  },
-  servicesPreview: {
-    title: "How we can support you",
-    description:
-      "Comprehensive psychology services designed to foster resilience, growth, and healing in a safe environment.",
-    items: [
+    imageAlt:
+      "A psychologist and client talking together in a bright, comfortable consultation space.",
+    primaryAction: { href: "/get-matched", label: "Find your psychologist" },
+    secondaryAction: { href: "/services", label: "Explore services" },
+    tertiaryAction: { href: "#how-it-works", label: "How it works" },
+    trustIndicators: [
+      { label: "Medicare supported", icon: "medicare" },
+      { label: "AHPRA registered", icon: "ahpra" },
+      { label: "Secure telehealth", icon: "telehealth" },
+      { label: "Australia wide", icon: "australia" },
+      { label: "Privacy first", icon: "privacy" },
+    ],
+    floatingStats: [
       {
-        title: "Individual Therapy",
-        description:
-          "One-on-one sessions for anxiety, depression, trauma, and life transitions using evidence-based approaches.",
+        value: "~2 min",
+        label: "Matching quiz",
+        disclaimer: "Typical completion time",
       },
       {
-        title: "Couples Counselling",
-        description:
-          "Support for communication and relationship challenges in a neutral, collaborative therapeutic space.",
+        value: "15+",
+        label: "Clinical psychologists",
+        disclaimer: "Illustrative practice snapshot",
       },
       {
-        title: "Child and Adolescent",
-        description:
-          "Specialized care for younger clients navigating school pressure, emotional regulation, and developmental changes.",
+        value: "100%",
+        label: "Confidential care",
+        disclaimer: "Privacy-first by design",
       },
     ],
   },
-  trustConnection: {
-    eyebrow: "Trust first",
-    title: "A therapeutic relationship you can rely on",
+  trustBar: [
+    {
+      title: "Evidence-based care",
+      description: "Structured, research-informed approaches tailored to your goals.",
+      icon: "evidence",
+    },
+    {
+      title: "Licensed professionals",
+      description: "AHPRA-registered psychologists with credentialing at onboarding.",
+      icon: "licensed",
+    },
+    {
+      title: "Secure video",
+      description: "Encrypted telehealth with a simple, reliable joining flow.",
+      icon: "video",
+    },
+    {
+      title: "Fast matching",
+      description: "A short quiz surfaces clinicians who fit your state and needs.",
+      icon: "matching",
+    },
+    {
+      title: "Australia wide",
+      description: "Telehealth across states and territories where clinicians are registered.",
+      icon: "australia",
+    },
+    {
+      title: "Privacy",
+      description: "Consent, access controls, and transparent data handling.",
+      icon: "privacy",
+    },
+  ],
+  howItWorks: {
+    title: "How it works",
     description:
-      "We invest in fit, consent, and transparent communication so you always know how your care works, what to expect in session, and how your information is protected.",
-    imageSrc: "/assets/home-trust-connection-C5Do13n-.webp",
-    imageAlt: "Two people in conversation, suggesting empathy and connection.",
-    imageOnLeft: true,
-    action: { href: "/trust", label: "How we earn trust" },
-  },
-  carePath: {
-    title: "From first contact to ongoing care",
-    description:
-      "A straightforward path so you spend less time on logistics and more time on what matters.",
+      "A straightforward path from first questions to your first session — less logistics, more focus on care.",
     steps: [
       {
-        title: "Tell us what you need",
-        body: "Share your goals, availability, and preferences—telehealth, in-person, or a mix.",
+        title: "Answer a few questions",
+        description:
+          "Tell us your state, goals, and preferences in a confidential quiz — about 2 minutes.",
+        icon: "questions",
       },
       {
-        title: "Get matched thoughtfully",
-        body: "We suggest clinicians whose experience and style align with your situation.",
+        title: "We match you thoughtfully",
+        description:
+          "We suggest psychologists whose experience, modality, and availability align with your situation.",
+        icon: "match",
       },
       {
-        title: "Build momentum together",
-        body: "Regular sessions, clear plans, and collaborative review of progress over time.",
+        title: "Book when you are ready",
+        description:
+          "Choose a clinician and a real available slot. No pressure until you feel comfortable to proceed.",
+        icon: "book",
       },
     ],
-    imageSrc: "/assets/home-process-notes-DFNaNRKT.jpg",
-    imageAlt: "Therapy notes and planning materials on a desk, suggesting structured care.",
   },
-  telehealthBand: {
-    title: "Accessible care, wherever you are.",
+  services: {
+    title: "Support for what you are facing",
     description:
-      "Choose secure telehealth or in-clinic appointments, with clear Medicare guidance and billing support.",
+      "Evidence-based psychology pathways across common concerns. Explore a condition to learn how we approach care.",
+    items: featuredConditionSlugs
+      .map((slug) => conditionPages.find((c) => c.slug === slug))
+      .filter((c): c is (typeof conditionPages)[number] => Boolean(c))
+      .map((c) => ({
+        slug: c.slug,
+        title: c.title.replace(/ support$/, ""),
+        description: c.summary,
+      })),
+  },
+  featuredPsychologists: {
+    title: "Featured psychologists",
+    description:
+      "A sample of clinicians you may see after matching. Registration and availability vary by state.",
+    disclaimer:
+      "Profiles shown are illustrative examples from our matching catalogue; your suggested clinicians may differ.",
+  },
+  whyChooseUs: {
+    title: "Why choose Tailored Psychology",
+    description:
+      "Care designed around fit, evidence, and respect for your pace — not a one-size-fits-all program.",
     items: [
       {
-        title: "Secure Telehealth",
+        eyebrow: "Privacy first",
+        title: "Your information stays yours",
         description:
-          "Attend encrypted video sessions from home with a simple, reliable joining flow.",
-        icon: "telehealth",
+          "Consent, access controls, and transparent communication about how your data is used — so you can focus on therapy, not paperwork anxiety.",
+        imageSrc: "/assets/home-trust-connection-C5Do13n-.webp",
+        imageAlt: "Two people in conversation, suggesting empathy and trust.",
       },
       {
-        title: "Medicare Rebates",
+        eyebrow: "Evidence based",
+        title: "Care grounded in research",
         description:
-          "Eligible patients can claim rebates with a valid Mental Health Care Plan from their GP.",
-        icon: "medicare",
+          "Structured assessment, clear goals, and approaches informed by current evidence — adapted to what works for you in practice.",
+        imageSrc: "/assets/home-process-notes-DFNaNRKT.jpg",
+        imageAlt: "Therapy notes and planning materials suggesting structured care.",
+      },
+      {
+        eyebrow: "Personal matching",
+        title: "Fit matters as much as expertise",
+        description:
+          "We combine your goals, logistics, and preferences to suggest clinicians with relevant experience — you choose who feels right.",
+        imageSrc: "/assets/home-guided-support-rzFm5cPb.jpg",
+        imageAlt: "Clinician reviewing notes in a collaborative session.",
+      },
+      {
+        eyebrow: "Experienced clinicians",
+        title: "Depth across specialties",
+        description:
+          "Our psychologists bring diverse specialties and stay current with research-backed methods — individual attention within a connected practice.",
+        imageSrc: "/assets/home-benefits-team-PZcsa_1m.jpg",
+        imageAlt: "Clinical team collaborating in a professional healthcare setting.",
+      },
+      {
+        eyebrow: "Australia wide",
+        title: "Care wherever you are",
+        description:
+          "Secure telehealth across Australia, with in-clinic options where available. Medicare-aware intake helps you understand typical rebate pathways.",
+        imageSrc: "/assets/hero-telehealth-CKKDaObt.webp",
+        imageAlt: "Person joining a telehealth call from home.",
       },
     ],
   },
-  teamSnapshot: {
-    eyebrow: "Clinical depth",
-    title: "Psychologists who collaborate and keep learning",
+  testimonials: {
+    title: "What patients say",
     description:
-      "Our clinicians bring diverse specialties and stay current with research-backed methods—so you benefit from both individual attention and a connected practice culture.",
-    imageSrc: "/assets/home-benefits-team-PZcsa_1m.jpg",
-    imageAlt: "Clinical team collaborating in a professional healthcare setting.",
-    action: { href: "/why-clink", label: "Why Tailored Psychology" },
-  },
-  moments: {
-    title: "Care in the moments that shape your week",
-    description:
-      "From focused therapy to flexible telehealth and supportive check-ins, the same standards apply across how you meet us.",
+      "Experiences vary — these examples reflect common themes we hear, not guaranteed outcomes.",
+    disclaimer:
+      "Illustrative testimonials for layout demonstration; names and details are fictionalised.",
     items: [
       {
-        src: "/assets/hero-therapy-BYkdR1Cj.webp",
-        alt: "Therapy session in a calm room.",
-        caption: "In-person sessions when you want a dedicated space away from home.",
+        quote:
+          "The matching quiz saved me scrolling through profiles. I felt understood from the first session and knew what to expect.",
+        name: "M. R.",
+        context: "Matched for anxiety · NSW telehealth",
       },
       {
-        src: "/assets/hero-telehealth-CKKDaObt.webp",
-        alt: "Person joining a telehealth call from home.",
-        caption: "Telehealth that fits workdays, travel, or regional access needs.",
+        quote:
+          "Clear Medicare guidance upfront meant no surprises at billing. Telehealth was straightforward — I could join from work between meetings.",
+        name: "J. T.",
+        context: "Follow-up care · VIC",
       },
       {
-        src: "/assets/hero-support-EqaJeg5E.webp",
-        alt: "Supportive conversation between two people.",
-        caption: "Supportive dialogue with clear next steps—not open-ended uncertainty.",
+        quote:
+          "I appreciated being able to switch clinicians when my needs changed. The team explained options without pressure.",
+        name: "S. L.",
+        context: "Relationship support · QLD",
       },
     ],
-  },
-  clinicalBand: {
-    title: "Where thoughtful care meets real collaboration",
-    description:
-      "Whether you prefer a dedicated therapy room or coordinated teamwork behind the scenes, the environment is built to feel steady—not rushed.",
-    clinic: {
-      src: "/assets/clinic-room.svg",
-      alt: "Calm in-clinic therapy room with natural light.",
-      caption: "In-clinic spaces designed to feel grounded and private.",
-    },
-    team: {
-      src: "/assets/team-discussion.svg",
-      alt: "Clinical team discussing care plans together.",
-      caption: "Clinicians align on approaches so your care stays coherent.",
-    },
   },
   faq: {
-    title: "Common questions",
+    title: "Frequently asked questions",
     items: [
       {
         question: "How do I know if Tailored Psychology is right for me?",
         answer:
-          "Start with a short matching flow or a call with our team. We will ask about your goals, availability, and preferences, then suggest clinicians who fit—there is no pressure to book until you feel ready.",
+          "Start with a short matching flow or a call with our team. We will ask about your goals, availability, and preferences, then suggest clinicians who fit — there is no pressure to book until you feel ready.",
       },
       {
         question: "Can I use Medicare or private cover?",
@@ -273,7 +318,17 @@ export const homepageContent: HomePageContent = {
       {
         question: "What happens in the first session?",
         answer:
-          "Your psychologist will explain confidentiality, consent, and how sessions work. You will set initial goals together and agree on frequency and format—so you leave with a clear sense of direction.",
+          "Your psychologist will explain confidentiality, consent, and how sessions work. You will set initial goals together and agree on frequency and format — so you leave with a clear sense of direction.",
+      },
+      {
+        question: "How quickly can I get an appointment?",
+        answer:
+          "Availability depends on clinician schedules and your preferences. The booking flow shows real available slots after matching — many patients book within a few days.",
+      },
+      {
+        question: "Can I change psychologist if it is not the right fit?",
+        answer:
+          "Yes. Therapeutic fit matters. Contact our team or use intake again to explore other clinicians — we want you to feel comfortable with your choice.",
       },
     ],
   },
@@ -282,8 +337,18 @@ export const homepageContent: HomePageContent = {
     description:
       "Tell us your preferences and availability, and we will help match you with the right psychologist.",
     primaryHref: "/get-matched",
-    primaryLabel: "Find your right psychologist",
+    primaryLabel: "Find your psychologist",
     secondaryHref: "/contact",
-    secondaryLabel: "Talk to Our Team",
+    secondaryLabel: "Talk to our team",
   },
 }
+
+/** Featured clinicians for homepage cards — excludes auto-match placeholder. */
+export const homepageFeaturedClinicians = matchClinicianCatalog.map((c) => ({
+  id: c.id,
+  name: c.name,
+  specialty: c.specialty,
+  languages: c.languages,
+  profileImageUrl: c.profileImageUrl,
+  bookHref: "/get-matched",
+}))

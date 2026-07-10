@@ -30,15 +30,15 @@ export function CtaStrip({
             aria-hidden
           />
           <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between md:gap-10">
-            <div className="max-w-2xl space-y-2">
-              <h2 className="font-heading text-2xl font-semibold tracking-tight text-balance md:text-3xl">{title}</h2>
-              <p className="text-muted-foreground leading-relaxed">{description}</p>
+            <div className="max-w-2xl space-y-3">
+              <h2 className="marketing-h2 text-balance">{title}</h2>
+              <p className="marketing-body text-muted-foreground leading-relaxed">{description}</p>
             </div>
             <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center">
-              <Button asChild size="lg" className="shadow-sm">
+              <Button asChild className="marketing-cta shadow-primary-glow">
                 <Link href={primaryHref}>{primaryLabel}</Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-border/80 bg-background/80 backdrop-blur-sm">
+              <Button asChild variant="outline" className="marketing-cta border-border/80 bg-background/80 backdrop-blur-sm">
                 <Link href={secondaryHref}>{secondaryLabel}</Link>
               </Button>
             </div>

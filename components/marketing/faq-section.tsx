@@ -16,35 +16,41 @@ type FaqSectionProps = {
 
 export function FaqSection({ title, items }: FaqSectionProps) {
   return (
-    <PageSection>
-      <PageContainer className="space-y-8">
-        <div className="max-w-2xl space-y-2">
-          <h2 className="font-heading text-2xl font-semibold tracking-tight text-balance md:text-3xl">{title}</h2>
-          <p className="text-muted-foreground text-sm leading-relaxed md:text-base">
-            Tap a question to expand the answer — everything here is general guidance, not personal medical advice.
+    <PageSection id="faq" className="scroll-mt-24 bg-marketing-canvas">
+      <PageContainer className="space-y-10">
+        <div className="max-w-2xl space-y-3">
+          <h2 className="marketing-h2 text-balance">{title}</h2>
+          <p className="marketing-small">
+            Tap a question to expand the answer — everything here is general guidance, not personal
+            medical advice.
           </p>
         </div>
-        <div className="mx-auto max-w-3xl space-y-3">
+        <div
+          className="mx-auto max-w-3xl space-y-3"
+          role="region"
+          aria-label="Frequently asked questions"
+        >
           {items.map((item) => (
             <details
               key={item.question}
-              className="group border-border/70 bg-card open:ring-primary/8 rounded-xl border shadow-sm open:shadow-md open:ring-2"
+              className="marketing-card group open:border-primary/20 open:shadow-e2"
             >
               <summary
                 className={cn(
-                  "flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-4 text-left text-base font-medium md:px-5 md:py-4",
+                  "flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-left md:px-6 md:py-5",
                   "[&::-webkit-details-marker]:hidden",
                 )}
+                aria-expanded={undefined}
               >
-                <span className="pr-2">{item.question}</span>
+                <span className="marketing-body text-base font-medium md:text-lg">{item.question}</span>
                 <CaretDown
                   className="text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180"
                   size={20}
                   aria-hidden
                 />
               </summary>
-              <div className="text-muted-foreground border-border/60 border-t px-4 pb-4 pt-0 text-sm leading-relaxed md:px-5 md:pb-5">
-                <p className="pt-3">{item.answer}</p>
+              <div className="text-muted-foreground border-border/60 border-t px-5 pb-5 md:px-6 md:pb-6">
+                <p className="marketing-small pt-4">{item.answer}</p>
               </div>
             </details>
           ))}

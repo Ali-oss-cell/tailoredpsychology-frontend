@@ -1,51 +1,56 @@
-import Link from "next/link"
-import { ShieldCheck } from "@phosphor-icons/react/dist/ssr"
+import {
+  Brain,
+  GlobeHemisphereWest,
+  Lightning,
+  Lock,
+  ShieldCheck,
+  VideoCamera,
+} from "@phosphor-icons/react/dist/ssr"
 
 import { PageContainer } from "@/components/layout/page-container"
-import { publicContactDetails } from "@/content/legal/public-contact"
+import { PageSection } from "@/components/layout/page-section"
+import type { HomeTrustBarItem } from "@/content/homepage"
 import { cn } from "@/lib/utils"
 
 type HomeTrustStripProps = {
+  items: HomeTrustBarItem[]
   className?: string
 }
 
-const trustLinks = [
-  { href: "/trust", label: "Trust & security" },
-  { href: "/privacy-policy", label: "Privacy policy" },
-  { href: "/terms-of-service", label: "Terms of service" },
-] as const
+const iconMap = {
+  evidence: Brain,
+  licensed: ShieldCheck,
+  video: VideoCamera,
+  matching: Lightning,
+  australia: GlobeHemisphereWest,
+  privacy: Lock,
+} as const
 
-export function HomeTrustStrip({ className }: HomeTrustStripProps) {
+export function HomeTrustStrip({ items, className }: HomeTrustStripProps) {
   return (
     <section
-      className={cn(
-        "border-border/60 bg-muted/25 border-y py-4",
-        className,
-      )}
-      aria-label="Trust and legal information"
+      className={cn("border-border/50 border-y bg-card/80 py-8 md:py-10", className)}
+      aria-label="Why patients trust Tailored Psychology"
     >
       <PageContainer>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-start gap-2.5 sm:items-center">
-            <ShieldCheck size={20} weight="duotone" className="text-primary mt-0.5 shrink-0 sm:mt-0" aria-hidden />
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              <span className="text-foreground font-medium">{publicContactDetails.entityName}</span>
-              {" — "}
-              Australian telehealth psychology with privacy-first design and clinician governance.
-            </p>
-          </div>
-          <nav className="flex flex-wrap gap-x-4 gap-y-1 text-sm" aria-label="Legal and trust links">
-            {trustLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-primary font-medium underline-offset-2 hover:underline"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          {items.map((item) => {
+            const Icon = iconMap[item.icon]
+            return (
+              <li key={item.title}>
+                <article className="marketing-card interactive-lift h-full p-4 md:p-5">
+                  <span className="bg-primary/10 text-primary mb-3 flex h-10 w-10 items-center justify-center rounded-xl">
+                    <Icon size={22} weight="duotone" aria-hidden />
+                  </span>
+                  <h3 className="text-sm font-semibold leading-snug md:text-base">{item.title}</h3>
+                  <p className="text-muted-foreground mt-1.5 text-xs leading-relaxed md:text-sm">
+                    {item.description}
+                  </p>
+                </article>
+              </li>
+            )
+          })}
+        </ul>
       </PageContainer>
     </section>
   )

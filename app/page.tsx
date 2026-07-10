@@ -1,19 +1,20 @@
+import Link from "next/link"
+
 import { PublicFooter } from "@/components/layout/public-footer"
 import { PublicHeader } from "@/components/layout/public-header"
 import { CtaStrip } from "@/components/marketing/cta-strip"
 import { FaqSection } from "@/components/marketing/faq-section"
+import { FeaturedPsychologistsSection } from "@/components/marketing/featured-psychologists-section"
 import { HeroSection } from "@/components/marketing/hero-section"
-import { HomeClinicTeamBand } from "@/components/marketing/home-clinic-team-band"
-import { HomeMomentsRow } from "@/components/marketing/home-moments-row"
-import { HomeProcessSection } from "@/components/marketing/home-process-section"
+import { HomeHowItWorksSection } from "@/components/marketing/home-how-it-works-section"
+import { HomeServicesGrid } from "@/components/marketing/home-services-grid"
 import { HomeTrustStrip } from "@/components/marketing/home-trust-strip"
 import { HomepageObserver } from "@/components/marketing/homepage-observer"
+import { HomepageSectionObserver } from "@/components/marketing/homepage-section-observer"
 import { ScrollSection } from "@/components/marketing/scroll-section"
-import { ServicesPreview } from "@/components/marketing/services-preview"
-import { SplitFeatureSection } from "@/components/marketing/split-feature-section"
-import { TelehealthRebatesBand } from "@/components/marketing/telehealth-rebates-band"
-import { TrustStats } from "@/components/marketing/trust-stats"
-import { homepageContent } from "@/content/homepage"
+import { TestimonialsSection } from "@/components/marketing/testimonials-section"
+import { WhyChooseUsSection } from "@/components/marketing/why-choose-us-section"
+import { homepageContent, homepageFeaturedClinicians } from "@/content/homepage"
 import { homeMetadata } from "@/content/marketing-metadata"
 
 export const metadata = homeMetadata
@@ -22,51 +23,28 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <HomepageObserver />
+      <HomepageSectionObserver />
       <PublicHeader />
       <main>
         <HeroSection {...homepageContent.hero} />
-        <HomeTrustStrip />
-        <ScrollSection variant="cards">
-          <TrustStats stats={homepageContent.trustStats} />
-        </ScrollSection>
-        <ScrollSection variant="split">
-          <SplitFeatureSection {...homepageContent.wellbeingIntro} />
-        </ScrollSection>
-        <ScrollSection variant="split">
-          <SplitFeatureSection {...homepageContent.guidedCare} />
-        </ScrollSection>
-        <ScrollSection variant="cards">
-          <ServicesPreview
-            title={homepageContent.servicesPreview.title}
-            description={homepageContent.servicesPreview.description}
-            services={homepageContent.servicesPreview.items}
-          />
-        </ScrollSection>
-        <ScrollSection variant="split">
-          <SplitFeatureSection {...homepageContent.trustConnection} />
-        </ScrollSection>
+        <HomeTrustStrip items={homepageContent.trustBar} />
         <ScrollSection variant="process">
-          <HomeProcessSection {...homepageContent.carePath} />
+          <HomeHowItWorksSection {...homepageContent.howItWorks} />
         </ScrollSection>
-        <ScrollSection variant="band">
-          <TelehealthRebatesBand
-            title={homepageContent.telehealthBand.title}
-            description={homepageContent.telehealthBand.description}
-            items={homepageContent.telehealthBand.items}
+        <ScrollSection variant="cards">
+          <HomeServicesGrid {...homepageContent.services} />
+        </ScrollSection>
+        <ScrollSection variant="cards">
+          <FeaturedPsychologistsSection
+            {...homepageContent.featuredPsychologists}
+            clinicians={homepageFeaturedClinicians}
           />
         </ScrollSection>
         <ScrollSection variant="split">
-          <SplitFeatureSection {...homepageContent.teamSnapshot} />
+          <WhyChooseUsSection {...homepageContent.whyChooseUs} />
         </ScrollSection>
         <ScrollSection variant="cards">
-          <HomeMomentsRow
-            title={homepageContent.moments.title}
-            description={homepageContent.moments.description}
-            moments={homepageContent.moments.items}
-          />
-        </ScrollSection>
-        <ScrollSection variant="rise-scale">
-          <HomeClinicTeamBand {...homepageContent.clinicalBand} />
+          <TestimonialsSection {...homepageContent.testimonials} />
         </ScrollSection>
         <ScrollSection variant="faq">
           <FaqSection title={homepageContent.faq.title} items={homepageContent.faq.items} />
