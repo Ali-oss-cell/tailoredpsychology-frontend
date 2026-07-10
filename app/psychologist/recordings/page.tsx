@@ -6,39 +6,42 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { PortalListRow } from "@/components/shared/portal-list-row"
 import { PsychologistPortalPage } from "@/components/psychologist/psychologist-portal-page"
-import { PsychologistShell } from "@/components/psychologist/psychologist-shell"
 import { psychologistRecordingsContent } from "@/content/psychologist-recordings"
 import { Button } from "@/components/ui/button"
-import { getCurrentUser } from "@/src/auth/current-user"
+import { usePsychologistId } from "@/src/psychologist/queries/use-current-user"
 import { getPsychologistSessionVideos, requestSessionVideoAccess, type SessionVideoItem } from "@/src/psychologist/videos/api"
 
 export default function PsychologistRecordingsPage() {
+  const psychologistId = usePsychologistId()
   const [rows, setRows] = useState<SessionVideoItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [statusByVideo, setStatusByVideo] = useState<Record<string, string>>({})
 
   useEffect(() => {
+    if (!psychologistId) return
+    let cancelled = false
     void (async () => {
+      setLoading(true)
       try {
-        const user = await getCurrentUser()
-        if (user.role !== "psychologist") {
-          setError("Sign in as a psychologist to view recordings.")
-          return
+        const videos = await getPsychologistSessionVideos(psychologistId)
+        if (!cancelled) {
+          setRows(videos)
+          setError(null)
         }
-        setRows(await getPsychologistSessionVideos(user.id))
-        setError(null)
       } catch {
-        setError("Could not load recordings.")
+        if (!cancelled) setError("Could not load recordings.")
       } finally {
-        setLoading(false)
+        if (!cancelled) setLoading(false)
       }
     })()
-  }, [])
+    return () => {
+      cancelled = true
+    }
+  }, [psychologistId])
 
   return (
-    <PsychologistShell activeRoute="recordings">
-      <PsychologistPortalPage
+    <PsychologistPortalPage
         title={psychologistRecordingsContent.header.title}
         description={psychologistRecordingsContent.header.description}
         eyebrow="Session media"
@@ -100,6 +103,5 @@ export default function PsychologistRecordingsPage() {
           </CardContent>
         </Card>
       </PsychologistPortalPage>
-    </PsychologistShell>
   )
 }

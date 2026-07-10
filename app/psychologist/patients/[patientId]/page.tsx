@@ -8,20 +8,20 @@ import { useParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { PsychologistPortalPage } from "@/components/psychologist/psychologist-portal-page"
-import { PsychologistShell } from "@/components/psychologist/psychologist-shell"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { PortalListRow } from "@/components/shared/portal-list-row"
 import { PatientIntakeSummaryCard } from "@/components/psychologist/patient-intake-summary-card"
 import { PreSessionChecklistCard } from "@/components/psychologist/pre-session-checklist-card"
-import { getCurrentUser } from "@/src/auth/current-user"
+import { usePsychologistId } from "@/src/psychologist/queries/use-current-user"
+import { usePsychologistSessions } from "@/src/psychologist/queries/use-psychologist-sessions"
+import { usePsychologistWorkspace } from "@/src/psychologist/queries/use-psychologist-workspace"
 import {
   getPatientIntakeLatest,
   getPsychologistPatientContext,
-  getPsychologistWorkspace,
   type PatientIntakeLatest,
   type PsychologistWorkspaceItem,
 } from "@/src/psychologist/workspace/api"
-import { getPsychologistSessions, type SessionSummary } from "@/src/sessions/api"
+import type { SessionSummary } from "@/src/sessions/api"
 import { Button } from "@/components/ui/button"
 import { getPsychologistReferrals, type PsychologistReferral } from "@/src/psychologist/referrals/api"
 import {
@@ -42,11 +42,13 @@ function riskBadgeClass(level: string | undefined): string {
 export default function PsychologistPatientProfilePage() {
   const params = useParams<{ patientId: string }>()
   const patientId = params.patientId
+  const psychologistId = usePsychologistId() ?? ""
+  const sessionsQuery = usePsychologistSessions(psychologistId || undefined)
+  const workspaceQuery = usePsychologistWorkspace(psychologistId || undefined)
   const [context, setContext] = React.useState<Awaited<ReturnType<typeof getPsychologistPatientContext>> | null>(null)
   const [patientSessions, setPatientSessions] = React.useState<SessionSummary[]>([])
   const [sessionTab, setSessionTab] = React.useState<"upcoming" | "past">("upcoming")
   const [referrals, setReferrals] = React.useState<PsychologistReferral[]>([])
-  const [psychologistId, setPsychologistId] = React.useState<string>("")
   const [exportStatus, setExportStatus] = React.useState<PsychologistPatientExportStatus | null>(null)
   const [exportBusy, setExportBusy] = React.useState(false)
   const [loading, setLoading] = React.useState(true)
@@ -57,23 +59,23 @@ export default function PsychologistPatientProfilePage() {
   const [intakeError, setIntakeError] = React.useState(false)
 
   React.useEffect(() => {
+    if (!psychologistId || sessionsQuery.isLoading || workspaceQuery.isLoading) return
     let cancelled = false
     setIntake(null)
     setIntakeError(false)
     setWorkspaceItems([])
     setIntakeLoading(true)
+    setLoading(true)
     void (async () => {
       try {
-        const user = await getCurrentUser()
-        const [ctx, psychologistSessions, workspace, intakeResult] = await Promise.all([
-          getPsychologistPatientContext(user.id, patientId),
-          getPsychologistSessions(user.id),
-          getPsychologistWorkspace(user.id).catch(() => null),
+        const psychologistSessions = sessionsQuery.data ?? []
+        const workspace = workspaceQuery.data
+        const [ctx, intakeResult] = await Promise.all([
+          getPsychologistPatientContext(psychologistId, patientId),
           getPatientIntakeLatest(patientId).catch(() => null),
         ])
-        const referralRows = await getPsychologistReferrals(user.id).catch(() => [])
+        const referralRows = await getPsychologistReferrals(psychologistId).catch(() => [])
         if (!cancelled) {
-          setPsychologistId(user.id)
           setContext(ctx)
           setPatientSessions(psychologistSessions.filter((item) => item.patientId === patientId))
           setReferrals(referralRows.filter((row) => row.patientId === patientId))
@@ -99,7 +101,7 @@ export default function PsychologistPatientProfilePage() {
     return () => {
       cancelled = true
     }
-  }, [patientId])
+  }, [patientId, psychologistId, sessionsQuery.data, sessionsQuery.isLoading, workspaceQuery.data, workspaceQuery.isLoading])
 
   const requestExport = async () => {
     if (!psychologistId) return
@@ -166,8 +168,7 @@ export default function PsychologistPatientProfilePage() {
   }
 
   return (
-    <PsychologistShell activeRoute="patients">
-      <PsychologistPortalPage
+    <PsychologistPortalPage
         title={loading ? "Loading patient…" : (context?.patientDisplayName ?? "Patient profile")}
         description="Live patient context, referrals, sessions, and governed export."
         eyebrow="Patient profile"
@@ -326,6 +327,5 @@ export default function PsychologistPatientProfilePage() {
           </Card>
         </div>
       </PsychologistPortalPage>
-    </PsychologistShell>
   )
 }

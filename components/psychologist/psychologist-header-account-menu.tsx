@@ -20,7 +20,7 @@ import {
 import { useNextTheme } from "@space-man/react-theme-animation"
 
 import { LogoutLink } from "@/components/auth/logout-link"
-import { getCurrentUser } from "@/src/auth/current-user"
+import { usePsychologistCurrentUser } from "@/src/psychologist/queries/use-current-user"
 import { cn } from "@/lib/utils"
 
 function initialsFromDisplayName(displayName: string): string {
@@ -61,23 +61,11 @@ function MenuWaveAccent() {
  * Motion: contained fade/zoom on open (motion-safe), ~200ms.
  */
 export function PsychologistHeaderAccountMenu() {
-  const [label, setLabel] = React.useState<string>("")
-  const [email, setEmail] = React.useState<string>("")
+  const userQuery = usePsychologistCurrentUser()
+  const label = userQuery.data?.displayName?.trim() || userQuery.data?.email || ""
+  const email = userQuery.data?.email ?? ""
   const { resolvedTheme, switchTheme } = useNextTheme()
   const themeValue = resolvedTheme === "dark" ? "dark" : "light"
-
-  React.useEffect(() => {
-    let cancelled = false
-    void getCurrentUser().then((user) => {
-      if (!cancelled) {
-        setLabel(user.displayName?.trim() || user.email || "")
-        setEmail(user.email ?? "")
-      }
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [])
 
   const initials = label ? initialsFromDisplayName(label) : "…"
 

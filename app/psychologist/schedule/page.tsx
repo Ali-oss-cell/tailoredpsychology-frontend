@@ -1,80 +1,67 @@
 "use client"
 
 import * as React from "react"
+import { useQueryClient } from "@tanstack/react-query"
 
 import { PsychologistDayScheduleView } from "@/components/psychologist/schedule/psychologist-day-schedule-view"
 import { PsychologistPortalPage } from "@/components/psychologist/psychologist-portal-page"
-import { PsychologistShell } from "@/components/psychologist/psychologist-shell"
 import { Button } from "@/components/ui/button"
 import { psychologistScheduleContent } from "@/content/psychologist-schedule"
-import { getCurrentUser } from "@/src/auth/current-user"
+import { psychologistQueryKeys } from "@/src/psychologist/queries/keys"
+import { usePsychologistId } from "@/src/psychologist/queries/use-current-user"
+import { usePsychologistSessions } from "@/src/psychologist/queries/use-psychologist-sessions"
 import { filterSessionsScheduledOnDay } from "@/src/psychologist/session-filters"
-import { getPsychologistSessions, type SessionSummary } from "@/src/sessions/api"
 
 export default function PsychologistSchedulePage() {
-  const [allSessions, setAllSessions] = React.useState<SessionSummary[]>([])
+  const queryClient = useQueryClient()
+  const psychologistId = usePsychologistId()
+  const sessionsQuery = usePsychologistSessions(psychologistId)
   const [selectedDay, setSelectedDay] = React.useState(() => new Date())
-  const [loading, setLoading] = React.useState(true)
-  const [error, setError] = React.useState<string | null>(null)
-  const [lastUpdated, setLastUpdated] = React.useState<Date | null>(null)
-
-  const load = React.useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const user = await getCurrentUser()
-      const sessions = await getPsychologistSessions(user.id)
-      setAllSessions(sessions)
-      setLastUpdated(new Date())
-      setError(null)
-    } catch {
-      setError("Could not load schedule.")
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  React.useEffect(() => {
-    void load()
-  }, [load])
 
   const dayEntries = React.useMemo(
     () =>
-      filterSessionsScheduledOnDay(allSessions, selectedDay).sort(
+      filterSessionsScheduledOnDay(sessionsQuery.data ?? [], selectedDay).sort(
         (a, b) => new Date(a.scheduledStartAt).getTime() - new Date(b.scheduledStartAt).getTime(),
       ),
-    [allSessions, selectedDay],
+    [selectedDay, sessionsQuery.data],
   )
 
+  const refresh = () => {
+    if (!psychologistId) return
+    void queryClient.invalidateQueries({ queryKey: psychologistQueryKeys.sessions(psychologistId) })
+  }
+
+  const loading = sessionsQuery.isLoading
+  const error = sessionsQuery.isError ? "Could not load schedule." : null
+  const lastUpdated = sessionsQuery.dataUpdatedAt ? new Date(sessionsQuery.dataUpdatedAt) : null
+
   return (
-    <PsychologistShell activeRoute="schedule">
-      <PsychologistPortalPage
-        title={psychologistScheduleContent.header.title}
-        description={psychologistScheduleContent.header.description}
-        eyebrow="Schedule"
-        tutorialId="psychologist.page.schedule"
-        actions={
-          <>
-            {lastUpdated ? (
-              <span className="text-muted-foreground text-xs">
-                Updated {lastUpdated.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit", second: "2-digit" })}
-              </span>
-            ) : null}
-            <Button type="button" variant="outline" size="sm" onClick={() => void load()} disabled={loading}>
-              {loading ? "Refreshing…" : "Refresh"}
-            </Button>
-          </>
-        }
-      >
-        <PsychologistDayScheduleView
-          entries={dayEntries}
-          selectedDay={selectedDay}
-          onSelectedDayChange={setSelectedDay}
-          loading={loading}
-          error={error}
-          onRetry={() => void load()}
-        />
-      </PsychologistPortalPage>
-    </PsychologistShell>
+    <PsychologistPortalPage
+      title={psychologistScheduleContent.header.title}
+      description={psychologistScheduleContent.header.description}
+      eyebrow="Schedule"
+      tutorialId="psychologist.page.schedule"
+      actions={
+        <>
+          {lastUpdated ? (
+            <span className="text-muted-foreground text-xs">
+              Updated {lastUpdated.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit", second: "2-digit" })}
+            </span>
+          ) : null}
+          <Button type="button" variant="outline" size="sm" onClick={refresh} disabled={loading || !psychologistId}>
+            {loading ? "Refreshing…" : "Refresh"}
+          </Button>
+        </>
+      }
+    >
+      <PsychologistDayScheduleView
+        entries={dayEntries}
+        selectedDay={selectedDay}
+        onSelectedDayChange={setSelectedDay}
+        loading={loading}
+        error={error}
+        onRetry={refresh}
+      />
+    </PsychologistPortalPage>
   )
 }

@@ -2,20 +2,8 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 
 import PsychologistNotesPage from "@/app/psychologist/notes/page"
 
-jest.mock("@/components/psychologist/psychologist-shell", () => ({
-  PsychologistShell: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}))
-jest.mock("@/components/patient/patient-page-header", () => ({
-  PatientPageHeader: ({ title }: { title: string; description: string }) => <h1>{title}</h1>,
-}))
-jest.mock("@/src/auth/current-user", () => ({
-  getCurrentUser: jest.fn().mockResolvedValue({
-    id: "user_psychologist_001",
-    email: "psychologist@clink.test",
-    displayName: "Psychologist Demo",
-    role: "psychologist",
-    accountSetupComplete: true,
-  }),
+jest.mock("@/src/psychologist/queries/use-current-user", () => ({
+  usePsychologistId: () => "user_psychologist_001",
 }))
 const createMock = jest.fn().mockResolvedValue({
   noteId: "note_1",

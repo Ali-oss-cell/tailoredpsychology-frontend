@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { PsychologistPortalPage } from "@/components/psychologist/psychologist-portal-page"
-import { PsychologistShell } from "@/components/psychologist/psychologist-shell"
 import { PortalListRow } from "@/components/shared/portal-list-row"
 import { psychologistNotesContent } from "@/content/psychologist-notes"
 import {
@@ -18,7 +17,7 @@ import {
   type PsychologistNote,
   updatePsychologistNote,
 } from "@/src/psychologist/notes/api"
-import { getCurrentUser } from "@/src/auth/current-user"
+import { usePsychologistId } from "@/src/psychologist/queries/use-current-user"
 import { getNoteSessionChoices, type NoteSessionChoice } from "@/src/psychologist/note-session-choices"
 import { getPsychologistPatientContext } from "@/src/psychologist/workspace/api"
 
@@ -31,26 +30,25 @@ function statusBadgeVariant(status: PsychologistNote["status"]): "default" | "se
 }
 
 export default function PsychologistNotesPage() {
+  const psychologistId = usePsychologistId() ?? ""
   const [notes, setNotes] = useState<PsychologistNote[]>([])
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null)
   const [editorBody, setEditorBody] = useState("")
   const [selectedContext, setSelectedContext] = useState<Awaited<ReturnType<typeof getPsychologistPatientContext>> | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [psychologistId, setPsychologistId] = useState("")
   const [sessionChoices, setSessionChoices] = useState<NoteSessionChoice[]>([])
   const [selectedSessionId, setSelectedSessionId] = useState("")
   const [autosaveStatus, setAutosaveStatus] = useState<AutosaveStatus>("idle")
   const editorScopeRef = useRef<string | null>(null)
 
   useEffect(() => {
+    if (!psychologistId) return
     void (async () => {
       setLoading(true)
       setError(null)
       try {
-        const user = await getCurrentUser()
-        setPsychologistId(user.id)
-        const [notesData, choices] = await Promise.all([getPsychologistNotes(user.id), getNoteSessionChoices(user.id)])
+        const [notesData, choices] = await Promise.all([getPsychologistNotes(psychologistId), getNoteSessionChoices(psychologistId)])
         setNotes(notesData)
         setSessionChoices(choices)
         setSelectedSessionId(choices[0]?.sessionId ?? "")
@@ -60,7 +58,7 @@ export default function PsychologistNotesPage() {
         setLoading(false)
       }
     })()
-  }, [])
+  }, [psychologistId])
 
   useEffect(() => {
     if (!selectedNoteId || !psychologistId) return
@@ -155,8 +153,7 @@ export default function PsychologistNotesPage() {
   const activeNote = selectedNoteId ? notes.find((n) => n.noteId === selectedNoteId) : undefined
 
   return (
-    <PsychologistShell activeRoute="notes">
-      <PsychologistPortalPage
+    <PsychologistPortalPage
         title={psychologistNotesContent.header.title}
         description={psychologistNotesContent.header.description}
         eyebrow="Documentation"
@@ -284,6 +281,5 @@ export default function PsychologistNotesPage() {
           </Card>
         ) : null}
       </PsychologistPortalPage>
-    </PsychologistShell>
   )
 }

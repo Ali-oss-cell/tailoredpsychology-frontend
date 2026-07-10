@@ -1,6 +1,7 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react"
+import { fireEvent, screen, waitFor } from "@testing-library/react"
 
 import PsychologistRecordingsPage from "@/app/psychologist/recordings/page"
+import { renderWithQueryClient } from "@/src/patient/queries/test-utils"
 
 const requestAccessMock = jest.fn().mockResolvedValue({
   videoId: "video_appt_open_001",
@@ -8,20 +9,8 @@ const requestAccessMock = jest.fn().mockResolvedValue({
   denialReason: "Downloads blocked while legal hold is active.",
 })
 
-jest.mock("@/components/psychologist/psychologist-shell", () => ({
-  PsychologistShell: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}))
-jest.mock("@/components/patient/patient-page-header", () => ({
-  PatientPageHeader: ({ title }: { title: string; description: string }) => <h1>{title}</h1>,
-}))
-jest.mock("@/src/auth/current-user", () => ({
-  getCurrentUser: jest.fn().mockResolvedValue({
-    id: "user_psychologist_001",
-    email: "psychologist@clink.test",
-    displayName: "Psychologist Demo",
-    role: "psychologist",
-    accountSetupComplete: true,
-  }),
+jest.mock("@/src/psychologist/queries/use-current-user", () => ({
+  usePsychologistId: () => "user_psychologist_001",
 }))
 jest.mock("@/src/psychologist/videos/api", () => ({
   getPsychologistSessionVideos: jest.fn().mockResolvedValue([
@@ -43,7 +32,7 @@ jest.mock("@/src/psychologist/videos/api", () => ({
 
 describe("PsychologistRecordingsPage", () => {
   it("shows policy denial returned by access gate", async () => {
-    render(<PsychologistRecordingsPage />)
+    renderWithQueryClient(<PsychologistRecordingsPage />)
     const button = await screen.findByRole("button", { name: "Request access" })
     fireEvent.click(button)
     await waitFor(() => expect(requestAccessMock).toHaveBeenCalledWith("video_appt_open_001"))

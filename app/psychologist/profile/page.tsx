@@ -10,7 +10,6 @@ import { ClinicianPublicProfileHeader } from "@/components/shared/clinician-publ
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { PsychologistPortalPage } from "@/components/psychologist/psychologist-portal-page"
 import { PsychologistNotificationPrefsCard } from "@/components/psychologist/psychologist-notification-prefs-card"
-import { PsychologistShell } from "@/components/psychologist/psychologist-shell"
 import { psychologistProfileContent } from "@/content/psychologist-profile"
 import {
   getPsychologistProfile,
@@ -146,8 +145,7 @@ export default function PsychologistProfilePage() {
   }
 
   return (
-    <PsychologistShell activeRoute="profile">
-      <PsychologistPortalPage
+    <PsychologistPortalPage
         title={psychologistProfileContent.header.title}
         description={psychologistProfileContent.header.description}
         eyebrow="Professional profile"
@@ -318,6 +316,5 @@ export default function PsychologistProfilePage() {
           <PsychologistNotificationPrefsCard />
         </div>
       </PsychologistPortalPage>
-    </PsychologistShell>
   )
 }
