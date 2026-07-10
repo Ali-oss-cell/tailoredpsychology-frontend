@@ -56,7 +56,7 @@ export function BookingWizard() {
         {wizard.activeStep !== "submitted" ? (
           <div className="space-y-4">
             <BookingStepper steps={wizard.visibleSteps} currentIndex={wizard.stepIndex} />
-            <Card className="interactive-lift gap-0 overflow-hidden p-0 shadow-e1">
+            <Card className="dashboard-card interactive-lift gap-0 overflow-hidden p-0 shadow-e1">
               <CardHeader className="border-border/50 gap-3 border-b px-6 pt-6 pb-5">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                   <div className="min-w-0 space-y-1">
@@ -122,7 +122,7 @@ export function BookingWizard() {
             ) : null}
           </div>
         ) : (
-          <Card className="interactive-lift gap-0 overflow-hidden p-0 shadow-e1">
+          <Card className="dashboard-card interactive-lift gap-0 overflow-hidden p-0 shadow-e1">
             <CardHeader className="border-border/50 border-b px-6 pt-6 pb-5">
               <p className="card-eyebrow">Complete</p>
               <CardTitle className="text-lg" id="booking-step-title">

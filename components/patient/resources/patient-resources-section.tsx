@@ -27,7 +27,7 @@ export function PatientResourcesSection() {
       ) : null}
       <div className="grid gap-4 md:grid-cols-3">
         {categories.map((category) => (
-          <Card key={category.title} className="interactive-lift">
+          <Card key={category.title} className="dashboard-card interactive-lift">
             <CardHeader className="pb-2">
               <CardTitle className="text-base">{category.title}</CardTitle>
             </CardHeader>

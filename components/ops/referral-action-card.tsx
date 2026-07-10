@@ -60,7 +60,7 @@ export function ReferralActionCard({ mode }: ReferralActionCardProps) {
   }
 
   return (
-    <Card>
+    <Card className="dashboard-card interactive-lift">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>

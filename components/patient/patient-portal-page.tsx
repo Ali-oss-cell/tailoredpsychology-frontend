@@ -1,5 +1,5 @@
 import { JourneyRail } from "@/components/patient/journey/journey-rail"
-import { PortalPageHeader } from "@/components/shared/portal-page-header"
+import { DashboardPageHeader } from "@/components/shared/dashboard-page-header"
 import { cn } from "@/lib/utils"
 
 type PatientPortalPageProps = {
@@ -10,6 +10,7 @@ type PatientPortalPageProps = {
   children: React.ReactNode
   className?: string
   tutorialId?: string
+  actions?: React.ReactNode
 }
 
 export function PatientPortalPage({
@@ -20,11 +21,16 @@ export function PatientPortalPage({
   children,
   className,
   tutorialId,
+  actions,
 }: PatientPortalPageProps) {
   return (
-    <section className={cn("space-y-6", className)} data-tutorial={tutorialId}>
-      <PortalPageHeader title={title} description={description} eyebrow={eyebrow} />
-      {showJourney ? <JourneyRail /> : null}
+    <section className={cn("space-y-8 pb-4", className)} data-tutorial={tutorialId}>
+      <DashboardPageHeader title={title} description={description} eyebrow={eyebrow} actions={actions} />
+      {showJourney ? (
+        <div className="dashboard-section">
+          <JourneyRail />
+        </div>
+      ) : null}
       {children}
     </section>
   )

@@ -1,6 +1,6 @@
 import type * as React from "react"
 
-import { PortalPageHeader } from "@/components/shared/portal-page-header"
+import { DashboardPageHeader } from "@/components/shared/dashboard-page-header"
 import { cn } from "@/lib/utils"
 
 type PsychologistPortalPageProps = {
@@ -23,11 +23,8 @@ export function PsychologistPortalPage({
   actions,
 }: PsychologistPortalPageProps) {
   return (
-    <section className={cn("space-y-6", className)} data-tutorial={tutorialId}>
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <PortalPageHeader title={title} description={description} eyebrow={eyebrow} />
-        {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
-      </div>
+    <section className={cn("space-y-8 pb-4", className)} data-tutorial={tutorialId}>
+      <DashboardPageHeader title={title} description={description} eyebrow={eyebrow} actions={actions} />
       {children}
     </section>
   )

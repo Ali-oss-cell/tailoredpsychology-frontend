@@ -146,7 +146,7 @@ export function PatientMyClinicianSection() {
                 clinician.specialties.length > 0 ? `Focus areas: ${clinician.specialties.join(", ")}` : undefined
 
               return (
-                <Card key={clinician.clinicianId} className="interactive-lift border-border/70">
+                <Card key={clinician.clinicianId} className="dashboard-card interactive-lift border-border/70">
                   <CardHeader className="pb-2">
                     <p className="card-eyebrow">Clinician</p>
                     <ClinicianPublicProfileHeader

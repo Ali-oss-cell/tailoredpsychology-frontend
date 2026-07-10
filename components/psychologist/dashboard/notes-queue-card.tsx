@@ -14,7 +14,7 @@ type NotesQueueCardProps = {
 
 export function NotesQueueCard({ pendingCount = 0, signedCount = 0, loading = false }: NotesQueueCardProps) {
   return (
-    <Card className="interactive-lift md:col-span-5">
+    <Card className="dashboard-card interactive-lift md:col-span-5">
       <CardHeader className="pb-3">
         <p className="card-eyebrow">Documentation</p>
         <CardTitle className="text-lg">Notes queue</CardTitle>

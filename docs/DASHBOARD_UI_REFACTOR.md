@@ -45,6 +45,14 @@ Use `font-heading` for headings; body stays on the sans stack.
 | Card surface | `--card` | `#ffffff` | Unchanged |
 | Success badge | `--success` | existing | In progress / up to date |
 
+Role-specific sidebar tokens (same teal family, independent overrides):
+
+| Role | Token prefix |
+|------|----------------|
+| Patient | `--sidebar-patient-*` |
+| Psychologist | `--sidebar-psychologist-*` |
+| Ops (manager + admin) | `--sidebar-ops-*` |
+
 Dark mode: sidebar and dashboard-bg tokens have `.dark` overrides so contrast is preserved.
 
 ## Before / after — major changes
@@ -80,10 +88,17 @@ Dark mode: sidebar and dashboard-bg tokens have `.dark` overrides so contrast is
 
 | Phase | Scope | Status |
 |-------|-------|--------|
-| **Phase 1** | Patient portal dashboard + shell chrome | ✅ This session |
-| **Phase 2** | Psychologist dashboard + shell | Planned |
-| **Phase 3** | Ops / Admin dashboards | Planned |
-| **Phase 4** | Forms polish (booking, intake, account) | Planned |
+| **Phase 1** | Patient portal dashboard + shell chrome | ✅ Complete (`c58f5cb`) |
+| **Phase 2** | Psychologist dashboard + shell + top pages | ✅ Complete |
+| **Phase 3** | Ops / Admin dashboards + list pages | ✅ Complete |
+| **Phase 4** | Remaining patient pages (chrome + cards) | ✅ Complete |
+
+### Deferred (out of scope)
+
+- Marketing / public pages
+- Auth pages (login, register, password reset)
+- Video session room UI
+- Deep booking-wizard step redesign (outer chrome only in Phase 4)
 
 ## Phase 1 implementation notes
 
@@ -94,13 +109,46 @@ Dark mode: sidebar and dashboard-bg tokens have `.dark` overrides so contrast is
 - Journey rail hidden when complete (existing `isJourneyComplete` behaviour).
 - Collapsed sidebar (`collapsible="icon"`) preserved.
 
+## Phase 2 implementation notes
+
+- `psychologist-shell.tsx` — dark sidebar (`data-psychologist-sidebar`), pinned "View schedule" CTA, conditional "Join next session" when a room is available.
+- `psychologist-dashboard-view.tsx` — time-aware greeting, `PsychologistDashboardSummaryCards` (today's sessions, caseload, messages, pending notes).
+- Portal pages (schedule, patients, notes, messages, profile, recordings) use `DashboardPageHeader` + `.dashboard-card` wrappers.
+- Data from `usePsychologistDashboard`, `useNotificationUnreadCount`.
+
+## Phase 3 implementation notes
+
+- `ops-shell.tsx` — dark sidebar (`data-ops-sidebar`), pinned "Compliance tools" CTA; manager and admin share shell.
+- `OpsDashboardSummaryCards` on manager + admin dashboards (staff, patients, appointments today, pending queues).
+- List pages: `AdminFilterBar` and `AdminDataTable` use dashboard card chrome; ops queue/insight cards unified.
+- Data from `getAdminOpsStaff`, `getAdminOpsPatients`, `getAdminOpsAppointments`, `getOpsInsights`.
+
+## Phase 4 implementation notes
+
+- `PatientPortalPage` migrated to `DashboardPageHeader` with `space-y-8` section rhythm.
+- Patient sub-pages updated: appointments, my-clinician, account, onboarding, book-appointment (wizard shell), resources, invoices, data-requests.
+- Booking wizard steps unchanged internally; outer page header + card wrappers only.
+- `EmptyState` uses dashboard card border/radius tokens.
+
+## Shared infrastructure
+
+| Component / token | Path |
+|-------------------|------|
+| `DashboardPageHeader` | `components/shared/dashboard-page-header.tsx` |
+| `DashboardSummaryCard` + row | `components/shared/dashboard-summary-card.tsx` |
+| `PortalHeaderScrollFx` | `components/shared/portal-header-scroll-fx.tsx` |
+| `.dashboard-card`, `.dashboard-section`, `.bg-dashboard` | `app/globals.css` |
+| Shell chrome class names | `components/shared/portal-shell-chrome.tsx` |
+
 ## Key files
 
-- `app/globals.css` — dashboard + patient sidebar tokens
-- `components/patient/patient-shell.tsx` — sidebar + header chrome
-- `components/patient/dashboard/patient-dashboard-view.tsx` — layout orchestration
-- `components/patient/dashboard/dashboard-summary-cards.tsx` — 4-card summary row
-- `components/patient/dashboard/dashboard-welcome-section.tsx` — greeting + next appointment chip
-- `components/patient/dashboard/next-session-hero.tsx` — current session hero
-- `components/patient/journey/journey-rail.tsx` — timeline stepper polish
-- `content/patient-dashboard.ts` — en-AU copy
+- `app/globals.css` — dashboard + role sidebar tokens
+- `components/patient/patient-shell.tsx` — patient sidebar + header chrome
+- `components/psychologist/psychologist-shell.tsx` — psychologist sidebar + header chrome
+- `components/ops/ops-shell.tsx` — ops sidebar + header chrome
+- `components/patient/dashboard/patient-dashboard-view.tsx` — patient layout orchestration
+- `components/psychologist/dashboard/psychologist-dashboard-view.tsx` — psychologist layout orchestration
+- `components/ops/ops-dashboard-summary-cards.tsx` — ops summary row
+- `components/patient/patient-portal-page.tsx` — patient page chrome
+- `components/psychologist/psychologist-portal-page.tsx` — psychologist page chrome
+- `components/ops/ops-portal-page.tsx` — ops page chrome

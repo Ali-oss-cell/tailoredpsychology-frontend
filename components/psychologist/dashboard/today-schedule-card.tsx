@@ -20,7 +20,7 @@ export function TodayScheduleCard({ entries = [], loading = false, error = null,
     entries.find((entry) => new Date(entry.scheduledStartAt).getTime() > nowMs)?.sessionId ?? entries[0]?.sessionId
 
   return (
-    <Card className="interactive-lift md:col-span-7">
+    <Card className="dashboard-card interactive-lift md:col-span-7">
       <CardHeader className="pb-3">
         <p className="card-eyebrow">Today</p>
         <CardTitle className="text-lg">Schedule timeline</CardTitle>

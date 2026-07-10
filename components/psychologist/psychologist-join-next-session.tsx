@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { ChalkboardTeacher } from "@phosphor-icons/react/dist/ssr"
 
-import { Button } from "@/components/ui/button"
+import { SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { usePsychologistCurrentUser } from "@/src/psychologist/queries/use-current-user"
 import { usePsychologistWorkspace } from "@/src/psychologist/queries/use-psychologist-workspace"
 import { joinSessionHref } from "@/src/session/join-session"
@@ -21,27 +21,20 @@ export function PsychologistJoinNextSession() {
     return next ? joinSessionHref(next.appointmentId) : null
   })()
 
-  if (href) {
-    return (
-      <Button asChild variant="outline" className="w-full justify-start gap-2">
-        <Link href={href}>
-          <ChalkboardTeacher size={16} />
-          <span className="group-data-[state=collapsed]/sidebar:hidden">Join Next Session</span>
-        </Link>
-      </Button>
-    )
+  if (!href) {
+    return null
   }
 
   return (
-    <Button
-      variant="outline"
-      className="w-full justify-start gap-2"
-      disabled={loading || !href}
-      title={loading ? "Loading sessions…" : "No upcoming session in your workspace"}
-      type="button"
-    >
-      <ChalkboardTeacher size={16} />
-      <span className="group-data-[state=collapsed]/sidebar:hidden">Join Next Session</span>
-    </Button>
+    <SidebarMenuItem>
+      <SidebarMenuButton asChild>
+        <Link href={href} title="Join next session">
+          <ChalkboardTeacher size={18} />
+          <span className="group-data-[state=collapsed]/sidebar:sr-only">
+            {loading ? "Loading sessions…" : "Join next session"}
+          </span>
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
   )
 }

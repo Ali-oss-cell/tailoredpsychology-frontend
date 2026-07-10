@@ -72,7 +72,7 @@ export function PatientDataRequestsQueueCard({ title = "Patient data requests qu
   const pagination = useClientPagination(rows)
 
   return (
-    <Card>
+    <Card className="dashboard-card interactive-lift">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>

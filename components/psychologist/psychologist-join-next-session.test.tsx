@@ -66,7 +66,7 @@ describe("PsychologistJoinNextSession", () => {
     })
   })
 
-  it("renders disabled control when no upcoming session", async () => {
+  it("renders nothing when no upcoming session", async () => {
     mockedUsePsychologistCurrentUser.mockReturnValue({
       data: psychologistUser,
       isLoading: false,
@@ -79,11 +79,11 @@ describe("PsychologistJoinNextSession", () => {
       isLoading: false,
     } as ReturnType<typeof usePsychologistWorkspace>)
 
-    renderWithQueryClient(<PsychologistJoinNextSession />)
+    const { container } = renderWithQueryClient(<PsychologistJoinNextSession />)
 
     await waitFor(() => {
       expect(screen.queryByRole("link", { name: /join next session/i })).toBeNull()
     })
-    expect(screen.getByRole("button", { name: /join next session/i })).toBeDisabled()
+    expect(container).toBeEmptyDOMElement()
   })
 })

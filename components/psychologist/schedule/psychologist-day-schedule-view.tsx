@@ -145,7 +145,7 @@ export function PsychologistDayScheduleView({
 
   return (
     <div className="space-y-4">
-      <Card className="interactive-lift">
+      <Card className="dashboard-card interactive-lift">
         <CardHeader className="space-y-4 pb-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -309,7 +309,7 @@ export function PsychologistDayScheduleView({
       </Card>
 
       {!loading && !error && sortedEntries.length > 0 ? (
-        <Card className="interactive-lift">
+        <Card className="dashboard-card interactive-lift">
           <CardHeader className="pb-3">
             <p className="card-eyebrow">Agenda</p>
             <CardTitle className="text-lg">Session list</CardTitle>

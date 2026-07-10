@@ -87,7 +87,7 @@ export function ManagerOperationsSnapshotCard() {
   }, [load])
 
   return (
-    <Card>
+    <Card className="dashboard-card interactive-lift">
       <CardHeader className="pb-3">
         <p className="card-eyebrow">Operations</p>
         <CardTitle className="text-lg">{opsPagesContent.managerDashboard.cardTitle}</CardTitle>

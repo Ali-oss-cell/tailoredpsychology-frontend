@@ -45,7 +45,7 @@ export default function PsychologistPatientsPage() {
           </button>
         </p>
       ) : null}
-      <Card className="interactive-lift">
+      <Card className="dashboard-card interactive-lift">
         <CardHeader className="pb-3">
           <p className="card-eyebrow">Assigned patients</p>
           <CardTitle className="text-lg">Active caseload</CardTitle>

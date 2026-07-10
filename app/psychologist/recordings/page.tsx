@@ -48,7 +48,7 @@ export default function PsychologistRecordingsPage() {
         eyebrow="Session media"
         tutorialId="psychologist.page.recordings"
       >
-        <Card className="interactive-lift">
+        <Card className="dashboard-card interactive-lift">
           <CardHeader className="pb-3">
             <p className="card-eyebrow">Library</p>
             <CardTitle className="text-lg">Recording list</CardTitle>

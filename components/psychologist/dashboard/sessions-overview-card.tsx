@@ -25,7 +25,7 @@ export function SessionsOverviewCard({ stats, loading = false, error = null, onR
     : []
 
   return (
-    <Card className="interactive-lift md:col-span-8">
+    <Card className="dashboard-card interactive-lift md:col-span-8">
       <CardHeader className="pb-3">
         <p className="card-eyebrow">Overview</p>
         <CardTitle className="flex items-center gap-2 text-lg">

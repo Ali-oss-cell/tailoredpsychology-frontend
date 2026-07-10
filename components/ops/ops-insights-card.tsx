@@ -41,7 +41,7 @@ export function OpsInsightsCard() {
   }
 
   return (
-    <Card>
+    <Card className="dashboard-card interactive-lift">
       <CardHeader>
         <CardTitle>Ops insights</CardTitle>
       </CardHeader>

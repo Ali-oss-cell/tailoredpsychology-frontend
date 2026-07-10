@@ -214,7 +214,7 @@ export function PsychologistNotesWorkspace() {
           </Button>
         </div>
 
-        <Card className={cn("interactive-lift", !showQueuePanel && "hidden md:block")}>
+        <Card className={cn("dashboard-card interactive-lift", !showQueuePanel && "hidden md:block")}>
           <CardHeader className="pb-3">
             <p className="card-eyebrow">Queue</p>
             <CardTitle className="text-lg">Notes queue</CardTitle>
@@ -297,7 +297,7 @@ export function PsychologistNotesWorkspace() {
           </CardContent>
         </Card>
         {selectedNoteId ? (
-          <Card className={cn("interactive-lift", !showEditorPanel && "hidden md:block")}>
+          <Card className={cn("dashboard-card interactive-lift", !showEditorPanel && "hidden md:block")}>
             <CardHeader className="pb-3">
               <p className="card-eyebrow">Editor</p>
               <div className="flex flex-wrap items-center justify-between gap-2">

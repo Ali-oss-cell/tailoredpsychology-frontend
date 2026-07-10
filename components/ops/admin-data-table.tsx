@@ -90,7 +90,7 @@ export function AdminDataTable<TItem>({
 
   if (loading) {
     return (
-      <div className="overflow-x-auto rounded-md border border-border/70" aria-busy="true" aria-label="Loading data">
+      <div className="dashboard-card overflow-x-auto rounded-dashboard-card" aria-busy="true" aria-label="Loading data">
         <table className="w-full border-collapse text-sm">
           <thead className="bg-muted/50">
             <tr>
@@ -124,8 +124,8 @@ export function AdminDataTable<TItem>({
   if (rows.length === 0) return <DashboardStateBlock variant="empty" message={emptyMessage} />
 
   return (
-    <div className="space-y-3">
-      <div className="overflow-x-auto rounded-md border border-border/70">
+    <div className="dashboard-section space-y-3">
+      <div className="dashboard-card overflow-x-auto rounded-dashboard-card">
         <table className="w-full border-collapse text-sm">
           <thead className="bg-muted/50">
             <tr>

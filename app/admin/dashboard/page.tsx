@@ -1,4 +1,5 @@
 import { IntakeQueueCard } from "@/components/ops/intake-queue-card"
+import { OpsDashboardSummaryCards } from "@/components/ops/ops-dashboard-summary-cards"
 import { ReferralActionCard } from "@/components/ops/referral-action-card"
 import { OpsInsightsCard } from "@/components/ops/ops-insights-card"
 import { OpsPortalPage } from "@/components/ops/ops-portal-page"
@@ -13,6 +14,7 @@ export default function AdminDashboardPage() {
       eyebrow="Administration"
       tutorialId="admin.page.dashboard"
     >
+      <OpsDashboardSummaryCards mode="admin" />
       <OpsInsightsCard />
       <TelehealthInsightsCard />
       <ReferralActionCard mode="admin" />

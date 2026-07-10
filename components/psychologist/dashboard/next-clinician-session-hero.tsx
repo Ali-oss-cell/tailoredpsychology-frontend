@@ -84,7 +84,7 @@ export function NextClinicianSessionHero({
 
   if (loading) {
     return (
-      <Card className="min-h-[12rem] shadow-e2" aria-busy="true" aria-label="Loading next session">
+      <Card className="dashboard-card min-h-[12rem] shadow-e2" aria-busy="true" aria-label="Loading next session">
         <CardContent className="space-y-5 pt-6">
           <Skeleton className="skeleton-shimmer h-4 w-28" />
           <Skeleton className="skeleton-shimmer h-7 w-64" />
@@ -96,7 +96,7 @@ export function NextClinicianSessionHero({
 
   if (error) {
     return (
-      <Card className="min-h-[12rem] shadow-e2">
+      <Card className="dashboard-card min-h-[12rem] shadow-e2">
         <CardContent className="space-y-4 pt-6">
           <p className="card-eyebrow">Next session</p>
           <DashboardStateBlock variant="error" message={error} onRetry={onRetry} />
@@ -107,7 +107,7 @@ export function NextClinicianSessionHero({
 
   if (!session) {
     return (
-      <Card className="min-h-[12rem] shadow-e2">
+      <Card className="dashboard-card min-h-[12rem] shadow-e2">
         <CardContent className="flex flex-col items-start gap-4 pt-6">
           <p className="card-eyebrow">Next session</p>
           <div className="space-y-1">
@@ -126,7 +126,7 @@ export function NextClinicianSessionHero({
   const joinOpen = session.window.status === "open" || isClinicianJoinImminent(session)
 
   return (
-    <Card className="min-h-[12rem] shadow-e2">
+    <Card className="dashboard-card min-h-[12rem] shadow-e2">
       <CardContent className="space-y-5 pt-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="card-eyebrow">Next session</p>

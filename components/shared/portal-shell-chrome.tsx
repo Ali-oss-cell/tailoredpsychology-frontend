@@ -8,6 +8,10 @@ export const portalSidebarClassName =
 export const portalPatientSidebarClassName =
   "fixed inset-y-0 left-0 z-30 flex h-screen flex-col overflow-y-auto border-r transition-[width] duration-200 lg:flex backdrop-blur-none"
 
+export const portalPsychologistSidebarClassName = portalPatientSidebarClassName
+
+export const portalOpsSidebarClassName = portalPatientSidebarClassName
+
 export const portalInsetClassName =
   "flex h-screen min-w-0 flex-1 flex-col overflow-hidden transition-[margin] duration-200 ml-64 group-data-[state=collapsed]/sidebar-wrapper:lg:ml-[4.5rem]"
 
@@ -15,6 +19,10 @@ export const portalHeaderClassName =
   "border-border/70 sticky top-0 z-20 shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
 
 export const portalPatientMainClassName = "bg-dashboard"
+
+export const portalPsychologistMainClassName = "bg-dashboard"
+
+export const portalOpsMainClassName = "bg-dashboard"
 
 type PortalShellMainProps = {
   children: React.ReactNode

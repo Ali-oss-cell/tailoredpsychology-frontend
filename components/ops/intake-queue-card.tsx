@@ -99,7 +99,7 @@ export function IntakeQueueCard() {
   }
 
   return (
-    <Card>
+    <Card className="dashboard-card interactive-lift">
       <CardHeader>
         <CardTitle>Intake triage queue</CardTitle>
       </CardHeader>

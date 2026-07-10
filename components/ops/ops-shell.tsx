@@ -9,14 +9,15 @@ import { ClinkLogo } from "@/components/brand/clink-logo"
 import { ClinkSidebarBrand } from "@/components/brand/clink-sidebar-brand"
 import { NotificationBell } from "@/components/notifications/notification-bell"
 import { OpsHeaderAccountMenu } from "@/components/ops/ops-header-account-menu"
+import { PortalHeaderScrollFx } from "@/components/shared/portal-header-scroll-fx"
 import { PortalShellSearch } from "@/components/shared/portal-shell-search"
 import {
   portalHeaderClassName,
   portalInsetClassName,
-  portalSidebarClassName,
+  portalOpsMainClassName,
+  portalOpsSidebarClassName,
   PortalShellMain,
 } from "@/components/shared/portal-shell-chrome"
-import { Button } from "@/components/ui/button"
 import {
   Sidebar,
   SidebarContent,
@@ -29,6 +30,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { cn } from "@/lib/utils"
 import { NavIcon } from "@/src/routes/nav-icons"
 import {
   getShellNavItems,
@@ -63,16 +65,25 @@ export function OpsShell({ children, activeRoute }: OpsShellProps) {
   const navItems = getShellNavItems("ops", opsMode)
   const opsDashboardHref = managerMode ? "/manager/dashboard" : "/admin/dashboard"
   const searchTarget = opsSearchTarget(activeRoute, opsMode)
+  const complianceHref = opsComplianceHref(opsMode)
 
   return (
     <SidebarProvider defaultOpen={true} storageKey="clink-sidebar-ops">
-      <div className="bg-background text-foreground flex h-screen w-full overflow-hidden">
-        <Sidebar collapsible="icon" className={portalSidebarClassName}>
+      <div className="bg-dashboard text-foreground flex h-screen w-full overflow-hidden">
+        <Sidebar
+          collapsible="icon"
+          className={cn(portalOpsSidebarClassName, "group/ops-sidebar")}
+          data-ops-sidebar
+        >
           <SidebarHeader className="group-data-[state=collapsed]/sidebar:mb-3">
-            <ClinkSidebarBrand dashboardHref={opsDashboardHref} portalLabel="Operations Portal" />
+            <ClinkSidebarBrand
+              dashboardHref={opsDashboardHref}
+              portalLabel="Operations Portal"
+              variant="inverse"
+            />
           </SidebarHeader>
           <SidebarContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-1.5">
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.key}>
                   <SidebarMenuButton asChild isActive={item.key === activeRoute}>
@@ -85,43 +96,55 @@ export function OpsShell({ children, activeRoute }: OpsShellProps) {
               ))}
             </SidebarMenu>
           </SidebarContent>
-          <SidebarFooter className="space-y-2 border-t border-border/60 pt-4">
-            <Button asChild variant="outline" className="w-full justify-start gap-2">
-              <Link href={opsComplianceHref(opsMode)} title="Open compliance tools">
-                <ShieldCheck size={16} />
-                <span className="group-data-[state=collapsed]/sidebar:sr-only">Compliance tools</span>
-              </Link>
-            </Button>
-            <Button asChild variant="ghost" className="w-full justify-start gap-2">
-              <LogoutLink>
-                <SignOut size={16} />
-                <span className="group-data-[state=collapsed]/sidebar:sr-only">Logout</span>
-              </LogoutLink>
-            </Button>
+          <SidebarFooter className="mt-auto space-y-2 border-t border-[var(--sidebar-ops-border)] pt-4">
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  className="justify-center py-2.5 hover:bg-transparent"
+                  data-ops-sidebar-cta
+                >
+                  <Link href={complianceHref} title="Open compliance tools">
+                    <ShieldCheck size={18} weight="bold" />
+                    <span className="group-data-[state=collapsed]/sidebar:sr-only">Compliance tools</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <LogoutLink className="flex w-full items-center gap-3">
+                    <SignOut size={18} />
+                    <span className="group-data-[state=collapsed]/sidebar:sr-only">Logout</span>
+                  </LogoutLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
           </SidebarFooter>
         </Sidebar>
 
         <SidebarInset className={portalInsetClassName}>
-          <header className={portalHeaderClassName}>
+          <header data-ops-header className={portalHeaderClassName}>
+            <PortalHeaderScrollFx headerSelector="[data-ops-header]" />
             <div className="flex h-16 items-center justify-between gap-3 px-4 md:px-6">
-              <div className="flex min-w-0 items-center gap-3">
-                <SidebarTrigger variant="soft" className="hidden lg:inline-flex" />
-                <Link href={opsDashboardHref} className="flex items-center gap-2 lg:hidden" aria-label="Tailored Psychology Operations home">
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                <SidebarTrigger variant="soft" className="hidden shrink-0 lg:inline-flex" />
+                <Link href={opsDashboardHref} className="flex shrink-0 items-center gap-2 lg:hidden" aria-label="Tailored Psychology Operations home">
                   <ClinkLogo alt="" className="size-8" />
                   <span className="text-muted-foreground text-sm font-semibold tracking-tight">Ops</span>
                 </Link>
                 <PortalShellSearch
                   targetHref={searchTarget}
                   placeholder={opsSearchPlaceholder(activeRoute)}
+                  className="min-w-0 flex-1 md:block"
                 />
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex shrink-0 items-center gap-1 sm:gap-2">
                 <NotificationBell />
                 <OpsHeaderAccountMenu mode={opsMode} />
               </div>
             </div>
           </header>
-          <PortalShellMain>{children}</PortalShellMain>
+          <PortalShellMain className={portalOpsMainClassName}>{children}</PortalShellMain>
         </SidebarInset>
       </div>
     </SidebarProvider>

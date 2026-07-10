@@ -247,7 +247,7 @@ export function PatientOnboardingChecklist() {
                 <li key={step.href}>
                   <Card
                     className={cn(
-                      "overflow-hidden transition-shadow duration-200 hover:shadow-md",
+                      "dashboard-card overflow-hidden transition-shadow duration-200 hover:shadow-md",
                       highlightIncomplete && "ring-2 ring-warning/35 border-warning",
                       doneAll && "border-success/20",
                     )}
@@ -306,7 +306,7 @@ export function PatientOnboardingChecklist() {
         </div>
 
         <aside className="space-y-4 lg:col-span-4">
-          <Card className="border-primary/15 bg-muted/20">
+          <Card className="dashboard-card border-primary/15 bg-muted/20">
             <CardHeader className="pb-2">
               <CardTitle className="text-base">Why these steps?</CardTitle>
               <CardDescription className="text-muted-foreground leading-relaxed">
@@ -316,7 +316,7 @@ export function PatientOnboardingChecklist() {
             </CardHeader>
           </Card>
 
-          <Card className="border-dashed border-border/80">
+          <Card className="dashboard-card border-dashed border-border/80">
             <CardContent className="pt-6">
               <EmptyState
                 className="border-none bg-transparent px-0 py-0"

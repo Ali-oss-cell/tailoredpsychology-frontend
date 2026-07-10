@@ -45,7 +45,7 @@ export function PatientVideoSetupCard() {
   }, [run])
 
   return (
-    <Card className="interactive-lift">
+    <Card className="dashboard-card interactive-lift">
       <CardHeader className="pb-3">
         <p className="card-eyebrow">Device check</p>
         <CardTitle>Video setup check</CardTitle>

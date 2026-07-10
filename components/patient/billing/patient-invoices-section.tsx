@@ -91,7 +91,7 @@ export function PatientInvoicesSection() {
   }
 
   return (
-    <Card className="interactive-lift">
+    <Card className="dashboard-card interactive-lift">
       <CardHeader className="pb-3">
         <p className="card-eyebrow">History</p>
         <CardTitle className="text-lg">Invoice history</CardTitle>

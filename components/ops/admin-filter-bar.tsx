@@ -54,8 +54,8 @@ export function AdminFilterBar({
   }, [searchValue, selects])
 
   return (
-    <div className="space-y-2">
-    <div className="bg-background/95 lg:sticky lg:top-0 lg:z-20 flex flex-wrap items-end gap-3 rounded-md border border-border/70 p-3 backdrop-blur-sm">
+    <div className="dashboard-section space-y-2">
+    <div className="dashboard-card flex flex-wrap items-end gap-3 rounded-dashboard-card p-4 lg:sticky lg:top-0 lg:z-20">
       <label className="flex min-w-64 flex-1 flex-col gap-1 text-xs">
         <span className="text-muted-foreground">Search</span>
         <PortalSearchInput

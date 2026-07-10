@@ -61,7 +61,7 @@ export function PreSessionWorkspaceCard() {
     : null
 
   return (
-    <Card className="interactive-lift md:col-span-12">
+    <Card className="dashboard-card interactive-lift md:col-span-12">
       <CardHeader>
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>

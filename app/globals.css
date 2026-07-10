@@ -70,6 +70,18 @@
     --sidebar-patient-accent: rgb(255 255 255 / 0.14);
     --sidebar-patient-border: rgb(255 255 255 / 0.1);
     --sidebar-patient-cta: #5fa8a6;
+    --sidebar-psychologist: #0a7378;
+    --sidebar-psychologist-foreground: #f4f7f6;
+    --sidebar-psychologist-muted: rgb(244 247 246 / 0.72);
+    --sidebar-psychologist-accent: rgb(255 255 255 / 0.14);
+    --sidebar-psychologist-border: rgb(255 255 255 / 0.1);
+    --sidebar-psychologist-cta: #5fa8a6;
+    --sidebar-ops: #0a7378;
+    --sidebar-ops-foreground: #f4f7f6;
+    --sidebar-ops-muted: rgb(244 247 246 / 0.72);
+    --sidebar-ops-accent: rgb(255 255 255 / 0.14);
+    --sidebar-ops-border: rgb(255 255 255 / 0.1);
+    --sidebar-ops-cta: #5fa8a6;
     --radius-dashboard-card: 1rem;
 
     /* Motion system */
@@ -141,6 +153,18 @@
     --sidebar-patient-accent: rgb(255 255 255 / 0.1);
     --sidebar-patient-border: rgb(255 255 255 / 0.08);
     --sidebar-patient-cta: #5fa8a6;
+    --sidebar-psychologist: #0d4f52;
+    --sidebar-psychologist-foreground: #e6eceb;
+    --sidebar-psychologist-muted: rgb(230 236 235 / 0.65);
+    --sidebar-psychologist-accent: rgb(255 255 255 / 0.1);
+    --sidebar-psychologist-border: rgb(255 255 255 / 0.08);
+    --sidebar-psychologist-cta: #5fa8a6;
+    --sidebar-ops: #0d4f52;
+    --sidebar-ops-foreground: #e6eceb;
+    --sidebar-ops-muted: rgb(230 236 235 / 0.65);
+    --sidebar-ops-accent: rgb(255 255 255 / 0.1);
+    --sidebar-ops-border: rgb(255 255 255 / 0.08);
+    --sidebar-ops-cta: #5fa8a6;
 }
 
 @theme inline {
@@ -285,6 +309,90 @@
       margin-bottom: 2rem;
     }
   }
+
+  .dashboard-card {
+    border-radius: var(--radius-dashboard-card);
+    border: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
+    background-color: var(--card);
+    box-shadow: var(--shadow-e1);
+  }
+
+  /* Marketing / landing page typography */
+  .marketing-h1 {
+    font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+    font-size: clamp(2.5rem, 4.5vw + 1rem, 4rem);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+  }
+
+  .marketing-h2 {
+    font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+    font-size: clamp(1.875rem, 2.5vw + 0.75rem, 2.5rem);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+  }
+
+  .marketing-h3 {
+    font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+    font-size: clamp(1.25rem, 1.5vw + 0.5rem, 1.75rem);
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+
+  .marketing-body {
+    font-size: 1.125rem;
+    line-height: 1.65;
+  }
+
+  .marketing-small {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--muted-foreground);
+  }
+
+  .marketing-cta {
+    min-height: 3rem;
+    padding-inline: 1.25rem;
+    border-radius: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .marketing-card {
+    border-radius: var(--radius-dashboard-card);
+    border: 1px solid color-mix(in oklab, var(--border) 55%, transparent);
+    background-color: var(--card);
+    box-shadow: var(--shadow-e1);
+    transition:
+      transform var(--duration-micro) var(--ease-out-quint),
+      box-shadow var(--duration-micro) var(--ease-out-quint),
+      border-color var(--duration-micro) var(--ease-out-quint);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .marketing-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-e2);
+      border-color: color-mix(in oklab, var(--primary) 22%, var(--border));
+    }
+  }
+
+  .bg-marketing-canvas {
+    background-color: var(--dashboard-bg);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 /* Patient portal — dark teal sidebar chrome */
@@ -319,6 +427,76 @@
 }
 
 [data-patient-sidebar] [data-patient-sidebar-cta]:hover {
+  filter: brightness(1.06);
+}
+
+/* Psychologist portal — dark teal sidebar chrome */
+[data-psychologist-sidebar] {
+  background-color: var(--sidebar-psychologist);
+  border-color: var(--sidebar-psychologist-border);
+  color: var(--sidebar-psychologist-foreground);
+}
+
+[data-psychologist-sidebar] [data-slot="sidebar-menu-button"] {
+  color: var(--sidebar-psychologist-muted);
+}
+
+[data-psychologist-sidebar] [data-slot="sidebar-menu-button"]:hover {
+  background-color: var(--sidebar-psychologist-accent);
+  color: var(--sidebar-psychologist-foreground);
+}
+
+[data-psychologist-sidebar] [data-slot="sidebar-menu-button"][data-active="true"] {
+  background-color: var(--sidebar-psychologist-accent);
+  color: var(--sidebar-psychologist-foreground);
+  font-weight: 600;
+  border-radius: 0.75rem;
+}
+
+[data-psychologist-sidebar] [data-psychologist-sidebar-cta] {
+  background-color: var(--sidebar-psychologist-cta);
+  color: var(--primary-foreground);
+  font-weight: 600;
+  border-radius: 9999px;
+  box-shadow: var(--shadow-primary-glow);
+}
+
+[data-psychologist-sidebar] [data-psychologist-sidebar-cta]:hover {
+  filter: brightness(1.06);
+}
+
+/* Ops portal — dark teal sidebar chrome */
+[data-ops-sidebar] {
+  background-color: var(--sidebar-ops);
+  border-color: var(--sidebar-ops-border);
+  color: var(--sidebar-ops-foreground);
+}
+
+[data-ops-sidebar] [data-slot="sidebar-menu-button"] {
+  color: var(--sidebar-ops-muted);
+}
+
+[data-ops-sidebar] [data-slot="sidebar-menu-button"]:hover {
+  background-color: var(--sidebar-ops-accent);
+  color: var(--sidebar-ops-foreground);
+}
+
+[data-ops-sidebar] [data-slot="sidebar-menu-button"][data-active="true"] {
+  background-color: var(--sidebar-ops-accent);
+  color: var(--sidebar-ops-foreground);
+  font-weight: 600;
+  border-radius: 0.75rem;
+}
+
+[data-ops-sidebar] [data-ops-sidebar-cta] {
+  background-color: var(--sidebar-ops-cta);
+  color: var(--primary-foreground);
+  font-weight: 600;
+  border-radius: 9999px;
+  box-shadow: var(--shadow-primary-glow);
+}
+
+[data-ops-sidebar] [data-ops-sidebar-cta]:hover {
   filter: brightness(1.06);
 }
 
@@ -469,10 +647,20 @@
     background-color var(--duration-element) var(--ease-out-quint),
     border-color var(--duration-element) var(--ease-out-quint);
 }
-[data-patient-header][data-scrolled="true"] {
+[data-patient-header][data-scrolled="true"],
+[data-psychologist-header][data-scrolled="true"],
+[data-ops-header][data-scrolled="true"] {
   background-color: var(--glass-bg);
   border-color: transparent;
   box-shadow: var(--shadow-e1);
+}
+
+[data-psychologist-header],
+[data-ops-header] {
+  transition:
+    box-shadow var(--duration-element) var(--ease-out-quint),
+    background-color var(--duration-element) var(--ease-out-quint),
+    border-color var(--duration-element) var(--ease-out-quint);
 }
 
 /* Driver.js — sit above patient shell (header z-20, modals z-[60]+). */

@@ -81,7 +81,7 @@ export default function PatientDataRequestsPage() {
       eyebrow="Privacy"
       tutorialId="patient.page.privacy-requests"
     >
-      <Card className="interactive-lift">
+      <Card className="dashboard-card interactive-lift">
         <CardHeader className="pb-2">
           <p className="card-eyebrow">New request</p>
           <CardTitle className="text-lg">{copy.newRequest.title}</CardTitle>
@@ -119,7 +119,7 @@ export default function PatientDataRequestsPage() {
         </CardContent>
       </Card>
 
-      <Card className="interactive-lift">
+      <Card className="dashboard-card interactive-lift">
         <CardHeader className="pb-3">
           <p className="card-eyebrow">History</p>
           <CardTitle className="text-lg">{copy.list.title}</CardTitle>
