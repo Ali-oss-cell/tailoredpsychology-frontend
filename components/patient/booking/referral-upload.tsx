@@ -127,7 +127,7 @@ export function ReferralUpload({ value, onChange }: ReferralUploadProps) {
         }}
         onDrop={(event) => void handleDrop(event)}
         className={cn(
-          "bg-muted/40 border-border/60 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed p-6 text-center transition-colors",
+          "dashboard-card rounded-dashboard-card border-border/60 flex cursor-pointer flex-col items-center justify-center gap-2 border border-dashed p-6 text-center transition-colors md:p-8",
           isDragging && "border-primary/50 bg-primary/5",
           isUploading && "pointer-events-none opacity-80",
         )}
@@ -161,7 +161,7 @@ export function ReferralUpload({ value, onChange }: ReferralUploadProps) {
       ) : null}
 
       {value.fileName ? (
-        <div className="bg-background border-border/70 flex items-center justify-between rounded-lg border p-3">
+        <div className="dashboard-card rounded-dashboard-card border-border/70 flex items-center justify-between p-3">
           <p className="flex flex-col gap-1 text-sm">
             <span className="flex items-center gap-2">
               <FilePdf size={16} />

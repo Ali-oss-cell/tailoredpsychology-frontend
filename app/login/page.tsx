@@ -6,8 +6,9 @@ import * as React from "react"
 
 import { AuthCard } from "@/components/auth/auth-card"
 import { AuthField } from "@/components/auth/auth-field"
+import { AuthPrimaryButton } from "@/components/auth/auth-primary-button"
 import { AuthShell } from "@/components/auth/auth-shell"
-import { Button } from "@/components/ui/button"
+import { AuthTrustIndicators } from "@/components/auth/auth-trust-indicators"
 import { authContent } from "@/content/auth"
 import { loginWithBackend } from "@/src/auth/api"
 import { getDefaultRouteForRole } from "@/src/auth/session"
@@ -66,7 +67,7 @@ export default function LoginPage() {
           </p>
         }
       >
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-5" onSubmit={handleSubmit}>
           <AuthField
             id="email"
             label="Email Address"
@@ -109,10 +110,11 @@ export default function LoginPage() {
               If you changed a password in this session, restart the API so stub users reset.
             </p>
           ) : null}
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Signing In..." : "Sign In"}
-          </Button>
+          <AuthPrimaryButton type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Signing in…" : "Sign in"}
+          </AuthPrimaryButton>
         </form>
+        <AuthTrustIndicators className="mt-6" />
       </AuthCard>
     </AuthShell>
   )

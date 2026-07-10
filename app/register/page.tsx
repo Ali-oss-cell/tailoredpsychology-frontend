@@ -6,8 +6,10 @@ import * as React from "react"
 
 import { AuthCard } from "@/components/auth/auth-card"
 import { AuthField } from "@/components/auth/auth-field"
+import { AuthPrimaryButton } from "@/components/auth/auth-primary-button"
 import { AuthShell } from "@/components/auth/auth-shell"
-import { Button } from "@/components/ui/button"
+import { AuthTrustIndicators } from "@/components/auth/auth-trust-indicators"
+import { PortalCheckboxField } from "@/components/shared/portal-form-field"
 import { authContent } from "@/content/auth"
 import { registerWithBackend } from "@/src/auth/api"
 import { PASSWORD_HINT, isPasswordLongEnough } from "@/src/auth/password-policy"
@@ -84,7 +86,7 @@ export default function RegisterPage() {
           </p>
         }
       >
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-5" onSubmit={handleSubmit}>
           <div className="grid gap-4 sm:grid-cols-2">
             <AuthField id="firstName" label="First Name" placeholder="Sarah" value={firstName} onChange={(e) => setFirstName(e.target.value)} autoComplete="given-name" required />
             <AuthField id="lastName" label="Last Name" placeholder="Chen" value={lastName} onChange={(e) => setLastName(e.target.value)} autoComplete="family-name" required />
@@ -102,34 +104,35 @@ export default function RegisterPage() {
             autoComplete="new-password"
             required
           />
-          <label className="text-muted-foreground flex items-start gap-2 rounded-lg border border-border/60 bg-muted/40 p-3 text-xs leading-5">
-            <input
-              type="checkbox"
-              checked={acceptedTerms}
-              onChange={(e) => setAcceptedTerms(e.target.checked)}
-              className="mt-0.5 h-4 w-4 accent-[var(--primary)]"
-            />
-            <span>
-              I agree to the{" "}
-              <Link href="/terms-of-service" className="text-primary font-medium hover:underline">
-                Terms of Service
-              </Link>
-              ,{" "}
-              <Link href="/privacy-policy" className="text-primary font-medium hover:underline">
-                Privacy Policy
-              </Link>
-              , and electronic communications.
-            </span>
-          </label>
+          <PortalCheckboxField
+            id="accept-terms"
+            checked={acceptedTerms}
+            onChange={setAcceptedTerms}
+            className="dashboard-card rounded-dashboard-card border-border/60 bg-muted/20 p-4"
+            label={
+              <>
+                I agree to the{" "}
+                <Link href="/terms-of-service" className="text-primary font-medium hover:underline">
+                  Terms of Service
+                </Link>
+                ,{" "}
+                <Link href="/privacy-policy" className="text-primary font-medium hover:underline">
+                  Privacy Policy
+                </Link>
+                , and electronic communications.
+              </>
+            }
+          />
           {error ? (
             <p className="text-destructive text-sm" role="alert">
               {error}
             </p>
           ) : null}
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Creating account..." : "Create Account"}
-          </Button>
+          <AuthPrimaryButton type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Creating account…" : "Create account"}
+          </AuthPrimaryButton>
         </form>
+        <AuthTrustIndicators className="mt-6" />
       </AuthCard>
     </AuthShell>
   )

@@ -3,6 +3,7 @@
 import { BookingCrisisPanel } from "@/components/patient/booking/booking-crisis-panel"
 import { CompactDatePicker } from "@/components/patient/booking/compact-date-picker"
 import { useBookingWizardContext } from "@/components/patient/booking/booking-wizard-context"
+import { StepIntro } from "@/components/shared/step-intro"
 import {
   PortalFormField,
   PortalSelect,
@@ -23,7 +24,12 @@ export function BookingReasonStep() {
   const requireCareSummary = isInitial || draft.bookingMeta.changesSinceLastVisit === "yes"
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
+    <div className="space-y-6">
+      <StepIntro
+        title="About you and your care needs"
+        description="Tell us how to reach you and what brings you in today. Fields marked with an asterisk are required."
+      />
+      <div className="dashboard-card rounded-dashboard-card grid gap-4 p-5 md:grid-cols-2 md:p-6">
       <PortalFormField
         id="patient-full-name"
         label="Full legal name"
@@ -218,6 +224,7 @@ export function BookingReasonStep() {
           ))}
         </PortalSelect>
       </PortalFormField>
+      </div>
     </div>
   )
 }

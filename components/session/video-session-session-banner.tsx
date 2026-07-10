@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
+import { Clock, WifiHigh } from "@phosphor-icons/react"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { getSessionDetail, type SessionDetail } from "@/src/sessions/api"
 
 function formatCountdown(msUntilStart: number): string {
@@ -48,38 +48,45 @@ export function VideoSessionSessionBanner({ appointmentId }: VideoSessionSession
     startMs !== null ? formatCountdown(startMs - Date.now()) : detail ? "Starting soon" : "Loading schedule…"
 
   return (
-    <Card className="border-primary/20">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-base">Your session</CardTitle>
-        <CardDescription>
-          Scheduled start:{" "}
-          {detail
-            ? `${new Date(detail.scheduledStartAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })} (${tz})`
-            : "—"}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3 text-sm">
-        <p className="text-muted-foreground text-xs" aria-live="polite">
-          {countdown}
-        </p>
-        <details className="rounded-md border border-border/60 bg-muted/30 px-3 py-2 text-xs">
-          <summary className="cursor-pointer font-medium text-foreground">Connection tips</summary>
-          <ul className="text-muted-foreground mt-2 list-inside list-disc space-y-1">
+    <section className="dashboard-card rounded-dashboard-card border-primary/20 from-primary/5 to-card bg-gradient-to-br p-5 md:p-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div className="space-y-2">
+          <p className="text-primary text-xs font-semibold tracking-wide uppercase">Your session</p>
+          <h2 className="font-heading text-lg font-semibold tracking-tight">
+            {detail?.sessionTypeLabel ?? "Telehealth appointment"}
+          </h2>
+          <p className="text-muted-foreground flex items-center gap-2 text-sm">
+            <Clock size={16} className="text-primary shrink-0" aria-hidden />
+            Scheduled start:{" "}
+            {detail
+              ? `${new Date(detail.scheduledStartAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })} (${tz})`
+              : "—"}
+          </p>
+          <p className="text-foreground text-sm font-medium" aria-live="polite">
+            {countdown}
+          </p>
+        </div>
+        <details className="dashboard-card rounded-dashboard-card border-border/60 bg-card/80 min-w-[14rem] px-4 py-3 text-sm">
+          <summary className="flex cursor-pointer items-center gap-2 font-medium">
+            <WifiHigh size={16} className="text-primary" aria-hidden />
+            Connection tips
+          </summary>
+          <ul className="text-muted-foreground mt-3 list-inside list-disc space-y-1.5 text-xs leading-relaxed">
             <li>Use a stable Wi‑Fi or wired connection where possible.</li>
             <li>Allow camera and microphone when your browser prompts.</li>
             <li>Find a private space; headphones reduce echo for others.</li>
           </ul>
         </details>
-        <p className="text-xs">
-          <a
-            href="mailto:support@clink.test"
-            className="text-primary font-medium underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
-          >
-            Need help?
-          </a>{" "}
-          <span className="text-muted-foreground">For emergencies call 000 — this inbox is not monitored for crises.</span>
-        </p>
-      </CardContent>
-    </Card>
+      </div>
+      <p className="text-muted-foreground mt-4 text-xs">
+        <a
+          href="mailto:support@clink.test"
+          className="text-primary focus-visible:ring-ring rounded-sm font-medium underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:outline-none"
+        >
+          Need help?
+        </a>{" "}
+        For emergencies call 000 — this inbox is not monitored for crises.
+      </p>
+    </section>
   )
 }

@@ -3,7 +3,6 @@ import { Eye, EyeSlash } from "@phosphor-icons/react"
 
 import { cn } from "@/lib/utils"
 import {
-  PortalFormField,
   PortalTextInput,
   type PortalTextInputProps,
 } from "@/components/shared/portal-form-field"
@@ -34,7 +33,7 @@ export function AuthField({
   const resolvedType = isPassword && showPassword ? "text" : type
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn("space-y-2.5", className)}>
       <div className="flex items-center justify-between gap-2">
         <label htmlFor={id} className="text-sm font-medium">
           {label}
@@ -47,7 +46,7 @@ export function AuthField({
           type={resolvedType}
           placeholder={placeholder}
           hasError={Boolean(error)}
-          className={cn(isPassword && "pr-10")}
+          className={cn("h-11 text-base", isPassword && "pr-11")}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
           {...inputProps}
@@ -55,7 +54,7 @@ export function AuthField({
         {isPassword ? (
           <button
             type="button"
-            className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2 rounded p-1"
+            className="text-muted-foreground hover:text-foreground focus-visible:ring-ring absolute top-1/2 right-2.5 -translate-y-1/2 rounded-md p-1.5 focus-visible:ring-2 focus-visible:outline-none"
             onClick={() => setShowPassword((prev) => !prev)}
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
@@ -64,12 +63,12 @@ export function AuthField({
         ) : null}
       </div>
       {hint ? (
-        <p id={`${id}-hint`} className="text-muted-foreground text-xs">
+        <p id={`${id}-hint`} className="text-muted-foreground text-sm">
           {hint}
         </p>
       ) : null}
       {error ? (
-        <p id={`${id}-error`} className="text-destructive text-xs" role="alert">
+        <p id={`${id}-error`} className="text-destructive text-sm" role="alert">
           {error}
         </p>
       ) : null}

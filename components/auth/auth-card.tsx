@@ -1,6 +1,5 @@
 import type * as React from "react"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
 type AuthCardProps = {
@@ -19,15 +18,18 @@ export function AuthCard({
   className,
 }: AuthCardProps) {
   return (
-    <Card className={cn("surface-glass interactive-lift border-border/70 shadow-e1", className)}>
-      <CardHeader className="space-y-2 text-center">
-        <CardTitle className="font-heading text-2xl">{title}</CardTitle>
-        <p className="text-muted-foreground text-sm">{description}</p>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {children}
-        {footer ? <div className="border-border/60 border-t pt-4">{footer}</div> : null}
-      </CardContent>
-    </Card>
+    <article
+      className={cn(
+        "rounded-dashboard-card border-border/60 bg-card shadow-e1 border p-6 md:p-8",
+        className,
+      )}
+    >
+      <header className="space-y-2 text-center">
+        <h1 className="font-heading text-[1.75rem] leading-tight font-semibold tracking-tight">{title}</h1>
+        <p className="text-muted-foreground text-base leading-relaxed">{description}</p>
+      </header>
+      <div className="mt-8 space-y-6">{children}</div>
+      {footer ? <div className="border-border/50 mt-6 border-t pt-5">{footer}</div> : null}
+    </article>
   )
 }

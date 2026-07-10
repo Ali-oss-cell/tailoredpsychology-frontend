@@ -1,7 +1,9 @@
 "use client"
 
 import { useBookingWizardContext } from "@/components/patient/booking/booking-wizard-context"
+import { StepIntro } from "@/components/shared/step-intro"
 import {
+  PortalFormField,
   PortalSelect,
   PortalTextInput,
 } from "@/components/shared/portal-form-field"
@@ -14,18 +16,23 @@ export function BookingMedicareStep() {
 
   if (draft.bookingMeta.bookingType === "follow_up" && draft.bookingMeta.changesSinceLastVisit === "no") {
     return (
-      <p className="text-muted-foreground text-sm">
-        Medicare and referral details are unchanged for this follow-up booking.
-      </p>
+      <div className="space-y-4">
+        <StepIntro title="Medicare details" description="No changes needed for this follow-up booking." />
+        <p className="text-muted-foreground dashboard-card rounded-dashboard-card p-5 text-sm">
+          Medicare and referral details are unchanged for this follow-up booking.
+        </p>
+      </div>
     )
   }
 
   return (
-    <div className="space-y-4">
-      <p className="text-muted-foreground text-sm">{bookingContent.helper.medicare}</p>
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Mental Health Treatment Plan (MHTP)</label>
+    <div className="space-y-6">
+      <StepIntro
+        title="Medicare and referral"
+        description={bookingContent.helper.medicare}
+      />
+      <div className="dashboard-card rounded-dashboard-card grid gap-4 p-5 md:grid-cols-2 md:p-6">
+        <PortalFormField id="mhtp-status" label="Mental Health Treatment Plan (MHTP)">
           <PortalSelect
             value={draft.medicarePath.hasMhtp}
             onChange={(event) =>
@@ -39,9 +46,8 @@ export function BookingMedicareStep() {
             <option value="yes">Yes, I have one</option>
             <option value="no">No, I do not have one</option>
           </PortalSelect>
-        </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Referral available now?</label>
+        </PortalFormField>
+        <PortalFormField id="referral-available" label="Referral available now?">
           <PortalSelect
             value={draft.medicarePath.hasReferral}
             onChange={(event) =>
@@ -54,11 +60,10 @@ export function BookingMedicareStep() {
             <option value="no">No</option>
             <option value="yes">Yes</option>
           </PortalSelect>
-        </div>
+        </PortalFormField>
 
         {draft.medicarePath.hasReferral === "yes" ? (
-          <div className="space-y-2 md:col-span-2">
-            <label className="text-sm font-medium">Referral type</label>
+          <PortalFormField id="referral-type" label="Referral type" className="md:col-span-2">
             <PortalSelect
               value={draft.medicarePath.referralType}
               onChange={(event) =>
@@ -75,11 +80,10 @@ export function BookingMedicareStep() {
                 </option>
               ))}
             </PortalSelect>
-          </div>
+          </PortalFormField>
         ) : null}
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Estimated sessions used this year</label>
+        <PortalFormField id="sessions-used" label="Estimated sessions used this year">
           <PortalTextInput
             value={draft.medicarePath.sessionsUsedEstimate}
             onChange={(event) =>
@@ -90,9 +94,8 @@ export function BookingMedicareStep() {
             }
             placeholder="e.g. 2 individual sessions"
           />
-        </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium">GP name (optional)</label>
+        </PortalFormField>
+        <PortalFormField id="gp-name" label="GP name (optional)">
           <PortalTextInput
             value={draft.medicarePath.gpName}
             onChange={(event) =>
@@ -102,13 +105,14 @@ export function BookingMedicareStep() {
               })
             }
           />
-        </div>
+        </PortalFormField>
       </div>
-      <div className="rounded-md border border-border/60 p-3">
-        <p className="text-sm font-medium">Indicative out-of-pocket examples</p>
-        <div className="mt-2 grid gap-2 md:grid-cols-3">
+
+      <div className="dashboard-card rounded-dashboard-card space-y-3 p-5 md:p-6">
+        <p className="text-sm font-semibold">Indicative out-of-pocket examples</p>
+        <div className="grid gap-3 md:grid-cols-3">
           {publicPricing.gapExamples.map((example) => (
-            <div key={example.label} className="rounded-md border border-border/50 p-2 text-xs">
+            <div key={example.label} className="rounded-xl border border-border/50 bg-muted/15 p-3 text-xs">
               <p className="font-medium">{example.label}</p>
               <p className="text-muted-foreground">Fee: ${example.sessionFeeAud.toFixed(2)}</p>
               <p className="text-muted-foreground">Rebate: ${example.medicareRebateAud.toFixed(2)}</p>
@@ -116,7 +120,7 @@ export function BookingMedicareStep() {
             </div>
           ))}
         </div>
-        <p className="text-muted-foreground mt-2 text-xs">{publicPricing.assumptions}</p>
+        <p className="text-muted-foreground text-xs leading-relaxed">{publicPricing.assumptions}</p>
       </div>
     </div>
   )

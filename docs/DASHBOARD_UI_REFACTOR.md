@@ -92,13 +92,24 @@ Dark mode: sidebar and dashboard-bg tokens have `.dark` overrides so contrast is
 | **Phase 2** | Psychologist dashboard + shell + top pages | ✅ Complete |
 | **Phase 3** | Ops / Admin dashboards + list pages | ✅ Complete |
 | **Phase 4** | Remaining patient pages (chrome + cards) | ✅ Complete |
+| **Phase 5** | Auth pages, video session room, booking wizard steps | ✅ Complete |
 
 ### Deferred (out of scope)
 
-- Marketing / public pages
+- Marketing / public pages (non-home)
+- Animated stat counters, video hero background (landing page)
+
+## Phase 5 implementation notes
+
+- **Auth pages** — `AuthShell` uses `--dashboard-bg` gradient canvas; `AuthCard` 16px radius, 24–32px padding; `AuthTrustIndicators` (Medicare, Secure, Privacy); `AuthPrimaryButton` 48px teal CTAs; `PortalCheckboxField` on register; forgot-password success uses semantic success tokens.
+- **Video session room** — Focus mode layout without portal sidebar (`app/video-session/[appointmentId]/page.tsx`); `VideoSessionHeader` with connection badge and leave action; `TwilioVideoRoom` polished tiles, sticky controls, keyboard shortcuts (M/V/F), loading skeleton; pre-join readiness/chat use dashboard cards.
+- **Booking wizard steps** — Journey-rail-style `BookingStepper` with progress bar; each step uses `StepIntro` + `dashboard-card` field groups; schedule calendar h-11 on sm+; consent via `PortalCheckboxField`; review hero summary card; sticky mobile `BookingActions` bar.
+
+### Previously deferred (now complete)
+
 - Auth pages (login, register, password reset)
 - Video session room UI
-- Deep booking-wizard step redesign (outer chrome only in Phase 4)
+- Deep booking-wizard step redesign
 
 ## Phase 1 implementation notes
 
@@ -127,7 +138,7 @@ Dark mode: sidebar and dashboard-bg tokens have `.dark` overrides so contrast is
 
 - `PatientPortalPage` migrated to `DashboardPageHeader` with `space-y-8` section rhythm.
 - Patient sub-pages updated: appointments, my-clinician, account, onboarding, book-appointment (wizard shell), resources, invoices, data-requests.
-- Booking wizard steps unchanged internally; outer page header + card wrappers only.
+- Booking wizard outer chrome in Phase 4; deep per-step redesign completed in Phase 5.
 - `EmptyState` uses dashboard card border/radius tokens.
 
 ## Shared infrastructure

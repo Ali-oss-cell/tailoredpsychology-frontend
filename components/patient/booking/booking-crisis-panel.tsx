@@ -6,7 +6,7 @@ export function BookingCrisisPanel() {
   const copy = bookingContent.crisisSupport
   return (
     <div
-      className="border-warning/40 bg-warning/10 space-y-3 rounded-xl border p-4"
+      className="border-warning/40 bg-warning/10 space-y-3 rounded-dashboard-card border p-5"
       role="region"
       aria-labelledby="booking-crisis-title"
     >

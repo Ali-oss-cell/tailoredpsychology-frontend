@@ -1,13 +1,14 @@
 "use client"
 
 import * as React from "react"
+import { CheckCircle, WarningCircle } from "@phosphor-icons/react"
 
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { getAppointmentReadiness, saveAppointmentReadiness, type TelehealthReadinessResponse } from "@/src/patient/booking/api"
 import { runBrowserTelehealthChecks } from "@/src/session/browser-telehealth-checks"
 import { formatRelativeTimestamp } from "@/src/shared/relative-time"
+import { cn } from "@/lib/utils"
 
 type PreSessionReadinessCardProps = {
   appointmentId: string
@@ -60,8 +61,8 @@ export function PreSessionReadinessCard({ appointmentId, onReadinessChange, reru
 
   const statusBadgeClass = (status: "pass" | "review") =>
     status === "pass"
-      ? "rounded-full border border-success/30 bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success"
-      : "rounded-full border border-warning/30 bg-warning/10 px-2 py-0.5 text-[11px] font-medium text-warning"
+      ? "rounded-full border border-success/30 bg-success/10 px-2.5 py-0.5 text-[11px] font-medium text-success"
+      : "rounded-full border border-warning/30 bg-warning/10 px-2.5 py-0.5 text-[11px] font-medium text-warning"
 
   const loadReadiness = React.useCallback(() => {
     let cancelled = false
@@ -107,40 +108,63 @@ export function PreSessionReadinessCard({ appointmentId, onReadinessChange, reru
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Telehealth readiness</CardTitle>
-        <CardDescription>Quick pre-session checks for smoother video care</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {isLoading ? <DashboardStateBlock variant="loading" message="Loading data..." /> : null}
-        {!isLoading && error ? <DashboardStateBlock variant="error" message={error} onRetry={retryLoadReadiness} /> : null}
+    <section className="dashboard-card rounded-dashboard-card overflow-hidden">
+      <header className="border-border/50 space-y-1 border-b px-5 py-4 md:px-6">
+        <h2 className="font-heading text-lg font-semibold tracking-tight">Telehealth readiness</h2>
+        <p className="text-muted-foreground text-sm">Quick pre-session checks for smoother video care</p>
+      </header>
+      <div className="space-y-4 px-5 py-5 md:px-6">
+        {isLoading ? <DashboardStateBlock variant="loading" message="Loading readiness checks…" /> : null}
+        {!isLoading && error ? (
+          <DashboardStateBlock variant="error" message={error} onRetry={retryLoadReadiness} />
+        ) : null}
         {!isLoading && !error && !data ? <DashboardStateBlock variant="empty" message="No data yet." /> : null}
         {!isLoading && !error && data ? (
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="text-sm text-muted-foreground">{data.guidance}</p>
-              <Button size="sm" variant="outline" onClick={() => void runChecksNow()} disabled={isRunningChecks}>
-                {isRunningChecks ? "Running checks..." : "Run checks now"}
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-muted-foreground text-sm leading-relaxed">{data.guidance}</p>
+              <Button
+                size="default"
+                variant="outline"
+                className="h-11 rounded-xl"
+                onClick={() => void runChecksNow()}
+                disabled={isRunningChecks}
+              >
+                {isRunningChecks ? "Running checks…" : "Run checks now"}
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground" title={new Date(data.updatedAt).toLocaleString()}>
+            <p className="text-muted-foreground text-xs" title={new Date(data.updatedAt).toLocaleString()}>
               Last checked: {formatRelativeTimestamp(data.updatedAt)}
             </p>
-            <div className="space-y-2">
+            <ul className="space-y-2" aria-label="Readiness checklist">
               {data.checks.map((check) => (
-                <article key={check.key} className="rounded-md border border-border/60 px-3 py-2 text-sm">
+                <li
+                  key={check.key}
+                  className={cn(
+                    "rounded-xl border px-4 py-3 text-sm",
+                    check.status === "pass"
+                      ? "border-success/25 bg-success/5"
+                      : "border-warning/30 bg-warning/5",
+                  )}
+                >
                   <div className="flex items-center justify-between gap-2">
-                    <p className="font-medium capitalize">{check.key.replaceAll("_", " ")}</p>
+                    <p className="flex items-center gap-2 font-medium capitalize">
+                      {check.status === "pass" ? (
+                        <CheckCircle size={16} className="text-success shrink-0" aria-hidden />
+                      ) : (
+                        <WarningCircle size={16} className="text-warning shrink-0" aria-hidden />
+                      )}
+                      {check.key.replaceAll("_", " ")}
+                    </p>
                     <span className={statusBadgeClass(check.status)}>{check.status}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">{check.message}</p>
-                </article>
+                  <p className="text-muted-foreground mt-1 text-xs leading-relaxed">{check.message}</p>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         ) : null}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   )
 }

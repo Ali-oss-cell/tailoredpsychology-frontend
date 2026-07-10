@@ -6,8 +6,9 @@ import * as React from "react"
 
 import { AuthCard } from "@/components/auth/auth-card"
 import { AuthField } from "@/components/auth/auth-field"
+import { AuthPrimaryButton } from "@/components/auth/auth-primary-button"
 import { AuthShell } from "@/components/auth/auth-shell"
-import { Button } from "@/components/ui/button"
+import { AuthTrustIndicators } from "@/components/auth/auth-trust-indicators"
 import { authContent } from "@/content/auth"
 import { PASSWORD_HINT } from "@/src/auth/password-policy"
 import { completePasswordReset } from "@/src/auth/password-reset-api"
@@ -66,10 +67,10 @@ export function ResetPasswordForm() {
           </p>
         }
       >
-        <form className="space-y-4" onSubmit={(e) => void handleSubmit(e)}>
+        <form className="space-y-5" onSubmit={(e) => void handleSubmit(e)}>
           <AuthField
             id="newPassword"
-            label="New Password"
+            label="New password"
             type="password"
             placeholder="Enter new password"
             value={newPassword}
@@ -81,7 +82,7 @@ export function ResetPasswordForm() {
           />
           <AuthField
             id="confirmPassword"
-            label="Confirm Password"
+            label="Confirm password"
             type="password"
             placeholder="Confirm new password"
             hint={PASSWORD_HINT}
@@ -91,11 +92,16 @@ export function ResetPasswordForm() {
             required
             autoComplete="new-password"
           />
-          {error ? <p className="text-destructive text-sm">{error}</p> : null}
-          <Button type="submit" className="w-full" disabled={busy}>
-            {busy ? "Saving…" : "Save New Password"}
-          </Button>
+          {error ? (
+            <p className="text-destructive text-sm" role="alert">
+              {error}
+            </p>
+          ) : null}
+          <AuthPrimaryButton type="submit" disabled={busy}>
+            {busy ? "Saving…" : "Save new password"}
+          </AuthPrimaryButton>
         </form>
+        <AuthTrustIndicators className="mt-6" />
       </AuthCard>
     </AuthShell>
   )

@@ -19,19 +19,25 @@ export function BookingActions({
   return (
     <div
       className={cn(
-        "border-border/50 bg-muted/15 -mx-6 flex flex-wrap justify-end gap-3 border-t px-6 py-4",
+        "border-border/50 bg-card/95 supports-[backdrop-filter]:bg-card/90 -mx-6 flex flex-wrap justify-end gap-3 border-t px-6 py-4 backdrop-blur-sm",
+        "sticky bottom-0 z-10 md:relative md:bottom-auto md:bg-muted/15 md:backdrop-blur-none",
       )}
     >
       <Button
         type="button"
         variant="outline"
-        className="min-w-[5.5rem] rounded-lg"
+        className="min-h-11 min-w-[5.5rem] rounded-xl"
         onClick={onBack}
         disabled={isFirstStep || isSubmitting}
       >
         Back
       </Button>
-      <Button type="button" className="min-w-[5.5rem] rounded-lg" onClick={onNext} disabled={isSubmitting}>
+      <Button
+        type="button"
+        className="min-h-11 min-w-[5.5rem] rounded-xl text-base font-semibold"
+        onClick={onNext}
+        disabled={isSubmitting}
+      >
         {isFinalStep
           ? isSubmitting
             ? "Redirecting to payment…"

@@ -1,12 +1,14 @@
 "use client"
 
 import Link from "next/link"
+import { CheckCircle } from "@phosphor-icons/react"
 import * as React from "react"
 
 import { AuthCard } from "@/components/auth/auth-card"
 import { AuthField } from "@/components/auth/auth-field"
+import { AuthPrimaryButton } from "@/components/auth/auth-primary-button"
 import { AuthShell } from "@/components/auth/auth-shell"
-import { Button } from "@/components/ui/button"
+import { AuthTrustIndicators } from "@/components/auth/auth-trust-indicators"
 import { authContent } from "@/content/auth"
 import { requestPasswordReset } from "@/src/auth/password-reset-api"
 
@@ -47,17 +49,17 @@ export function ForgotPasswordForm() {
         title={authContent.forgotPassword.title}
         description={authContent.forgotPassword.description}
         footer={
-          <p className="text-center text-sm">
+          <p className="text-muted-foreground text-center text-sm">
             <Link href="/login" className="text-primary font-medium hover:underline">
               Return to login
             </Link>
           </p>
         }
       >
-        <form className="space-y-4" onSubmit={(e) => void handleSubmit(e)}>
+        <form className="space-y-5" onSubmit={(e) => void handleSubmit(e)}>
           <AuthField
             id="email"
-            label="Email Address"
+            label="Email address"
             type="email"
             placeholder="name@example.com"
             value={email}
@@ -66,25 +68,39 @@ export function ForgotPasswordForm() {
             required
             autoComplete="email"
           />
-          {error ? <p className="text-destructive text-sm">{error}</p> : null}
+          {error ? (
+            <p className="text-destructive text-sm" role="alert">
+              {error}
+            </p>
+          ) : null}
           {message ? (
-            <div className="text-success space-y-1 text-sm">
-              <p>{message}</p>
-              <p>Check your inbox and spam or junk folder — the link can take a few minutes to arrive.</p>
+            <div
+              className="border-success/40 bg-success/10 text-success space-y-2 rounded-xl border p-4 text-sm"
+              role="status"
+              aria-live="polite"
+            >
+              <p className="flex items-start gap-2 font-medium">
+                <CheckCircle size={18} className="mt-0.5 shrink-0" aria-hidden />
+                <span>{message}</span>
+              </p>
+              <p className="text-muted-foreground pl-7 text-sm">
+                Check your inbox and spam or junk folder — the link can take a few minutes to arrive.
+              </p>
             </div>
           ) : null}
           {process.env.NODE_ENV === "development" && devResetUrl ? (
-            <p className="text-muted-foreground rounded-md border border-border/60 bg-muted/40 p-3 text-xs">
+            <p className="text-muted-foreground rounded-xl border border-border/60 bg-muted/30 p-3 text-xs">
               Email delivery is not configured in this environment. Use this link to reset:{" "}
               <Link href={devResetUrl} className="text-primary break-all font-medium hover:underline">
                 {devResetUrl}
               </Link>
             </p>
           ) : null}
-          <Button type="submit" className="w-full" disabled={busy}>
-            {busy ? "Sending…" : "Send Reset Link"}
-          </Button>
+          <AuthPrimaryButton type="submit" disabled={busy}>
+            {busy ? "Sending…" : "Send reset link"}
+          </AuthPrimaryButton>
         </form>
+        <AuthTrustIndicators className="mt-6" />
       </AuthCard>
     </AuthShell>
   )

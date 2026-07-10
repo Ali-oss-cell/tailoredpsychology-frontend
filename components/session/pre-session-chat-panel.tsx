@@ -23,7 +23,10 @@ export function PreSessionChatPanel({
   onAccessDenied,
 }: PreSessionChatPanelProps) {
   return (
-    <section className={`overflow-hidden rounded-xl border border-border bg-card shadow-sm ${compact ? "text-sm" : ""}`}>
+    <section
+      className={`dashboard-card rounded-dashboard-card overflow-hidden shadow-e1 ${compact ? "text-sm" : ""}`}
+      aria-label="Pre-session chat"
+    >
       <ChatConversationView
         appointmentId={appointmentId}
         viewerRole={viewerRole}
@@ -33,7 +36,7 @@ export function PreSessionChatPanel({
         onAccessDenied={onAccessDenied}
         showHeader={!compact}
         compact={compact}
-        className={compact ? "max-h-[22rem]" : ""}
+        className={compact ? "max-h-[22rem]" : "min-h-[20rem]"}
       />
     </section>
   )

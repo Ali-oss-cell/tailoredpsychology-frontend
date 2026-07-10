@@ -1,9 +1,10 @@
 "use client"
 
-import { Badge } from "@/components/ui/badge"
 import { BookingTypeOptionCard } from "@/components/patient/booking/booking-type-option-card"
 import { useBookingWizardContext } from "@/components/patient/booking/booking-wizard-context"
-import { PortalSelect, portalInputClassName } from "@/components/shared/portal-form-field"
+import { StepIntro } from "@/components/shared/step-intro"
+import { PortalSelect } from "@/components/shared/portal-form-field"
+import { Badge } from "@/components/ui/badge"
 import { bookingContent, bookingTypeOptions } from "@/content/patient-booking"
 
 export function BookingModeStep() {
@@ -11,10 +12,18 @@ export function BookingModeStep() {
 
   if (bookingEligibility.isNewPatient) {
     return (
-      <div className="space-y-4 rounded-xl border border-primary/30 bg-primary/5 p-4">
-        <Badge className="rounded-full">New patient</Badge>
-        <p className="text-sm font-semibold">{bookingContent.newPatient.modeTitle}</p>
-        <p className="text-muted-foreground text-sm">{bookingContent.newPatient.modeDescription}</p>
+      <div className="space-y-5">
+        <StepIntro
+          title="Your first appointment"
+          description="We'll guide you through intake questions before you choose a session time."
+        />
+        <div className="dashboard-card rounded-dashboard-card border-primary/25 from-primary/5 to-card space-y-3 border bg-gradient-to-br p-5">
+          <Badge variant="secondary" className="rounded-full">
+            New patient
+          </Badge>
+          <p className="text-sm font-semibold">{bookingContent.newPatient.modeTitle}</p>
+          <p className="text-muted-foreground text-sm leading-relaxed">{bookingContent.newPatient.modeDescription}</p>
+        </div>
       </div>
     )
   }
@@ -24,10 +33,13 @@ export function BookingModeStep() {
     : bookingTypeOptions.filter((o) => o.value === "initial")
 
   return (
-    <div className="space-y-4">
-      <p className="text-muted-foreground text-sm">{bookingContent.returningPatient.modeDescription}</p>
+    <div className="space-y-5">
+      <StepIntro
+        title="Booking type"
+        description={bookingContent.returningPatient.modeDescription}
+      />
       {bookingEligibility.canBookFollowUp ? (
-        <p className="text-muted-foreground text-xs">
+        <p className="text-muted-foreground text-sm">
           Welcome back — you have {bookingEligibility.pastAppointmentCount} prior visit
           {bookingEligibility.pastAppointmentCount === 1 ? "" : "s"} on file.
         </p>
@@ -52,7 +64,7 @@ export function BookingModeStep() {
         })}
       </div>
       {draft.bookingMeta.bookingType === "follow_up" ? (
-        <div className="space-y-2 rounded-xl border border-border/50 bg-muted/15 p-4">
+        <div className="dashboard-card rounded-dashboard-card border-border/50 bg-muted/15 space-y-3 p-5">
           <label className="text-sm font-medium">Has anything changed since your last visit?</label>
           <PortalSelect
             value={draft.bookingMeta.changesSinceLastVisit}

@@ -1,3 +1,5 @@
+import type * as React from "react"
+
 import {
   appointmentModalityOptions,
   bookingTypeLabels,
@@ -27,6 +29,15 @@ function labelFor<T extends string>(
   return options.find((opt) => opt.value === value)?.label ?? value
 }
 
+function ReviewSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="dashboard-card rounded-dashboard-card border-border/50 space-y-2 p-4">
+      <p className="text-sm font-semibold">{title}</p>
+      <div className="text-muted-foreground space-y-1 text-xs leading-relaxed">{children}</div>
+    </div>
+  )
+}
+
 export function BookingReviewSummary({
   draft,
   clinicianName,
@@ -43,87 +54,84 @@ export function BookingReviewSummary({
     : "—"
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-lg border border-border/60 p-3">
-        <p className="text-sm font-medium">Appointment selection</p>
-        <p className="text-muted-foreground mt-1 text-xs leading-relaxed">
-          {bookingTypeLabels[draft.bookingMeta.bookingType]} · {clinicianName} ·{" "}
+    <div className="space-y-5">
+      <div className="from-primary/8 via-card to-card rounded-dashboard-card border-primary/25 relative overflow-hidden border bg-gradient-to-br p-6 shadow-e1">
+        <p className="text-primary text-xs font-semibold tracking-wide uppercase">Review before payment</p>
+        <h3 className="font-heading mt-2 text-xl font-semibold tracking-tight">
+          {clinicianName !== "Not selected" ? clinicianName : "Your appointment"}
+        </h3>
+        <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
+          {bookingTypeLabels[draft.bookingMeta.bookingType]} ·{" "}
           {slotDate ? formatDateAu(`${slotDate}T12:00:00`) : "Date not selected"} ·{" "}
-          {slotTimeLabel || "Time not selected"} · {australianEasternTimezoneLabel(`${slotDate || new Date().toISOString()}T12:00:00`)}
+          {slotTimeLabel || "Time not selected"} ·{" "}
+          {australianEasternTimezoneLabel(`${slotDate || new Date().toISOString()}T12:00:00`)}
+        </p>
+        <p className="text-muted-foreground mt-3 text-xs">
+          Confirm details below, then continue to secure payment.
         </p>
       </div>
-      <div className="rounded-lg border border-border/60 p-3">
-        <p className="text-sm font-medium">Patient and contact</p>
-        <p className="text-muted-foreground mt-1 text-xs leading-relaxed">
-          {draft.patientIdentity.fullName || "—"} · {draft.patientIdentity.mobile || "—"} ·{" "}
-          {draft.patientIdentity.email || "No email entered"}
-        </p>
-        {draft.patientIdentity.suburb || draft.patientIdentity.state ? (
-          <p className="text-muted-foreground mt-1 text-xs">
-            {draft.patientIdentity.suburb}
-            {draft.patientIdentity.suburb && stateLabel ? ", " : ""}
-            {stateLabel ?? draft.patientIdentity.state}
+
+      <div className="grid gap-3 md:grid-cols-2">
+        <ReviewSection title="Patient and contact">
+          <p>
+            {draft.patientIdentity.fullName || "—"} · {draft.patientIdentity.mobile || "—"} ·{" "}
+            {draft.patientIdentity.email || "No email entered"}
           </p>
-        ) : null}
-        <p className="text-muted-foreground mt-1 text-xs">Preferred contact: {contactLabel}</p>
-        {draft.patientIdentity.dateOfBirth ? (
-          <p className="text-muted-foreground mt-1 text-xs">
-            Date of birth: {formatDateAu(`${draft.patientIdentity.dateOfBirth}T12:00:00`)}
+          {draft.patientIdentity.suburb || draft.patientIdentity.state ? (
+            <p>
+              {draft.patientIdentity.suburb}
+              {draft.patientIdentity.suburb && stateLabel ? ", " : ""}
+              {stateLabel ?? draft.patientIdentity.state}
+            </p>
+          ) : null}
+          <p>Preferred contact: {contactLabel}</p>
+          {draft.patientIdentity.dateOfBirth ? (
+            <p>Date of birth: {formatDateAu(`${draft.patientIdentity.dateOfBirth}T12:00:00`)}</p>
+          ) : null}
+          {draft.patientIdentity.indigenousStatus ? <p>Indigenous status: {indigenousLabel}</p> : null}
+        </ReviewSection>
+
+        <ReviewSection title="Care summary">
+          <p>{draft.careContext.presentingConcerns || "—"}</p>
+          <p>Urgency: {riskFlagLabels[draft.careContext.riskFlag]}</p>
+          {draft.careContext.symptomDuration ? <p>Duration: {draft.careContext.symptomDuration}</p> : null}
+        </ReviewSection>
+
+        <ReviewSection title="Medicare and referral">
+          <p>
+            MHTP: {mhtpStatusLabels[draft.medicarePath.hasMhtp]} · Referral:{" "}
+            {yesNoLabels[draft.medicarePath.hasReferral]}
+            {draft.medicarePath.hasReferral === "yes" ? ` (${referralTypeLabel})` : ""}
           </p>
-        ) : null}
-        {draft.patientIdentity.indigenousStatus ? (
-          <p className="text-muted-foreground mt-1 text-xs">Indigenous status: {indigenousLabel}</p>
-        ) : null}
-      </div>
-      <div className="rounded-lg border border-border/60 p-3">
-        <p className="text-sm font-medium">Care summary</p>
-        <p className="text-muted-foreground mt-1 text-xs leading-relaxed">
-          {draft.careContext.presentingConcerns || "—"}
-        </p>
-        <p className="text-muted-foreground mt-1 text-xs">
-          Urgency: {riskFlagLabels[draft.careContext.riskFlag]}
-        </p>
-        {draft.careContext.symptomDuration ? (
-          <p className="text-muted-foreground mt-1 text-xs">Duration: {draft.careContext.symptomDuration}</p>
-        ) : null}
-      </div>
-      <div className="rounded-lg border border-border/60 p-3">
-        <p className="text-sm font-medium">Medicare and referral</p>
-        <p className="text-muted-foreground mt-1 text-xs">
-          MHTP: {mhtpStatusLabels[draft.medicarePath.hasMhtp]} · Referral:{" "}
-          {yesNoLabels[draft.medicarePath.hasReferral]}
-          {draft.medicarePath.hasReferral === "yes" ? ` (${referralTypeLabel})` : ""}
-        </p>
-      </div>
-      <div className="rounded-lg border border-border/60 p-3">
-        <p className="text-sm font-medium">Session preferences</p>
-        <p className="text-muted-foreground mt-1 text-xs">
-          Format: {modalityLabel} · Clinician gender: {genderLabel}
-          {draft.preferences.preferredLanguage ? ` · Language: ${draft.preferences.preferredLanguage}` : ""}
-        </p>
-      </div>
-      <div className="rounded-lg border border-border/60 p-3">
-        <p className="text-sm font-medium">Telehealth safety</p>
-        <p className="text-muted-foreground mt-1 text-xs">
-          Session location: {draft.telehealthSafety.currentSessionLocation || "—"}
-        </p>
-        <p className="text-muted-foreground mt-1 text-xs">
-          Emergency contact: {draft.telehealthSafety.emergencyContactName || "—"}
-          {draft.telehealthSafety.emergencyContactPhone
-            ? ` · ${draft.telehealthSafety.emergencyContactPhone}`
-            : ""}
-          {draft.telehealthSafety.emergencyContactRelationship
-            ? ` (${draft.telehealthSafety.emergencyContactRelationship})`
-            : ""}
-        </p>
-      </div>
-      <div className="rounded-lg border border-border/60 p-3">
-        <p className="text-sm font-medium">Referral PDF</p>
-        <p className="text-muted-foreground mt-1 text-xs">
-          {draft.referralFile.fileName
-            ? `${draft.referralFile.fileName} (${Math.round(draft.referralFile.fileSize / 1024)} KB)`
-            : "No file uploaded"}
-        </p>
+        </ReviewSection>
+
+        <ReviewSection title="Session preferences">
+          <p>
+            Format: {modalityLabel} · Clinician gender: {genderLabel}
+            {draft.preferences.preferredLanguage ? ` · Language: ${draft.preferences.preferredLanguage}` : ""}
+          </p>
+        </ReviewSection>
+
+        <ReviewSection title="Telehealth safety">
+          <p>Session location: {draft.telehealthSafety.currentSessionLocation || "—"}</p>
+          <p>
+            Emergency contact: {draft.telehealthSafety.emergencyContactName || "—"}
+            {draft.telehealthSafety.emergencyContactPhone
+              ? ` · ${draft.telehealthSafety.emergencyContactPhone}`
+              : ""}
+            {draft.telehealthSafety.emergencyContactRelationship
+              ? ` (${draft.telehealthSafety.emergencyContactRelationship})`
+              : ""}
+          </p>
+        </ReviewSection>
+
+        <ReviewSection title="Referral PDF">
+          <p>
+            {draft.referralFile.fileName
+              ? `${draft.referralFile.fileName} (${Math.round(draft.referralFile.fileSize / 1024)} KB)`
+              : "No file uploaded"}
+          </p>
+        </ReviewSection>
       </div>
     </div>
   )

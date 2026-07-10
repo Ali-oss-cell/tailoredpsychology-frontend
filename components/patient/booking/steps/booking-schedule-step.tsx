@@ -6,6 +6,7 @@ import { ClinicianBookingOptionCard } from "@/components/patient/booking/clinici
 import { BookingScheduleSkeleton } from "@/components/patient/booking/booking-schedule-skeleton"
 import { useBookingWizardContext } from "@/components/patient/booking/booking-wizard-context"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { StepIntro } from "@/components/shared/step-intro"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { bookingContent } from "@/content/patient-booking"
@@ -53,9 +54,13 @@ export function BookingScheduleStep() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
+      <StepIntro
+        title="Choose your session time"
+        description={bookingContent.helper.schedule}
+      />
       {bookingEligibility.isNewPatient ? (
-        <div className="space-y-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-3">
+        <div className="dashboard-card rounded-dashboard-card border-primary/25 from-primary/5 to-card space-y-2 border bg-gradient-to-br px-4 py-3">
           <Badge variant="secondary" className="rounded-full">
             First appointment
           </Badge>
@@ -66,7 +71,6 @@ export function BookingScheduleStep() {
           </p>
         </div>
       ) : null}
-      <p className="text-muted-foreground text-sm">{bookingContent.helper.schedule}</p>
       <p className="text-muted-foreground text-xs">{australianEasternTimezoneLabel()}</p>
       {scheduleLoadError ? (
         <div className="space-y-2">
@@ -107,12 +111,12 @@ export function BookingScheduleStep() {
 
       <div className="space-y-3">
         <label className="text-sm font-medium">Choose date (monthly schedule)</label>
-        <div className="rounded-xl border border-border/60 bg-muted/25 p-4">
+        <div className="dashboard-card rounded-dashboard-card p-4 md:p-5">
           <div className="mb-3 flex items-center justify-between">
             <button
               type="button"
               onClick={() => setCalendarMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))}
-              className="rounded-md border border-border/70 p-2 hover:bg-muted"
+              className="focus-visible:ring-ring h-10 rounded-xl border border-border/70 p-2 hover:bg-muted focus-visible:ring-2 focus-visible:outline-none sm:h-11"
               aria-label="Previous month"
             >
               <CaretLeft size={16} />
@@ -121,7 +125,7 @@ export function BookingScheduleStep() {
             <button
               type="button"
               onClick={() => setCalendarMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1))}
-              className="rounded-md border border-border/70 p-2 hover:bg-muted"
+              className="focus-visible:ring-ring h-10 rounded-xl border border-border/70 p-2 hover:bg-muted focus-visible:ring-2 focus-visible:outline-none sm:h-11"
               aria-label="Next month"
             >
               <CaretRight size={16} />
@@ -153,7 +157,7 @@ export function BookingScheduleStep() {
                       selectedSlotId: "",
                     })
                   }
-                  className={`h-10 rounded-md text-sm transition-colors ${
+                  className={`h-10 rounded-xl text-sm transition-colors sm:h-11 ${
                     isSelected
                       ? "bg-primary text-primary-foreground"
                       : isAvailable
@@ -183,7 +187,7 @@ export function BookingScheduleStep() {
                     selectedSlotId: slot.id,
                   })
                 }
-                className={`rounded-full border px-3 py-1.5 text-xs ${
+                className={`min-h-10 rounded-full border px-4 py-2 text-sm sm:min-h-11 ${
                   draft.scheduleSelection.selectedSlotId === slot.id
                     ? "border-primary bg-primary text-primary-foreground"
                     : "border-border bg-background"
