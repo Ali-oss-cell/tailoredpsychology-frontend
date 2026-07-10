@@ -13,13 +13,21 @@ import { BookingScheduleSkeleton } from "@/components/patient/booking/booking-sc
 import { BookingStepper } from "@/components/patient/booking/booking-stepper"
 import { BookingTypeOptionCard } from "@/components/patient/booking/booking-type-option-card"
 import { ReferralUpload } from "@/components/patient/booking/referral-upload"
+import { BookingAppointmentSummaryChip } from "@/components/patient/booking/booking-appointment-summary-chip"
+import { BookingConsentCheckboxes } from "@/components/patient/booking/booking-consent-checkboxes"
+import { BookingCrisisPanel } from "@/components/patient/booking/booking-crisis-panel"
+import { BookingReviewSummary } from "@/components/patient/booking/booking-review-summary"
+import { PortalFormField, portalInputClassName } from "@/components/shared/portal-form-field"
 import { PatientPortalPage } from "@/components/patient/patient-portal-page"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
-import { InlinePurposeHint } from "@/components/shared/inline-purpose-hint"
+import { australianStates } from "@/content/get-matched-quiz"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { InlinePurposeHint } from "@/components/shared/inline-purpose-hint"
 import {
+  appointmentModalityOptions,
+  bookingStepTimeEstimates,
   bookingContent,
   bookingStepWhatsNext,
   bookingSteps,
@@ -30,6 +38,7 @@ import {
   indigenousStatusOptions,
   initialBookingDraft,
   mapStaticCliniciansToLiveOptions,
+  preferredContactMethodOptions,
   referralSourceOptions,
   scheduleByDate,
 } from "@/content/patient-booking"
@@ -50,6 +59,11 @@ import type { BookingRequestDraft, BookingStepId } from "@/src/patient/booking/t
 import { getCurrentUser } from "@/src/auth/current-user"
 import { loadMatchQuizDraft } from "@/src/get-matched/storage"
 import { mergeBookingDraftFromSources } from "@/src/patient/booking/merge-booking-draft"
+import {
+  firstInvalidFieldId,
+  validateBookingStep,
+  type BookingFieldErrors,
+} from "@/src/patient/booking/booking-validation"
 import { usePatientBookingEligibility } from "@/src/patient/booking/use-patient-booking-eligibility"
 
 const STORAGE_KEY = "clink_booking_draft_v1"
@@ -69,10 +83,6 @@ const STATIC_CLINICIAN_BY_ID = Object.fromEntries(clinicians.map((c) => [c.id, c
   string,
   (typeof clinicians)[number]
 >
-
-function inputClassName() {
-  return "bg-background text-foreground border-border/70 focus-visible:ring-ring w-full rounded-xl border px-3.5 py-2.5 text-sm shadow-sm outline-none transition-[border-color,box-shadow] focus-visible:ring-2"
-}
 
 function parsePersistedDraft(raw: string | null): BookingRequestDraft | null {
   if (!raw) {
@@ -224,6 +234,7 @@ export function BookingWizard() {
   })
   const [activeStep, setActiveStep] = React.useState<BookingStepId>("mode")
   const [errors, setErrors] = React.useState<string[]>([])
+  const [fieldErrors, setFieldErrors] = React.useState<BookingFieldErrors>({})
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [submittedStatus, setSubmittedStatus] = React.useState<BookingRequestStatusResponse | null>(null)
   const [liveScheduleByDate, setLiveScheduleByDate] = React.useState(scheduleByDate)
@@ -563,93 +574,22 @@ export function BookingWizard() {
     setDraft((current) => ({ ...current, [section]: value }))
   }
 
-  const validateCurrentStep = (): string[] => {
-    const nextErrors: string[] = []
-    const isInitial = draft.bookingMeta.bookingType === "initial"
-    const hasChanges = draft.bookingMeta.changesSinceLastVisit === "yes"
-
-    if (activeStep === "mode") {
-      if (!draft.bookingMeta.bookingType) {
-        nextErrors.push("Please select booking type.")
-      }
-    }
-
-    if (activeStep === "schedule") {
-      if (!draft.scheduleSelection.selectedClinicianId) {
-        nextErrors.push("Please select a clinician or choose no preference.")
-      }
-      if (!draft.scheduleSelection.selectedDate) {
-        nextErrors.push("Please select a date from schedule.")
-      }
-      if (!draft.scheduleSelection.selectedSlotId) {
-        nextErrors.push("Please select an available time slot.")
-      }
-    }
-
-    if (activeStep === "reason") {
-      if (isInitial && !draft.patientIdentity.fullName.trim()) {
-        nextErrors.push("Full name is required.")
-      }
-      if (isInitial && !draft.patientIdentity.dateOfBirth) {
-        nextErrors.push("Date of birth is required.")
-      }
-      if (!draft.patientIdentity.mobile.trim()) {
-        nextErrors.push("Mobile number is required.")
-      }
-      if ((isInitial || hasChanges) && !draft.careContext.presentingConcerns.trim()) {
-        nextErrors.push("Please describe your main concern.")
-      }
-    }
-
-    if (activeStep === "medicare") {
-      if (draft.bookingMeta.bookingType === "follow_up" && draft.bookingMeta.changesSinceLastVisit === "no") {
-        setErrors([])
-        return []
-      }
-      if (!draft.medicarePath.hasMhtp) {
-        nextErrors.push("Please select whether you have a mental health treatment plan.")
-      }
-      if (!draft.medicarePath.hasReferral) {
-        nextErrors.push("Please select whether you have a referral.")
-      }
-      if (draft.medicarePath.hasReferral === "yes" && !draft.medicarePath.referralType) {
-        nextErrors.push("Please select a referral type.")
-      }
-    }
-
-    if (activeStep === "clinical") {
-      if ((isInitial || hasChanges) && !draft.careContext.symptomDuration.trim()) {
-        nextErrors.push("Please provide symptom duration.")
-      }
-      if (!draft.telehealthSafety.currentSessionLocation.trim()) {
-        nextErrors.push("Please provide your typical telehealth session location.")
-      }
-      if (!draft.telehealthSafety.emergencyContactName.trim()) {
-        nextErrors.push("Emergency contact name is required.")
-      }
-      if (!draft.telehealthSafety.emergencyContactPhone.trim()) {
-        nextErrors.push("Emergency contact phone is required.")
-      }
-    }
-
-    if (activeStep === "consent") {
-      if (!draft.consents.privacyAccepted) {
-        nextErrors.push("Privacy acknowledgement is required.")
-      }
-      if (!draft.consents.telehealthAccepted) {
-        nextErrors.push("Telehealth consent is required.")
-      }
-      if (!draft.consents.treatmentAccepted) {
-        nextErrors.push("Treatment terms acknowledgement is required.")
-      }
-    }
-
-    setErrors(nextErrors)
-    return nextErrors
+  const focusFirstInvalidField = (nextFieldErrors: BookingFieldErrors) => {
+    const fieldId = firstInvalidFieldId(nextFieldErrors)
+    if (!fieldId) return
+    window.requestAnimationFrame(() => {
+      const el = document.getElementById(fieldId)
+      el?.focus()
+      el?.scrollIntoView({ behavior: "smooth", block: "center" })
+    })
   }
 
   const goNext = () => {
-    if (validateCurrentStep().length > 0) {
+    const validation = validateBookingStep(activeStep, draft)
+    if (validation.summaryErrors.length > 0) {
+      setFieldErrors(validation.fieldErrors)
+      setErrors(validation.summaryErrors)
+      focusFirstInvalidField(validation.fieldErrors)
       return
     }
 
@@ -693,6 +633,7 @@ export function BookingWizard() {
     }
 
     setErrors([])
+    setFieldErrors({})
     setActiveStep(visibleSteps[stepIndex + 1].id)
   }
 
@@ -701,6 +642,7 @@ export function BookingWizard() {
       return
     }
     setErrors([])
+    setFieldErrors({})
     setActiveStep(visibleSteps[stepIndex - 1].id)
   }
 
@@ -781,7 +723,7 @@ export function BookingWizard() {
             <div className="space-y-2 rounded-xl border border-border/50 bg-muted/15 p-4">
               <label className="text-sm font-medium">Has anything changed since your last visit?</label>
               <select
-                className={inputClassName()}
+                className={portalInputClassName()}
                 value={draft.bookingMeta.changesSinceLastVisit}
                 onChange={(event) =>
                   updateDraft("bookingMeta", {
@@ -960,10 +902,14 @@ export function BookingWizard() {
       const requireCareSummary = isInitial || draft.bookingMeta.changesSinceLastVisit === "yes"
       return (
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Full legal name</label>
+          <PortalFormField
+            id="patient-full-name"
+            label="Full legal name"
+            error={fieldErrors.fullName}
+            required={isInitial}
+          >
             <input
-              className={inputClassName()}
+              className={portalInputClassName(Boolean(fieldErrors.fullName))}
               value={draft.patientIdentity.fullName}
               onChange={(event) =>
                 updateDraft("patientIdentity", { ...draft.patientIdentity, fullName: event.target.value })
@@ -971,30 +917,44 @@ export function BookingWizard() {
               placeholder="Full name"
               disabled={!isInitial}
             />
-          </div>
+          </PortalFormField>
           <CompactDatePicker
             id="patient-date-of-birth"
             label="Date of birth"
             value={draft.patientIdentity.dateOfBirth}
             onChange={(next) => updateDraft("patientIdentity", { ...draft.patientIdentity, dateOfBirth: next })}
             disabled={!isInitial}
+            error={fieldErrors.dateOfBirth}
+            required={isInitial}
           />
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Mobile</label>
+          <PortalFormField
+            id="patient-mobile"
+            label="Mobile"
+            hint="Australian mobile, e.g. 04XX XXX XXX"
+            error={fieldErrors.mobile}
+            required
+          >
             <input
-              className={inputClassName()}
+              className={portalInputClassName(Boolean(fieldErrors.mobile))}
               value={draft.patientIdentity.mobile}
               onChange={(event) =>
                 updateDraft("patientIdentity", { ...draft.patientIdentity, mobile: event.target.value })
               }
               placeholder="04XX XXX XXX"
             />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Email</label>
+          </PortalFormField>
+          <PortalFormField
+            id="patient-email"
+            label="Email"
+            hint={
+              bookingEligibility.email
+                ? "Email is managed on your account and cannot be changed here."
+                : undefined
+            }
+          >
             <input
               type="email"
-              className={inputClassName()}
+              className={portalInputClassName()}
               value={draft.patientIdentity.email}
               onChange={(event) =>
                 updateDraft("patientIdentity", { ...draft.patientIdentity, email: event.target.value })
@@ -1004,14 +964,113 @@ export function BookingWizard() {
               aria-readonly={Boolean(bookingEligibility.email)}
               disabled={Boolean(bookingEligibility.email)}
             />
-            {bookingEligibility.email ? (
-              <p className="text-muted-foreground text-xs">Email is managed on your account and cannot be changed here.</p>
-            ) : null}
-          </div>
+          </PortalFormField>
+          <PortalFormField
+            id="patient-suburb"
+            label="Suburb"
+            error={fieldErrors.suburb}
+            required={isInitial}
+          >
+            <input
+              className={portalInputClassName(Boolean(fieldErrors.suburb))}
+              value={draft.patientIdentity.suburb}
+              onChange={(event) =>
+                updateDraft("patientIdentity", { ...draft.patientIdentity, suburb: event.target.value })
+              }
+              placeholder="e.g. Parramatta"
+            />
+          </PortalFormField>
+          <PortalFormField
+            id="patient-state"
+            label="State or territory"
+            error={fieldErrors.state}
+            required={isInitial}
+          >
+            <select
+              className={portalInputClassName(Boolean(fieldErrors.state))}
+              value={draft.patientIdentity.state}
+              onChange={(event) =>
+                updateDraft("patientIdentity", { ...draft.patientIdentity, state: event.target.value })
+              }
+            >
+              <option value="">Select state</option>
+              {australianStates.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </PortalFormField>
+          <PortalFormField
+            id="patient-preferred-contact"
+            label="Preferred contact method"
+            error={fieldErrors.preferredContactMethod}
+            required
+            className="md:col-span-2"
+          >
+            <select
+              className={portalInputClassName(Boolean(fieldErrors.preferredContactMethod))}
+              value={draft.patientIdentity.preferredContactMethod}
+              onChange={(event) =>
+                updateDraft("patientIdentity", {
+                  ...draft.patientIdentity,
+                  preferredContactMethod: event.target.value as BookingRequestDraft["patientIdentity"]["preferredContactMethod"],
+                })
+              }
+            >
+              {preferredContactMethodOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </PortalFormField>
+          <PortalFormField
+            id="presenting-concerns"
+            label="What brings you in today?"
+            error={fieldErrors.presentingConcerns}
+            required={requireCareSummary}
+            className="md:col-span-2"
+          >
+            <textarea
+              className={portalInputClassName(Boolean(fieldErrors.presentingConcerns))}
+              rows={4}
+              value={draft.careContext.presentingConcerns}
+              onChange={(event) =>
+                updateDraft("careContext", { ...draft.careContext, presentingConcerns: event.target.value })
+              }
+              placeholder={
+                requireCareSummary
+                  ? "Briefly describe your goals or concerns."
+                  : "No update required if nothing has changed."
+              }
+              disabled={!requireCareSummary}
+            />
+          </PortalFormField>
+          <PortalFormField id="urgency" label="Urgency" className="md:col-span-2">
+            <select
+              className={portalInputClassName()}
+              value={draft.careContext.riskFlag}
+              onChange={(event) =>
+                updateDraft("careContext", {
+                  ...draft.careContext,
+                  riskFlag: event.target.value as BookingRequestDraft["careContext"]["riskFlag"],
+                })
+              }
+            >
+              <option value="none">Standard booking (no immediate safety concerns)</option>
+              <option value="urgent_support_needed">I need urgent support from the care team</option>
+            </select>
+          </PortalFormField>
+          {draft.careContext.riskFlag === "urgent_support_needed" ? (
+            <div className="md:col-span-2">
+              <BookingCrisisPanel />
+            </div>
+          ) : null}
           <div className="space-y-2 md:col-span-2">
             <label className="text-sm font-medium">Aboriginal and Torres Strait Islander status (optional)</label>
             <select
-              className={inputClassName()}
+              className={portalInputClassName()}
               value={draft.patientIdentity.indigenousStatus}
               onChange={(event) =>
                 updateDraft("patientIdentity", {
@@ -1025,39 +1084,6 @@ export function BookingWizard() {
                   {opt.label}
                 </option>
               ))}
-            </select>
-          </div>
-          <div className="space-y-2 md:col-span-2">
-            <label className="text-sm font-medium">What brings you in today?</label>
-            <textarea
-              className={inputClassName()}
-              rows={4}
-              value={draft.careContext.presentingConcerns}
-              onChange={(event) =>
-                updateDraft("careContext", { ...draft.careContext, presentingConcerns: event.target.value })
-              }
-              placeholder={
-                requireCareSummary
-                  ? "Briefly describe your goals or concerns."
-                  : "No update required if nothing has changed."
-              }
-              disabled={!requireCareSummary}
-            />
-          </div>
-          <div className="space-y-2 md:col-span-2">
-            <label className="text-sm font-medium">Urgency</label>
-            <select
-              className={inputClassName()}
-              value={draft.careContext.riskFlag}
-              onChange={(event) =>
-                updateDraft("careContext", {
-                  ...draft.careContext,
-                  riskFlag: event.target.value as BookingRequestDraft["careContext"]["riskFlag"],
-                })
-              }
-            >
-              <option value="none">Standard booking (no immediate safety concerns)</option>
-              <option value="urgent_support_needed">I need urgent support from the care team</option>
             </select>
           </div>
         </div>
@@ -1079,7 +1105,7 @@ export function BookingWizard() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Mental Health Treatment Plan (MHTP)</label>
               <select
-                className={inputClassName()}
+                className={portalInputClassName()}
                 value={draft.medicarePath.hasMhtp}
                 onChange={(event) =>
                   updateDraft("medicarePath", {
@@ -1096,7 +1122,7 @@ export function BookingWizard() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Referral available now?</label>
               <select
-                className={inputClassName()}
+                className={portalInputClassName()}
                 value={draft.medicarePath.hasReferral}
                 onChange={(event) =>
                   updateDraft("medicarePath", {
@@ -1114,7 +1140,7 @@ export function BookingWizard() {
               <div className="space-y-2 md:col-span-2">
                 <label className="text-sm font-medium">Referral type</label>
                 <select
-                  className={inputClassName()}
+                  className={portalInputClassName()}
                   value={draft.medicarePath.referralType}
                   onChange={(event) =>
                     updateDraft("medicarePath", {
@@ -1136,7 +1162,7 @@ export function BookingWizard() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Estimated sessions used this year</label>
               <input
-                className={inputClassName()}
+                className={portalInputClassName()}
                 value={draft.medicarePath.sessionsUsedEstimate}
                 onChange={(event) =>
                   updateDraft("medicarePath", {
@@ -1150,7 +1176,7 @@ export function BookingWizard() {
             <div className="space-y-2">
               <label className="text-sm font-medium">GP name (optional)</label>
               <input
-                className={inputClassName()}
+                className={portalInputClassName()}
                 value={draft.medicarePath.gpName}
                 onChange={(event) =>
                   updateDraft("medicarePath", {
@@ -1184,10 +1210,15 @@ export function BookingWizard() {
         draft.bookingMeta.bookingType === "initial" || draft.bookingMeta.changesSinceLastVisit === "yes"
       return (
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2 md:col-span-2">
-            <label className="text-sm font-medium">How long have symptoms affected you?</label>
+          <PortalFormField
+            id="symptom-duration"
+            label="How long have symptoms affected you?"
+            error={fieldErrors.symptomDuration}
+            required={requireClinicalUpdate}
+            className="md:col-span-2"
+          >
             <input
-              className={inputClassName()}
+              className={portalInputClassName(Boolean(fieldErrors.symptomDuration))}
               value={draft.careContext.symptomDuration}
               onChange={(event) =>
                 updateDraft("careContext", { ...draft.careContext, symptomDuration: event.target.value })
@@ -1195,12 +1226,36 @@ export function BookingWizard() {
               placeholder="e.g. 6 months"
               disabled={!requireClinicalUpdate}
             />
-          </div>
+          </PortalFormField>
+          <PortalFormField
+            id="session-modality"
+            label="Preferred session format"
+            error={fieldErrors.modality}
+            required
+            className="md:col-span-2"
+          >
+            <select
+              className={portalInputClassName(Boolean(fieldErrors.modality))}
+              value={draft.preferences.modality}
+              onChange={(event) =>
+                updateDraft("preferences", {
+                  ...draft.preferences,
+                  modality: event.target.value as BookingRequestDraft["preferences"]["modality"],
+                })
+              }
+            >
+              {appointmentModalityOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </PortalFormField>
           <div className="space-y-2">
             <label className="text-sm font-medium">Previous therapy or care</label>
             <textarea
               rows={3}
-              className={inputClassName()}
+              className={portalInputClassName()}
               value={draft.careContext.priorCare}
               onChange={(event) =>
                 updateDraft("careContext", { ...draft.careContext, priorCare: event.target.value })
@@ -1212,7 +1267,7 @@ export function BookingWizard() {
             <label className="text-sm font-medium">Current medications</label>
             <textarea
               rows={3}
-              className={inputClassName()}
+              className={portalInputClassName()}
               value={draft.careContext.currentMedications}
               onChange={(event) =>
                 updateDraft("careContext", { ...draft.careContext, currentMedications: event.target.value })
@@ -1220,10 +1275,14 @@ export function BookingWizard() {
               disabled={!requireClinicalUpdate}
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Typical telehealth session location</label>
+          <PortalFormField
+            id="session-location"
+            label="Typical telehealth session location"
+            error={fieldErrors.currentSessionLocation}
+            required
+          >
             <input
-              className={inputClassName()}
+              className={portalInputClassName(Boolean(fieldErrors.currentSessionLocation))}
               value={draft.telehealthSafety.currentSessionLocation}
               onChange={(event) =>
                 updateDraft("telehealthSafety", {
@@ -1233,11 +1292,15 @@ export function BookingWizard() {
               }
               placeholder="Suburb and state where you usually join sessions"
             />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Emergency contact name</label>
+          </PortalFormField>
+          <PortalFormField
+            id="emergency-contact-name"
+            label="Emergency contact name"
+            error={fieldErrors.emergencyContactName}
+            required
+          >
             <input
-              className={inputClassName()}
+              className={portalInputClassName(Boolean(fieldErrors.emergencyContactName))}
               value={draft.telehealthSafety.emergencyContactName}
               onChange={(event) =>
                 updateDraft("telehealthSafety", {
@@ -1246,11 +1309,15 @@ export function BookingWizard() {
                 })
               }
             />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Emergency contact phone</label>
+          </PortalFormField>
+          <PortalFormField
+            id="emergency-contact-phone"
+            label="Emergency contact phone"
+            error={fieldErrors.emergencyContactPhone}
+            required
+          >
             <input
-              className={inputClassName()}
+              className={portalInputClassName(Boolean(fieldErrors.emergencyContactPhone))}
               value={draft.telehealthSafety.emergencyContactPhone}
               onChange={(event) =>
                 updateDraft("telehealthSafety", {
@@ -1259,11 +1326,11 @@ export function BookingWizard() {
                 })
               }
             />
-          </div>
+          </PortalFormField>
           <div className="space-y-2">
             <label className="text-sm font-medium">Relationship</label>
             <input
-              className={inputClassName()}
+              className={portalInputClassName()}
               value={draft.telehealthSafety.emergencyContactRelationship}
               onChange={(event) =>
                 updateDraft("telehealthSafety", {
@@ -1276,7 +1343,7 @@ export function BookingWizard() {
           <div className="space-y-2">
             <label className="text-sm font-medium">Preferred clinician gender</label>
             <select
-              className={inputClassName()}
+              className={portalInputClassName()}
               value={draft.preferences.preferredClinicianGender}
               onChange={(event) =>
                 updateDraft("preferences", {
@@ -1296,7 +1363,7 @@ export function BookingWizard() {
           <div className="space-y-2">
             <label className="text-sm font-medium">Preferred language (optional)</label>
             <input
-              className={inputClassName()}
+              className={portalInputClassName()}
               value={draft.preferences.preferredLanguage}
               onChange={(event) =>
                 updateDraft("preferences", {
@@ -1323,7 +1390,7 @@ export function BookingWizard() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Referral source</label>
               <select
-                className={inputClassName()}
+                className={portalInputClassName()}
                 value={draft.referralFile.sourceType}
                 onChange={(event) =>
                   updateDraft("referralFile", {
@@ -1356,7 +1423,7 @@ export function BookingWizard() {
               <label className="text-sm font-medium">Referral notes (optional)</label>
               <textarea
                 rows={3}
-                className={inputClassName()}
+                className={portalInputClassName()}
                 value={draft.referralFile.notes}
                 onChange={(event) =>
                   updateDraft("referralFile", {
@@ -1377,84 +1444,30 @@ export function BookingWizard() {
           <InlinePurposeHint>
             These confirmations are required before we can securely hold your health information and deliver telehealth care.
           </InlinePurposeHint>
-          <label className="bg-muted/35 flex items-start gap-3 rounded-lg border border-border/60 p-3">
-            <input
-              type="checkbox"
-              checked={draft.consents.privacyAccepted}
-              onChange={(event) =>
-                updateDraft("consents", { ...draft.consents, privacyAccepted: event.target.checked })
-              }
-            />
-            <span className="text-sm">{bookingContent.consentText.privacy}</span>
-          </label>
-          <label className="bg-muted/35 flex items-start gap-3 rounded-lg border border-border/60 p-3">
-            <input
-              type="checkbox"
-              checked={draft.consents.telehealthAccepted}
-              onChange={(event) =>
-                updateDraft("consents", { ...draft.consents, telehealthAccepted: event.target.checked })
-              }
-            />
-            <span className="text-sm">{bookingContent.consentText.telehealth}</span>
-          </label>
-          <label className="bg-muted/35 flex items-start gap-3 rounded-lg border border-border/60 p-3">
-            <input
-              type="checkbox"
-              checked={draft.consents.treatmentAccepted}
-              onChange={(event) =>
-                updateDraft("consents", { ...draft.consents, treatmentAccepted: event.target.checked })
-              }
-            />
-            <span className="text-sm">{bookingContent.consentText.treatment}</span>
-          </label>
+          <BookingConsentCheckboxes
+            consents={draft.consents}
+            fieldErrors={{
+              privacyAccepted: fieldErrors.privacyAccepted,
+              telehealthAccepted: fieldErrors.telehealthAccepted,
+              treatmentAccepted: fieldErrors.treatmentAccepted,
+            }}
+            onChange={(consents) => updateDraft("consents", consents)}
+          />
         </div>
       )
     }
 
     if (activeStep === "review") {
+      const clinicianName =
+        liveClinicians.find((item) => item.id === draft.scheduleSelection.selectedClinicianId)?.name ??
+        "Not selected"
       return (
-        <div className="space-y-4">
-          <div className="rounded-lg border border-border/60 p-3">
-            <p className="text-sm font-medium">Appointment selection</p>
-            <p className="text-muted-foreground text-xs">
-              Booking type: {draft.bookingMeta.bookingType.replace("_", " ")} • Clinician:{" "}
-              {liveClinicians.find((item) => item.id === draft.scheduleSelection.selectedClinicianId)?.name ??
-                "Not selected"}{" "}
-              • Date: {draft.scheduleSelection.selectedDate || "Not selected"} • Time:{" "}
-              {selectedSlotLabel || "Not selected"}
-            </p>
-          </div>
-          <div className="rounded-lg border border-border/60 p-3">
-            <p className="text-sm font-medium">Patient and contact</p>
-            <p className="text-muted-foreground text-xs">
-              {draft.patientIdentity.fullName} • {draft.patientIdentity.mobile} •{" "}
-              {draft.patientIdentity.email || "No email entered"}
-            </p>
-          </div>
-          <div className="rounded-lg border border-border/60 p-3">
-            <p className="text-sm font-medium">Care summary</p>
-            <p className="text-muted-foreground text-xs">{draft.careContext.presentingConcerns}</p>
-          </div>
-          <div className="rounded-lg border border-border/60 p-3">
-            <p className="text-sm font-medium">Medicare and referral</p>
-            <p className="text-muted-foreground text-xs">
-              MHTP: {draft.medicarePath.hasMhtp} • Referral: {draft.medicarePath.hasReferral}
-            </p>
-          </div>
-          <div className="rounded-lg border border-border/60 p-3">
-            <p className="text-sm font-medium">Referral PDF</p>
-            <p className="text-muted-foreground text-xs">
-              {draft.referralFile.fileName
-                ? `${draft.referralFile.fileName} (${Math.round(draft.referralFile.fileSize / 1024)} KB)`
-                : "No file uploaded"}
-            </p>
-            {draft.referralFile.documentId ? (
-              <p className="text-muted-foreground text-xs">
-                Linked document ID: <span className="font-medium">{draft.referralFile.documentId}</span>
-              </p>
-            ) : null}
-          </div>
-        </div>
+        <BookingReviewSummary
+          draft={draft}
+          clinicianName={clinicianName}
+          slotDate={draft.scheduleSelection.selectedDate}
+          slotTimeLabel={selectedSlotLabel}
+        />
       )
     }
 
@@ -1509,6 +1522,14 @@ export function BookingWizard() {
     )
   })()
 
+  const scheduleStepIndex = visibleSteps.findIndex((step) => step.id === "schedule")
+  const showAppointmentChip =
+    scheduleStepIndex >= 0 &&
+    stepIndex > scheduleStepIndex &&
+    Boolean(draft.scheduleSelection.selectedDate && draft.scheduleSelection.selectedSlotId)
+  const chipClinicianName =
+    liveClinicians.find((item) => item.id === draft.scheduleSelection.selectedClinicianId)?.name ?? "Your clinician"
+
   const wizardLoading =
     activeStep !== "submitted" && (bookingEligibility.loading || intakePatientId === null || !hasRemoteHydrated)
 
@@ -1555,6 +1576,9 @@ export function BookingWizard() {
                   <CardTitle className="text-lg" id="booking-step-title">
                     {visibleSteps[stepIndex]?.label ?? "Booking request"}
                   </CardTitle>
+                  <p className="text-muted-foreground text-xs font-medium">
+                    {bookingStepTimeEstimates[activeStep]}
+                  </p>
                   <p className="text-muted-foreground text-sm leading-relaxed" aria-live="polite">
                     {bookingStepWhatsNext[activeStep]}
                   </p>
@@ -1598,6 +1622,13 @@ export function BookingWizard() {
               />
             </CardContent>
           </Card>
+          {showAppointmentChip ? (
+            <BookingAppointmentSummaryChip
+              clinicianName={chipClinicianName}
+              dateIso={draft.scheduleSelection.selectedDate}
+              timeLabel={selectedSlotLabel}
+            />
+          ) : null}
         </div>
       ) : (
         <Card className="interactive-lift gap-0 overflow-hidden p-0 shadow-e1">

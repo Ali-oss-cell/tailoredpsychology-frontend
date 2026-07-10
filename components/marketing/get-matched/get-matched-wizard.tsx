@@ -37,7 +37,7 @@ function stepIndex(step: MatchQuizStep): number {
   return STEP_ORDER.indexOf(step)
 }
 
-function validateStep(step: MatchQuizStep, draft: MatchQuizDraft): string[] {
+function validateStep(step: MatchQuizStep, draft: MatchQuizDraft, acceptedTerms: boolean): string[] {
   const errors: string[] = []
   if (step === "location") {
     if (!draft.state) errors.push("Please select your state or territory.")
@@ -53,6 +53,7 @@ function validateStep(step: MatchQuizStep, draft: MatchQuizDraft): string[] {
     if (!draft.firstName.trim() || !draft.lastName.trim()) errors.push("Please enter your name.")
     if (!draft.email.trim()) errors.push("Please enter your email.")
     if (draft.password.length < 8) errors.push("Password must be at least 8 characters.")
+    if (!acceptedTerms) errors.push("Please accept the terms and privacy policy.")
   }
   return errors
 }
@@ -67,6 +68,7 @@ export function GetMatchedWizard() {
   const [isPatientLoggedIn, setIsPatientLoggedIn] = React.useState(false)
   const [authChecked, setAuthChecked] = React.useState(false)
   const [submitting, setSubmitting] = React.useState(false)
+  const [acceptedTerms, setAcceptedTerms] = React.useState(false)
 
   React.useEffect(() => {
     const restored = loadMatchQuizSession()
@@ -125,7 +127,7 @@ export function GetMatchedWizard() {
   }
 
   function goNext() {
-    const errs = validateStep(step, draft)
+    const errs = validateStep(step, draft, acceptedTerms)
     if (errs.length) {
       setErrors(errs)
       return
@@ -161,7 +163,7 @@ export function GetMatchedWizard() {
   }
 
   async function submitAccountAndReveal() {
-    const errs = validateStep("account", draft)
+    const errs = validateStep("account", draft, acceptedTerms)
     if (errs.length) {
       setErrors(errs)
       return
@@ -378,6 +380,25 @@ export function GetMatchedWizard() {
                 hint="At least 8 characters."
                 autoComplete="new-password"
               />
+              <label className="text-muted-foreground flex items-start gap-2 rounded-lg border border-border/60 bg-muted/40 p-3 text-xs leading-5">
+                <input
+                  type="checkbox"
+                  checked={acceptedTerms}
+                  onChange={(e) => setAcceptedTerms(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 accent-[var(--primary)]"
+                />
+                <span>
+                  I agree to the{" "}
+                  <Link href="/terms-of-service" className="text-primary font-medium hover:underline">
+                    Terms of Service
+                  </Link>
+                  ,{" "}
+                  <Link href="/privacy-policy" className="text-primary font-medium hover:underline">
+                    Privacy Policy
+                  </Link>
+                  , and electronic communications.
+                </span>
+              </label>
               <p className="text-muted-foreground flex gap-2 rounded-lg border border-border/60 bg-muted/30 p-3 text-xs">
                 <Lock className="mt-0.5 size-4 shrink-0" aria-hidden />
                 <span>{content.steps.account.privacyReassurance}</span>

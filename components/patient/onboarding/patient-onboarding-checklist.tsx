@@ -21,6 +21,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { getCurrentUser } from "@/src/auth/current-user"
+import { getLatestIntakeDraft } from "@/src/patient/booking/api"
+import { computeIntakeDraftPercent } from "@/src/patient/booking/intake-draft-progress"
 
 const steps = [
   {
@@ -61,6 +63,7 @@ export function PatientOnboardingChecklist() {
   const [complete, setComplete] = React.useState<boolean | null>(null)
   const [displayName, setDisplayName] = React.useState<string>("")
   const [error, setError] = React.useState<string | null>(null)
+  const [intakePercent, setIntakePercent] = React.useState<number | null>(null)
 
   const refreshStatus = React.useCallback(async () => {
     setError(null)
@@ -69,6 +72,16 @@ export function PatientOnboardingChecklist() {
       const user = await getCurrentUser()
       setComplete(user.accountSetupComplete)
       setDisplayName(user.displayName)
+      if (user.role === "patient" && !user.accountSetupComplete) {
+        try {
+          const latest = await getLatestIntakeDraft(user.id)
+          setIntakePercent(computeIntakeDraftPercent(latest.data as Parameters<typeof computeIntakeDraftPercent>[0]))
+        } catch {
+          setIntakePercent(null)
+        }
+      } else {
+        setIntakePercent(null)
+      }
       window.dispatchEvent(new Event("clink:current-user-invalidated"))
     } catch {
       setComplete(null)
@@ -120,7 +133,7 @@ export function PatientOnboardingChecklist() {
               </span>
               {complete !== null ? (
                 <Badge variant={complete ? "default" : "secondary"} className="font-medium">
-                  {complete ? "Setup complete" : "Action needed"}
+                  {complete ? "Setup complete" : intakePercent !== null ? `Intake ~${intakePercent}%` : "Action needed"}
                 </Badge>
               ) : (
                 <Badge variant="outline" className="font-normal text-muted-foreground">

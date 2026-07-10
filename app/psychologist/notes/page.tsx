@@ -9,6 +9,7 @@ import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { PsychologistPortalPage } from "@/components/psychologist/psychologist-portal-page"
 import { PortalListRow } from "@/components/shared/portal-list-row"
 import { psychologistNotesContent } from "@/content/psychologist-notes"
+import { formatDateTimeAu } from "@/src/lib/format-au"
 import {
   createPsychologistNote,
   getPsychologistNote,
@@ -211,7 +212,7 @@ export default function PsychologistNotesPage() {
                 <Badge variant={statusBadgeVariant(item.status)} className="w-fit text-[10px] uppercase">
                   {item.status.replace(/_/g, " ")}
                 </Badge>
-                <p className="text-muted-foreground text-sm">{new Date(item.updatedAt).toLocaleString()}</p>
+                <p className="text-muted-foreground text-sm">{formatDateTimeAu(item.updatedAt)}</p>
                 <Button size="sm" variant="outline" onClick={() => setSelectedNoteId(item.noteId)}>
                   Open
                 </Button>

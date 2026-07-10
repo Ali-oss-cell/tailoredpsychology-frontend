@@ -169,3 +169,9 @@ export function formatStepTimestamp(step: PatientJourneyStep): string | null {
   if (step.status !== "done" || !step.occurredAt) return null
   return formatWhen(step.occurredAt)
 }
+
+/** True when every visible milestone is recorded (UX-M3). */
+export function isJourneyComplete(steps: PatientJourneyStep[]): boolean {
+  const visible = visibleSteps(steps)
+  return visible.length > 0 && visible.every((step) => step.status === "done")
+}

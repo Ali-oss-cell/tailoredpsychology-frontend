@@ -120,6 +120,7 @@ describe("NextSessionHero", () => {
     await waitFor(() => expect(mockedGetAppointmentDetails).toHaveBeenCalledWith("appt_hero_001"))
 
     fireEvent.click(screen.getByRole("button", { name: "Cancel appointment" }))
+    fireEvent.click(screen.getByRole("button", { name: "Yes, cancel appointment" }))
     await waitFor(() =>
       expect(mockedPostManageAppointment).toHaveBeenCalledWith("appt_hero_001", { action: "cancel" }),
     )

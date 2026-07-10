@@ -2,6 +2,8 @@
 
 import * as React from "react"
 
+import { Badge } from "@/components/ui/badge"
+
 type FilterOption = {
   label: string
   value: string
@@ -31,7 +33,23 @@ export function AdminFilterBar({
   onSelectChange,
   onClear,
 }: AdminFilterBarProps) {
+  const activeChips = React.useMemo(() => {
+    const chips: { key: string; label: string }[] = []
+    if (searchValue.trim()) {
+      chips.push({ key: "search", label: `Search: ${searchValue.trim()}` })
+    }
+    for (const select of selects) {
+      const defaultOption = select.options[0]
+      if (select.value && defaultOption && select.value !== defaultOption.value) {
+        const match = select.options.find((opt) => opt.value === select.value)
+        chips.push({ key: select.key, label: `${select.label}: ${match?.label ?? select.value}` })
+      }
+    }
+    return chips
+  }, [searchValue, selects])
+
   return (
+    <div className="space-y-2">
     <div className="flex flex-wrap items-end gap-3 rounded-md border border-border/70 p-3">
       <label className="flex min-w-64 flex-1 flex-col gap-1 text-xs">
         <span className="text-muted-foreground">Search</span>
@@ -65,6 +83,17 @@ export function AdminFilterBar({
           Clear
         </button>
       ) : null}
+    </div>
+    {activeChips.length > 0 ? (
+      <div className="flex flex-wrap items-center gap-2 px-1">
+        <span className="text-muted-foreground text-xs font-medium">Active filters</span>
+        {activeChips.map((chip) => (
+          <Badge key={chip.key} variant="secondary" className="rounded-full text-xs font-normal">
+            {chip.label}
+          </Badge>
+        ))}
+      </div>
+    ) : null}
     </div>
   )
 }

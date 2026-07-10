@@ -49,6 +49,8 @@ export type CompactDatePickerProps = {
   value: string
   onChange: (isoDate: string) => void
   disabled?: boolean
+  error?: string
+  required?: boolean
   /** ISO yyyy-mm-dd lower bound */
   minDate?: string
   /** ISO yyyy-mm-dd upper bound; ignored when capAtToday is false unless set explicitly */
@@ -63,6 +65,8 @@ export function CompactDatePicker({
   value,
   onChange,
   disabled,
+  error,
+  required,
   minDate = "1900-01-01",
   maxDate: maxDateProp,
   capAtToday = true,
@@ -146,12 +150,19 @@ export function CompactDatePicker({
     <div className="relative space-y-2" ref={containerRef}>
       <label htmlFor={id} className="text-sm font-medium">
         {label}
+        {required ? (
+          <span className="text-destructive ml-0.5" aria-hidden>
+            *
+          </span>
+        ) : null}
       </label>
       <button
         id={id}
         type="button"
         disabled={disabled}
-        className={triggerClass}
+        className={`${triggerClass}${error ? " border-destructive/60" : ""}`}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${id}-error` : undefined}
         aria-expanded={open}
         aria-haspopup="dialog"
         onClick={() => {
@@ -243,6 +254,11 @@ export function CompactDatePicker({
             })}
           </div>
         </div>
+      ) : null}
+      {error ? (
+        <p id={`${id}-error`} className="text-destructive text-xs" role="alert">
+          {error}
+        </p>
       ) : null}
     </div>
   )

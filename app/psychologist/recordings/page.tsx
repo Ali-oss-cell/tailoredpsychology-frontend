@@ -7,6 +7,7 @@ import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { PortalListRow } from "@/components/shared/portal-list-row"
 import { PsychologistPortalPage } from "@/components/psychologist/psychologist-portal-page"
 import { psychologistRecordingsContent } from "@/content/psychologist-recordings"
+import { formatDateTimeAu } from "@/src/lib/format-au"
 import { Button } from "@/components/ui/button"
 import { usePsychologistId } from "@/src/psychologist/queries/use-current-user"
 import { getPsychologistSessionVideos, requestSessionVideoAccess, type SessionVideoItem } from "@/src/psychologist/videos/api"
@@ -65,7 +66,7 @@ export default function PsychologistRecordingsPage() {
                       <p className="text-sm font-medium">{recording.videoId}</p>
                       <p className="text-muted-foreground text-xs">{recording.patientId}</p>
                     </div>
-                    <p className="text-sm">{new Date(recording.sessionDate).toLocaleString()}</p>
+                    <p className="text-sm">{formatDateTimeAu(recording.sessionDate)}</p>
                     <p className="text-sm">{recording.transcriptReady ? "Ready" : "Processing"}</p>
                     <div className="space-y-1">
                       <p className="text-xs font-medium uppercase">{recording.policyStatus.replace("_", " ")}</p>

@@ -8,6 +8,7 @@ import { PortalListRow } from "@/components/shared/portal-list-row"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { getCurrentUser } from "@/src/auth/current-user"
+import { formatDateTimeAu } from "@/src/lib/format-au"
 import { getPatientSessionVideos, requestSessionVideoAccess, type SessionVideoItem } from "@/src/psychologist/videos/api"
 
 export default function PatientRecordingsPage() {
@@ -66,7 +67,7 @@ export default function PatientRecordingsPage() {
                   <div>
                     <p className="text-sm font-medium">{recording.videoId}</p>
                     <p className="text-muted-foreground text-xs">Session {recording.sessionId}</p>
-                    <p className="text-muted-foreground text-xs">{new Date(recording.sessionDate).toLocaleString()}</p>
+                    <p className="text-muted-foreground text-xs">{formatDateTimeAu(recording.sessionDate)}</p>
                   </div>
                   <p className="text-sm self-center">{recording.transcriptReady ? "Transcript ready" : "Transcript pending"}</p>
                   <div className="space-y-1 self-center">

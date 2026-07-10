@@ -11,6 +11,18 @@ export const bookingSteps: BookingStep[] = [
   { id: "review", label: "Review and submit", shortLabel: "Review" },
 ]
 
+/** Approximate time remaining from each step (UX-C3). */
+export const bookingStepTimeEstimates: Record<Exclude<BookingStepId, "submitted">, string> = {
+  mode: "~30 sec left",
+  schedule: "~5 min left",
+  reason: "~4 min left",
+  medicare: "~3 min left",
+  clinical: "~2 min left",
+  referral: "~1 min left",
+  consent: "~1 min left",
+  review: "Almost done",
+}
+
 /** One line per step: what the user can expect after this step (Wave 14). */
 export const bookingStepWhatsNext: Record<Exclude<BookingStepId, "submitted">, string> = {
   mode: "Next: you will choose a clinician and a real available session time.",
@@ -62,12 +74,23 @@ export const bookingContent = {
       "For follow-up bookings, we only ask what changed since your last visit plus booking essentials.",
   },
   consentText: {
-    privacy:
-      "I confirm I have read and accept the privacy notice for collection and use of my health information.",
-    telehealth:
-      "I understand telehealth limitations (connectivity, privacy environment, and emergency protocols).",
-    treatment:
-      "I accept treatment and cancellation policy terms, including short-notice cancellation handling.",
+    privacyPrefix: "I confirm I have read and accept the",
+    privacyLink: "Privacy Policy",
+    privacySuffix: "for collection and use of my health information.",
+    telehealthPrefix: "I understand telehealth limitations and have read the",
+    telehealthLink: "Telehealth requirements",
+    telehealthSuffix: "(connectivity, privacy environment, and emergency protocols).",
+    treatmentPrefix: "I accept the",
+    termsLink: "Terms of Service",
+    treatmentSuffix: "and treatment and cancellation policy, including short-notice cancellation handling.",
+  },
+  crisisSupport: {
+    title: "If you need urgent help right now",
+    body: "This booking form is not monitored in real time. If you or someone else is in immediate danger, call emergency services. For 24/7 crisis counselling in Australia:",
+    emergency: "000 — Emergency (police, ambulance, fire)",
+    lifeline: "13 11 14 — Lifeline (24/7 crisis support)",
+    practice:
+      "For non-urgent care team contact, call Tailored Psychology during business hours or leave a message — we will respond as soon as we can.",
   },
 }
 
@@ -161,6 +184,39 @@ export const indigenousStatusOptions = [
   { value: "neither", label: "Neither Aboriginal nor Torres Strait Islander" },
   { value: "prefer_not_to_say", label: "Prefer not to say" },
 ] as const
+
+export const preferredContactMethodOptions = [
+  { value: "sms", label: "SMS text message" },
+  { value: "email", label: "Email" },
+  { value: "phone", label: "Phone call" },
+] as const
+
+export const appointmentModalityOptions = [
+  { value: "telehealth", label: "Telehealth (video)" },
+  { value: "in_person", label: "In person" },
+  { value: "either", label: "Either — happy to discuss" },
+] as const
+
+export const mhtpStatusLabels: Record<"yes" | "no" | "unsure", string> = {
+  yes: "Yes, I have one",
+  no: "No, I do not have one",
+  unsure: "Not sure yet",
+}
+
+export const yesNoLabels: Record<"yes" | "no", string> = {
+  yes: "Yes",
+  no: "No",
+}
+
+export const bookingTypeLabels: Record<"initial" | "follow_up", string> = {
+  initial: "Initial appointment",
+  follow_up: "Follow-up appointment",
+}
+
+export const riskFlagLabels: Record<"none" | "urgent_support_needed", string> = {
+  none: "Standard booking",
+  urgent_support_needed: "Urgent support requested",
+}
 
 export const clinicianGenderOptions = [
   { value: "no_preference", label: "No preference" },

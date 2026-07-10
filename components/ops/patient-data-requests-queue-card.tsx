@@ -4,6 +4,7 @@ import * as React from "react"
 
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { formatDateTimeAu } from "@/src/lib/format-au"
 import { getOpsPatientDataRequests, submitOpsPatientDataRequestAction, type PatientDataRequest } from "@/src/privacy-requests/api"
 
 const ACTIONS: Array<"assign" | "start_review" | "fulfill" | "reject"> = ["assign", "start_review", "fulfill", "reject"]
@@ -59,7 +60,7 @@ export function PatientDataRequestsQueueCard({ title = "Patient data requests qu
               <p className="text-muted-foreground">{row.status}</p>
             </div>
             <p className="text-muted-foreground">
-              patient: {row.patientId} • type: {row.requestType} • due: {new Date(row.slaDueAt).toLocaleString()}
+              patient: {row.patientId} • type: {row.requestType} • due: {formatDateTimeAu(row.slaDueAt)}
             </p>
             <p>{row.details}</p>
             <div className="flex flex-wrap gap-2">

@@ -28,6 +28,7 @@ export function AdminPsychologistUsersCard() {
   const [error, setError] = useState<string | null>(null)
   const [busyId, setBusyId] = useState<string | null>(null)
   const [draft, setDraft] = useState(emptyDraft)
+  const [showCreateForm, setShowCreateForm] = useState(false)
   const [search] = useUrlSearchQuery()
 
   async function load(): Promise<void> {
@@ -62,6 +63,7 @@ export function AdminPsychologistUsersCard() {
       })
       setRows((prev) => [created, ...prev])
       setDraft(emptyDraft)
+      setShowCreateForm(false)
     } catch {
       setError("Could not create psychologist account.")
     } finally {
@@ -114,6 +116,13 @@ export function AdminPsychologistUsersCard() {
       <CardContent className="space-y-3">
         {loading ? <DashboardStateBlock variant="loading" message="Loading data..." /> : null}
         {!loading && error ? <DashboardStateBlock variant="error" message={error} onRetry={() => void load()} /> : null}
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-muted-foreground text-sm">Create psychologist portal accounts.</p>
+          <Button size="sm" variant="outline" onClick={() => setShowCreateForm((open) => !open)}>
+            {showCreateForm ? "Hide form" : "Add user"}
+          </Button>
+        </div>
+        {showCreateForm ? (
         <div className="grid gap-2 rounded-md border border-border/60 p-3 md:grid-cols-3">
           <input
             className="h-9 rounded border border-border bg-background px-2 text-sm"
@@ -159,6 +168,7 @@ export function AdminPsychologistUsersCard() {
             {busyId === "create" ? "Creating..." : "Create psychologist"}
           </Button>
         </div>
+        ) : null}
         {!loading && !error && search.trim() && filteredRows.length === 0 ? (
           <DashboardStateBlock variant="empty" message="No psychologist users matched your search." />
         ) : null}

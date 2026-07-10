@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { RescheduleDatetimeField } from "@/components/patient/appointments/reschedule-datetime-field"
 import { Button } from "@/components/ui/button"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { formatDateTimeAu } from "@/src/lib/format-au"
 import { getAppointmentDetails, postManageAppointment, type AppointmentDetailsResponse } from "@/src/patient/booking/api"
 import { invalidatePatientAppointments } from "@/src/patient/queries/invalidate"
@@ -23,6 +24,7 @@ export function AppointmentManagePanel({ appointmentId, onAppointmentUpdated }: 
   const [details, setDetails] = useState<AppointmentDetailsResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [rescheduleAt, setRescheduleAt] = useState("")
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
 
   const canManage = useMemo(() => details?.canManage ?? true, [details])
 
@@ -144,12 +146,31 @@ export function AppointmentManagePanel({ appointmentId, onAppointmentUpdated }: 
             >
               {isSubmitting ? "Saving..." : "Reschedule"}
             </Button>
-            <Button size="sm" variant="destructive" disabled={isSubmitting} onClick={() => void handleCancel()}>
+            <Button
+              size="sm"
+              variant="destructive"
+              disabled={isSubmitting}
+              onClick={() => setCancelDialogOpen(true)}
+            >
               {isSubmitting ? "Saving..." : "Cancel appointment"}
             </Button>
           </div>
         </div>
       ) : null}
+      <ConfirmDialog
+        open={cancelDialogOpen}
+        variant="danger"
+        title="Cancel this appointment?"
+        description="This cannot be undone online. You may need to book again if you still want a session."
+        confirmLabel="Yes, cancel appointment"
+        cancelLabel="Keep appointment"
+        isLoading={isSubmitting}
+        onCancel={() => setCancelDialogOpen(false)}
+        onConfirm={() => {
+          setCancelDialogOpen(false)
+          void handleCancel()
+        }}
+      />
       {error ? <p className="text-destructive text-xs">{error}</p> : null}
     </div>
   )

@@ -8,8 +8,10 @@ import { PatientTelehealth101Cta } from "@/components/tutorials/patient-teleheal
 import { PatientTutorialOnboardingCta } from "@/components/tutorials/patient-tutorial-onboarding-cta"
 import { Skeleton } from "@/components/ui/skeleton"
 import { patientDashboardContent } from "@/content/patient-dashboard"
+import { isJourneyComplete } from "@/src/patient/journey/step-guide"
 import { useCurrentUser } from "@/src/patient/queries/use-current-user"
 import { usePatientDashboard } from "@/src/patient/queries/use-patient-dashboard"
+import { usePatientJourney } from "@/src/patient/queries/use-patient-journey"
 
 function firstNameOf(displayName: string | undefined): string | null {
   const first = displayName?.trim().split(/\s+/)[0]
@@ -19,6 +21,7 @@ function firstNameOf(displayName: string | undefined): string | null {
 export function PatientDashboardView() {
   const userQuery = useCurrentUser()
   const dashboardQuery = usePatientDashboard()
+  const journeyQuery = usePatientJourney()
 
   const isPatient = userQuery.data?.role === "patient"
   const loading = userQuery.isLoading || (isPatient && dashboardQuery.isLoading)
@@ -30,6 +33,8 @@ export function PatientDashboardView() {
   }
 
   const firstName = firstNameOf(snapshot?.user.displayName)
+  const hideJourneyRail =
+    journeyQuery.isSuccess && isJourneyComplete(journeyQuery.data?.steps ?? [])
 
   return (
     <section className="space-y-8" data-tutorial="patient.page.dashboard">
@@ -50,7 +55,7 @@ export function PatientDashboardView() {
       <PatientTutorialOnboardingCta />
       <PatientTelehealth101Cta />
 
-      <JourneyRail />
+      {!hideJourneyRail ? <JourneyRail /> : null}
 
       <NextSessionHero
         session={snapshot?.nextSession ?? null}
