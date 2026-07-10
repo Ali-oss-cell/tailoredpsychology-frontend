@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 type SortDirection = "asc" | "desc"
@@ -63,7 +64,34 @@ export function AdminDataTable<TItem>({
     setSortDirection("asc")
   }
 
-  if (loading) return <DashboardStateBlock variant="loading" message="Loading data..." />
+  if (loading) {
+    return (
+      <div className="overflow-x-auto rounded-md border border-border/70" aria-busy="true" aria-label="Loading data">
+        <table className="w-full border-collapse text-sm">
+          <thead className="bg-muted/50">
+            <tr>
+              {columns.map((column) => (
+                <th key={column.key} className={cn("border-b border-border/70 px-3 py-2 text-left font-medium", column.className)}>
+                  {column.header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: 5 }).map((_, rowIndex) => (
+              <tr key={rowIndex} className="border-b border-border/40 last:border-b-0">
+                {columns.map((column) => (
+                  <td key={`${rowIndex}:${column.key}`} className={cn("px-3 py-2 align-top", column.className)}>
+                    <Skeleton className="skeleton-shimmer h-4 w-full max-w-[12rem]" />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
   if (error) return <DashboardStateBlock variant="error" message={error} />
   if (rows.length === 0) return <DashboardStateBlock variant="empty" message={emptyMessage} />
 

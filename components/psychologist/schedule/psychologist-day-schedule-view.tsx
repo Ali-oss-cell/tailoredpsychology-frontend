@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { formatTimeAu } from "@/src/lib/format-au"
 import { cn } from "@/lib/utils"
 import { sameLocalDay } from "@/src/psychologist/session-filters"
 import { joinSessionHref } from "@/src/session/join-session"
@@ -42,7 +43,7 @@ function addDays(day: Date, offset: number): Date {
 }
 
 function formatDayKey(day: Date): string {
-  return day.toLocaleDateString(undefined, { weekday: "short" })
+  return day.toLocaleDateString("en-AU", { weekday: "short" })
 }
 
 function formatDayNumber(day: Date): string {
@@ -50,7 +51,7 @@ function formatDayNumber(day: Date): string {
 }
 
 function formatSelectedDate(day: Date): string {
-  return day.toLocaleDateString(undefined, {
+  return day.toLocaleDateString("en-AU", {
     weekday: "long",
     month: "long",
     day: "numeric",
@@ -89,9 +90,7 @@ function sessionBlockClass(status: SessionSummary["status"]): string {
 }
 
 function formatTimeRange(startIso: string, endIso: string): string {
-  const start = new Date(startIso).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })
-  const end = new Date(endIso).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })
-  return `${start} – ${end}`
+  return `${formatTimeAu(startIso)} – ${formatTimeAu(endIso)}`
 }
 
 function canJoinSession(status: SessionSummary["status"]): boolean {
@@ -228,10 +227,7 @@ export function PsychologistDayScheduleView({
                       className="text-muted-foreground border-border/40 flex items-start border-b px-2 pt-1 text-[11px] tabular-nums"
                       style={{ height: HOUR_HEIGHT_PX }}
                     >
-                      {new Date(2000, 0, 1, hour).toLocaleTimeString(undefined, {
-                        hour: "numeric",
-                        minute: "2-digit",
-                      })}
+                      {formatTimeAu(new Date(2000, 0, 1, hour))}
                     </div>
                   ))}
                 </div>

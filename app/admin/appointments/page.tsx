@@ -2,12 +2,18 @@
 
 import * as React from "react"
 
-import { AdminDataTable, type AdminDataTableColumn } from "@/components/ops/admin-data-table"
+import {
+  AdminDataTable,
+  type AdminDataTableColumn,
+} from "@/components/ops/admin-data-table"
 import { AdminFilterBar } from "@/components/ops/admin-filter-bar"
-import { OpsShell } from "@/components/ops/ops-shell"
 import { OpsPortalPage } from "@/components/ops/ops-portal-page"
 import { opsPagesContent } from "@/content/ops-pages"
-import { getAdminOpsAppointments, type AdminAppointmentItem } from "@/src/admin/ops/api"
+import { formatDateTimeAu } from "@/src/lib/format-au"
+import {
+  getAdminOpsAppointments,
+  type AdminAppointmentItem,
+} from "@/src/admin/ops/api"
 import { useUrlSearchQuery } from "@/components/shared/use-url-search-query"
 
 export default function AdminAppointmentsPage() {
@@ -49,57 +55,82 @@ export default function AdminAppointmentsPage() {
   })
 
   const columns: AdminDataTableColumn<AdminAppointmentItem>[] = [
-    { key: "appointment", header: "Appointment", sortable: true, sortValue: (row) => row.appointmentId, renderCell: (row) => row.appointmentId },
-    { key: "patient", header: "Patient", sortable: true, sortValue: (row) => row.patientName, renderCell: (row) => row.patientName },
-    { key: "clinician", header: "Clinician", sortable: true, sortValue: (row) => row.clinicianName, renderCell: (row) => row.clinicianName },
+    {
+      key: "appointment",
+      header: "Appointment",
+      sortable: true,
+      sortValue: (row) => row.appointmentId,
+      renderCell: (row) => row.appointmentId,
+    },
+    {
+      key: "patient",
+      header: "Patient",
+      sortable: true,
+      sortValue: (row) => row.patientName,
+      renderCell: (row) => row.patientName,
+    },
+    {
+      key: "clinician",
+      header: "Clinician",
+      sortable: true,
+      sortValue: (row) => row.clinicianName,
+      renderCell: (row) => row.clinicianName,
+    },
     {
       key: "start",
       header: "Scheduled",
       sortable: true,
       sortValue: (row) => new Date(row.scheduledStartAt).getTime(),
-      renderCell: (row) => new Date(row.scheduledStartAt).toLocaleString(),
+      renderCell: (row) => formatDateTimeAu(row.scheduledStartAt),
     },
-    { key: "status", header: "Status", sortable: true, sortValue: (row) => row.status, renderCell: (row) => row.status },
+    {
+      key: "status",
+      header: "Status",
+      sortable: true,
+      sortValue: (row) => row.status,
+      renderCell: (row) => row.status,
+    },
   ]
 
   return (
-    <OpsShell activeRoute="admin-appointments">
-      <OpsPortalPage eyebrow="Administration"
-        title={opsPagesContent.adminAppointments.title} description={opsPagesContent.adminAppointments.description}>
-        <AdminFilterBar
-          searchValue={search}
-          onSearchChange={setSearch}
-          searchPlaceholder="Search by patient, clinician, or appointment ID"
-          selects={[
-            {
-              key: "status",
-              label: "Status",
-              value: status,
-              options: [
-                { label: "All", value: "all" },
-                { label: "Scheduled", value: "scheduled" },
-                { label: "Completed", value: "completed" },
-                { label: "Cancelled", value: "cancelled" },
-              ],
-            },
-          ]}
-          onSelectChange={(key, value) => {
-            if (key === "status") setStatus(value)
-          }}
-          onClear={() => {
-            setSearch("")
-            setStatus("all")
-          }}
-        />
-        <AdminDataTable
-          rows={filtered}
-          columns={columns}
-          keyExtractor={(row) => row.appointmentId}
-          loading={loading}
-          error={error}
-          emptyMessage="No appointments matched the current filters."
-        />
-      </OpsPortalPage>
-    </OpsShell>
+    <OpsPortalPage
+      eyebrow="Administration"
+      title={opsPagesContent.adminAppointments.title}
+      description={opsPagesContent.adminAppointments.description}
+    >
+      <AdminFilterBar
+        searchValue={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search by patient, clinician, or appointment ID"
+        selects={[
+          {
+            key: "status",
+            label: "Status",
+            value: status,
+            options: [
+              { label: "All", value: "all" },
+              { label: "Scheduled", value: "scheduled" },
+              { label: "Completed", value: "completed" },
+              { label: "Cancelled", value: "cancelled" },
+            ],
+          },
+        ]}
+        onSelectChange={(key, value) => {
+          if (key === "status") setStatus(value)
+        }}
+        onClear={() => {
+          setSearch("")
+          setStatus("all")
+        }}
+      />
+      <AdminDataTable
+        rows={filtered}
+        columns={columns}
+        keyExtractor={(row) => row.appointmentId}
+        loading={loading}
+        error={error}
+        emptyMessage="No appointments matched the current filters."
+      />
+    </OpsPortalPage>
   )
 }

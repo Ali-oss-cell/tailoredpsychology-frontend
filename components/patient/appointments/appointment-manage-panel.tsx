@@ -3,8 +3,10 @@
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect, useMemo, useState } from "react"
 
+import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { RescheduleDatetimeField } from "@/components/patient/appointments/reschedule-datetime-field"
 import { Button } from "@/components/ui/button"
+import { formatDateTimeAu } from "@/src/lib/format-au"
 import { getAppointmentDetails, postManageAppointment, type AppointmentDetailsResponse } from "@/src/patient/booking/api"
 import { invalidatePatientAppointments } from "@/src/patient/queries/invalidate"
 import { RESCHEDULE_LOCK_BEFORE_START_MS, RESCHEDULE_RULE_LINES } from "@/src/patient/booking/reschedule-policy"
@@ -95,7 +97,7 @@ export function AppointmentManagePanel({ appointmentId, onAppointmentUpdated }: 
 
   return (
     <div className="space-y-3 rounded-md border border-border/60 bg-muted/30 p-3 text-sm">
-      {isLoading ? <p className="text-muted-foreground">Loading appointment details...</p> : null}
+      {isLoading ? <DashboardStateBlock variant="loading" message="Loading appointment details…" /> : null}
       {details ? (
         <>
           <p className="text-muted-foreground">
@@ -103,7 +105,7 @@ export function AppointmentManagePanel({ appointmentId, onAppointmentUpdated }: 
           </p>
           <p className="text-muted-foreground">
             Scheduled start:{" "}
-            <span className="font-medium text-foreground">{new Date(details.scheduledStartAt).toLocaleString()}</span>
+            <span className="font-medium text-foreground">{formatDateTimeAu(details.scheduledStartAt)}</span>
           </p>
           {!canManage ? <p className="text-muted-foreground">You cannot manage this appointment.</p> : null}
         </>

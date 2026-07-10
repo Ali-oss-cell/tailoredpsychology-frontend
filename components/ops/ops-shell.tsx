@@ -43,7 +43,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
-type OpsRouteKey =
+export type OpsRouteKey =
   | "manager-dashboard"
   | "manager-staff"
   | "manager-patients"
@@ -66,6 +66,49 @@ type OpsRouteKey =
   | "admin-privacy-requests"
   | "admin-referrals"
   | "admin-resources"
+
+export type ManagerOpsRouteKey = Extract<OpsRouteKey, `manager-${string}`>
+export type AdminOpsRouteKey = Extract<OpsRouteKey, `admin-${string}`>
+
+const managerRoutePrefixes: readonly { prefix: string; key: ManagerOpsRouteKey }[] = [
+  { prefix: "/manager/staff", key: "manager-staff" },
+  { prefix: "/manager/patients", key: "manager-patients" },
+  { prefix: "/manager/appointments", key: "manager-appointments" },
+  { prefix: "/manager/billing", key: "manager-billing" },
+  { prefix: "/manager/referrals", key: "manager-referrals" },
+  { prefix: "/manager/privacy-requests", key: "manager-privacy-requests" },
+  { prefix: "/manager/resources", key: "manager-resources" },
+] as const
+
+const adminRoutePrefixes: readonly { prefix: string; key: AdminOpsRouteKey }[] = [
+  { prefix: "/admin/users", key: "admin-users" },
+  { prefix: "/admin/appointments", key: "admin-appointments" },
+  { prefix: "/admin/patients", key: "admin-patients" },
+  { prefix: "/admin/staff", key: "admin-staff" },
+  { prefix: "/admin/billing", key: "admin-billing" },
+  { prefix: "/admin/settings", key: "admin-settings" },
+  { prefix: "/admin/analytics", key: "admin-analytics" },
+  { prefix: "/admin/audit-logs", key: "admin-audit-logs" },
+  { prefix: "/admin/security-incidents", key: "admin-security-incidents" },
+  { prefix: "/admin/data-deletion", key: "admin-data-deletion" },
+  { prefix: "/admin/privacy-requests", key: "admin-privacy-requests" },
+  { prefix: "/admin/referrals", key: "admin-referrals" },
+  { prefix: "/admin/resources", key: "admin-resources" },
+] as const
+
+export function resolveManagerActiveRoute(pathname: string): ManagerOpsRouteKey {
+  for (const entry of managerRoutePrefixes) {
+    if (pathname.startsWith(entry.prefix)) return entry.key
+  }
+  return "manager-dashboard"
+}
+
+export function resolveAdminActiveRoute(pathname: string): AdminOpsRouteKey {
+  for (const entry of adminRoutePrefixes) {
+    if (pathname.startsWith(entry.prefix)) return entry.key
+  }
+  return "admin-dashboard"
+}
 
 type OpsShellProps = {
   children: React.ReactNode

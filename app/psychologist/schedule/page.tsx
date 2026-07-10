@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { PsychologistDayScheduleView } from "@/components/psychologist/schedule/psychologist-day-schedule-view"
 import { PsychologistPortalPage } from "@/components/psychologist/psychologist-portal-page"
 import { Button } from "@/components/ui/button"
+import { formatTimeAu } from "@/src/lib/format-au"
 import { psychologistScheduleContent } from "@/content/psychologist-schedule"
 import { psychologistQueryKeys } from "@/src/psychologist/queries/keys"
 import { usePsychologistId } from "@/src/psychologist/queries/use-current-user"
@@ -45,7 +46,7 @@ export default function PsychologistSchedulePage() {
         <>
           {lastUpdated ? (
             <span className="text-muted-foreground text-xs">
-              Updated {lastUpdated.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit", second: "2-digit" })}
+              Updated {formatTimeAu(lastUpdated, { second: "2-digit" })}
             </span>
           ) : null}
           <Button type="button" variant="outline" size="sm" onClick={refresh} disabled={loading || !psychologistId}>

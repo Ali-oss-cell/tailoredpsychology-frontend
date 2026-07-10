@@ -6,6 +6,7 @@ import { HeroSection } from "@/components/marketing/hero-section"
 import { HomeClinicTeamBand } from "@/components/marketing/home-clinic-team-band"
 import { HomeMomentsRow } from "@/components/marketing/home-moments-row"
 import { HomeProcessSection } from "@/components/marketing/home-process-section"
+import { HomeTrustStrip } from "@/components/marketing/home-trust-strip"
 import { HomepageObserver } from "@/components/marketing/homepage-observer"
 import { ScrollSection } from "@/components/marketing/scroll-section"
 import { ServicesPreview } from "@/components/marketing/services-preview"
@@ -21,6 +22,7 @@ export default function HomePage() {
       <PublicHeader />
       <main>
         <HeroSection {...homepageContent.hero} />
+        <HomeTrustStrip />
         <ScrollSection variant="cards">
           <TrustStats stats={homepageContent.trustStats} />
         </ScrollSection>

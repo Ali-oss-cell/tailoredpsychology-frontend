@@ -2,11 +2,13 @@
 
 import * as React from "react"
 
-import { OpsShell } from "@/components/ops/ops-shell"
 import { OpsPortalPage } from "@/components/ops/ops-portal-page"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { opsPagesContent } from "@/content/ops-pages"
-import { getAdminOpsBilling, type AdminBillingSummary } from "@/src/admin/ops/api"
+import {
+  getAdminOpsBilling,
+  type AdminBillingSummary,
+} from "@/src/admin/ops/api"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 
 export default function AdminBillingPage() {
@@ -35,22 +37,40 @@ export default function AdminBillingPage() {
   }, [])
 
   return (
-    <OpsShell activeRoute="admin-billing">
-      <OpsPortalPage eyebrow="Administration"
-        title={opsPagesContent.adminBilling.title} description={opsPagesContent.adminBilling.description}>
-        {loading ? <DashboardStateBlock variant="loading" message="Loading data..." /> : null}
-        {error ? <DashboardStateBlock variant="error" message={error} /> : null}
-        {!loading && !error && summary ? (
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-            <MetricCard label="Revenue today" value={`$${summary.revenueToday.toFixed(2)}`} />
-            <MetricCard label="Revenue week" value={`$${summary.revenueWeek.toFixed(2)}`} />
-            <MetricCard label="Revenue month" value={`$${summary.revenueMonth.toFixed(2)}`} />
-            <MetricCard label="Failed payments" value={`${summary.failedPayments}`} />
-            <MetricCard label="Pending claims" value={`${summary.pendingClaims}`} />
-          </div>
-        ) : null}
-      </OpsPortalPage>
-    </OpsShell>
+    <OpsPortalPage
+      eyebrow="Administration"
+      title={opsPagesContent.adminBilling.title}
+      description={opsPagesContent.adminBilling.description}
+    >
+      {loading ? (
+        <DashboardStateBlock variant="loading" message="Loading data..." />
+      ) : null}
+      {error ? <DashboardStateBlock variant="error" message={error} /> : null}
+      {!loading && !error && summary ? (
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+          <MetricCard
+            label="Revenue today"
+            value={`$${summary.revenueToday.toFixed(2)}`}
+          />
+          <MetricCard
+            label="Revenue week"
+            value={`$${summary.revenueWeek.toFixed(2)}`}
+          />
+          <MetricCard
+            label="Revenue month"
+            value={`$${summary.revenueMonth.toFixed(2)}`}
+          />
+          <MetricCard
+            label="Failed payments"
+            value={`${summary.failedPayments}`}
+          />
+          <MetricCard
+            label="Pending claims"
+            value={`${summary.pendingClaims}`}
+          />
+        </div>
+      ) : null}
+    </OpsPortalPage>
   )
 }
 

@@ -13,11 +13,8 @@ import { PageHero } from "@/components/marketing/page-hero"
 import { PricingRelatedStrip } from "@/components/marketing/pricing-related-strip"
 import { publicPricing } from "@/content/public-pricing"
 import { pricingCta, pricingFaq, pricingHero } from "@/content/pages/pricing-public"
+import { formatAud } from "@/src/lib/format-au"
 import { cn } from "@/lib/utils"
-
-function formatAud(value: number): string {
-  return new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(value)
-}
 
 export default function PricingPage() {
   return (

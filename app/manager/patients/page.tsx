@@ -3,9 +3,11 @@
 import * as React from "react"
 import { useUrlSearchQuery } from "@/components/shared/use-url-search-query"
 
-import { AdminDataTable, type AdminDataTableColumn } from "@/components/ops/admin-data-table"
+import {
+  AdminDataTable,
+  type AdminDataTableColumn,
+} from "@/components/ops/admin-data-table"
 import { AdminFilterBar } from "@/components/ops/admin-filter-bar"
-import { OpsShell } from "@/components/ops/ops-shell"
 import { OpsPortalPage } from "@/components/ops/ops-portal-page"
 import { opsPagesContent } from "@/content/ops-pages"
 import { getAdminOpsPatients, type AdminPatientItem } from "@/src/admin/ops/api"
@@ -38,64 +40,103 @@ export default function ManagerPatientsPage() {
   }, [])
 
   const filtered = rows.filter((row) => {
-    if (retentionStatus !== "all" && row.retentionStatus !== retentionStatus) return false
+    if (retentionStatus !== "all" && row.retentionStatus !== retentionStatus)
+      return false
     if (!search.trim()) return true
     const term = search.toLowerCase()
-    return row.displayName.toLowerCase().includes(term) || row.email.toLowerCase().includes(term) || row.patientId.toLowerCase().includes(term)
+    return (
+      row.displayName.toLowerCase().includes(term) ||
+      row.email.toLowerCase().includes(term) ||
+      row.patientId.toLowerCase().includes(term)
+    )
   })
 
   const columns: AdminDataTableColumn<AdminPatientItem>[] = [
-    { key: "patientId", header: "Patient ID", sortable: true, sortValue: (row) => row.patientId, renderCell: (row) => row.patientId },
-    { key: "name", header: "Name", sortable: true, sortValue: (row) => row.displayName, renderCell: (row) => row.displayName },
-    { key: "email", header: "Email", sortable: true, sortValue: (row) => row.email, renderCell: (row) => row.email },
-    { key: "intake", header: "Intake", sortable: true, sortValue: (row) => row.intakeState, renderCell: (row) => row.intakeState },
-    { key: "retention", header: "Retention", sortable: true, sortValue: (row) => row.retentionStatus, renderCell: (row) => row.retentionStatus },
-    { key: "legalHold", header: "Legal hold", sortable: true, sortValue: (row) => (row.legalHoldActive ? 1 : 0), renderCell: (row) => (row.legalHoldActive ? "on" : "off") },
+    {
+      key: "patientId",
+      header: "Patient ID",
+      sortable: true,
+      sortValue: (row) => row.patientId,
+      renderCell: (row) => row.patientId,
+    },
+    {
+      key: "name",
+      header: "Name",
+      sortable: true,
+      sortValue: (row) => row.displayName,
+      renderCell: (row) => row.displayName,
+    },
+    {
+      key: "email",
+      header: "Email",
+      sortable: true,
+      sortValue: (row) => row.email,
+      renderCell: (row) => row.email,
+    },
+    {
+      key: "intake",
+      header: "Intake",
+      sortable: true,
+      sortValue: (row) => row.intakeState,
+      renderCell: (row) => row.intakeState,
+    },
+    {
+      key: "retention",
+      header: "Retention",
+      sortable: true,
+      sortValue: (row) => row.retentionStatus,
+      renderCell: (row) => row.retentionStatus,
+    },
+    {
+      key: "legalHold",
+      header: "Legal hold",
+      sortable: true,
+      sortValue: (row) => (row.legalHoldActive ? 1 : 0),
+      renderCell: (row) => (row.legalHoldActive ? "on" : "off"),
+    },
   ]
 
   return (
-    <OpsShell activeRoute="manager-patients">
-      <OpsPortalPage
-        eyebrow="Operations"
-        title={opsPagesContent.managerPatients.title}
-        description={opsPagesContent.managerPatients.description}
-        tutorialId="manager.page.patients"
-      >
-        <AdminFilterBar
-          searchValue={search}
-          onSearchChange={setSearch}
-          searchPlaceholder="Search by name, email, or patient ID"
-          selects={[
-            {
-              key: "retentionStatus",
-              label: "Retention status",
-              value: retentionStatus,
-              options: [
-                { label: "All", value: "all" },
-                { label: "Active", value: "active" },
-                { label: "Deleted", value: "deleted" },
-                { label: "Legal hold", value: "legal_hold" },
-                { label: "Purge pending", value: "purge_pending" },
-              ],
-            },
-          ]}
-          onSelectChange={(key, value) => {
-            if (key === "retentionStatus") setRetentionStatus(value)
-          }}
-          onClear={() => {
-            setSearch("")
-            setRetentionStatus("all")
-          }}
-        />
-        <AdminDataTable
-          rows={filtered}
-          columns={columns}
-          keyExtractor={(row) => row.patientId}
-          loading={loading}
-          error={error}
-          emptyMessage="No patients matched the current filters."
-        />
-      </OpsPortalPage>
-    </OpsShell>
+    <OpsPortalPage
+      eyebrow="Operations"
+      title={opsPagesContent.managerPatients.title}
+      description={opsPagesContent.managerPatients.description}
+      tutorialId="manager.page.patients"
+    >
+      <AdminFilterBar
+        searchValue={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search by name, email, or patient ID"
+        selects={[
+          {
+            key: "retentionStatus",
+            label: "Retention status",
+            value: retentionStatus,
+            options: [
+              { label: "All", value: "all" },
+              { label: "Active", value: "active" },
+              { label: "Deleted", value: "deleted" },
+              { label: "Legal hold", value: "legal_hold" },
+              { label: "Purge pending", value: "purge_pending" },
+            ],
+          },
+        ]}
+        onSelectChange={(key, value) => {
+          if (key === "retentionStatus") setRetentionStatus(value)
+        }}
+        onClear={() => {
+          setSearch("")
+          setRetentionStatus("all")
+        }}
+      />
+      <AdminDataTable
+        rows={filtered}
+        columns={columns}
+        keyExtractor={(row) => row.patientId}
+        loading={loading}
+        error={error}
+        emptyMessage="No patients matched the current filters."
+      />
+    </OpsPortalPage>
   )
 }

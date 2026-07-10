@@ -2,6 +2,7 @@ import { ChartLineUp, ShieldCheck } from "@phosphor-icons/react/dist/ssr"
 
 import { PageContainer } from "@/components/layout/page-container"
 import { PageSection } from "@/components/layout/page-section"
+import { publicContactDetails } from "@/content/legal/public-contact"
 import type { TrustMetric } from "@/content/public-trust-metrics"
 
 type TrustMetricsSectionProps = {
@@ -17,7 +18,8 @@ export function TrustMetricsSection({ metrics }: TrustMetricsSectionProps) {
             Operational trust metrics
           </h2>
           <p className="text-muted-foreground text-sm leading-relaxed md:text-base">
-            Snapshot figures for transparency—always read the source line and updated date on each card.
+            Snapshot figures for transparency from {publicContactDetails.entityName}—always read the source line and
+            updated date on each card.
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
