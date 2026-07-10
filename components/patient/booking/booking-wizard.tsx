@@ -26,7 +26,6 @@ export function BookingWizard() {
         title={bookingContent.header.title}
         description={bookingContent.header.description}
         eyebrow="Book care"
-        showJourney
         tutorialId="patient.page.book-appointment"
       >
         <DashboardStateBlock variant="loading" message="Preparing your booking…" />
@@ -43,7 +42,6 @@ export function BookingWizard() {
           : bookingContent.header.description
       }
       eyebrow="Book care"
-      showJourney
       tutorialId="patient.page.book-appointment"
     >
       {wizard.paymentCancelled ? (

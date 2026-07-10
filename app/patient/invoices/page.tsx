@@ -8,7 +8,6 @@ export default function PatientInvoicesPage() {
       title={patientInvoicesContent.header.title}
       description={patientInvoicesContent.header.description}
       eyebrow="Billing"
-      showJourney
       tutorialId="patient.page.invoices"
     >
       <PatientInvoicesSection />

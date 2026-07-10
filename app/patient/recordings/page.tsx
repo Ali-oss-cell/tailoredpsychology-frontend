@@ -45,7 +45,6 @@ export default function PatientRecordingsPage() {
       title="Session recordings"
       description="Access your session video library and transcript readiness."
       eyebrow="Your care"
-      showJourney
       tutorialId="patient.page.recordings"
     >
       <Card className="interactive-lift">

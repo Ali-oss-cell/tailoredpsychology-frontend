@@ -84,7 +84,6 @@ export function BookingPaymentSuccessPanel() {
         title="Payment"
         description="We could not find your booking reference."
         eyebrow="Booking"
-        showJourney
         tutorialId="patient.page.booking-payment-success"
       >
         <DashboardStateBlock variant="error" message={error ?? "Missing booking reference."} />
@@ -107,7 +106,6 @@ export function BookingPaymentSuccessPanel() {
           : "Please wait while we confirm your payment with our payment provider."
       }
       eyebrow="Booking"
-      showJourney
       tutorialId="patient.page.booking-payment-success"
     >
       {isConfirming && !confirmed && !error ? (

@@ -8,7 +8,6 @@ export default function PatientMyClinicianPage() {
       title={patientMyClinicianContent.header.title}
       description={patientMyClinicianContent.header.description}
       eyebrow="Your care team"
-      showJourney
       tutorialId="patient.page.my-clinician"
     >
       <PatientMyClinicianSection />
