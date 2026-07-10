@@ -44,6 +44,8 @@ Headings use `font-heading`; body stays on sans stack.
 | No section anchor awareness | Active state when homepage sections scroll into view |
 | Horizontal scroll nav on mobile only | Collapsible mobile menu with full link list + section anchors |
 
+**Navbar & footer detail:** see [NAVBAR_FOOTER_UI_REFACTOR.md](./NAVBAR_FOOTER_UI_REFACTOR.md) for mega menus, fullscreen mobile nav, 6-column footer, emergency card, and deferred items.
+
 ### Hero
 
 | Before | After |
@@ -138,8 +140,10 @@ Headings use `font-heading`; body stays on sans stack.
 | Why choose us | `components/marketing/why-choose-us-section.tsx` |
 | Testimonials | `components/marketing/testimonials-section.tsx` |
 | FAQ | `components/marketing/faq-section.tsx` |
-| Header / mobile | `components/layout/public-header.tsx`, `public-header-nav.tsx`, `public-header-mobile-nav.tsx` |
-| Footer | `components/layout/public-footer.tsx` |
+| Header / mobile | `components/layout/public-header.tsx`, `public-header-nav.tsx`, `public-header-mobile-nav.tsx`, `public-nav-mega-menu.tsx` |
+| Footer | `components/layout/public-footer.tsx`, `public-footer-accordion.tsx` |
+| Nav / footer content | `content/public-nav.ts`, `content/public-footer.ts` |
+| Navbar & footer plan | `docs/NAVBAR_FOOTER_UI_REFACTOR.md` |
 | Section observer | `components/marketing/homepage-section-observer.tsx` |
 | Tokens | `app/globals.css` (`.marketing-*`, `.marketing-card`, smooth scroll) |
 

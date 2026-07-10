@@ -633,12 +633,18 @@ html {
   transition:
     box-shadow var(--duration-element) var(--ease-out-quint),
     background-color var(--duration-element) var(--ease-out-quint),
-    border-color var(--duration-element) var(--ease-out-quint);
+    border-color var(--duration-element) var(--ease-out-quint),
+    backdrop-filter var(--duration-element) var(--ease-out-quint);
 }
 [data-public-header][data-scrolled="true"] {
   background-color: var(--glass-bg);
   border-color: transparent;
   box-shadow: var(--shadow-e2);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+[data-public-header][data-scrolled="true"] {
+  --public-header-height: 4.5rem;
 }
 
 [data-patient-header] {

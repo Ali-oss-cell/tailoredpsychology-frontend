@@ -15,7 +15,7 @@ describe("PublicHeaderNav", () => {
     const nav = screen.getByRole("navigation", { name: /primary/i })
     const pricing = within(nav).getByRole("link", { name: "Pricing" })
     expect(pricing).toHaveAttribute("aria-current", "page")
-    expect(within(nav).getByRole("link", { name: "Services" })).not.toHaveAttribute("aria-current")
+    expect(within(nav).getByRole("button", { name: /services/i })).not.toHaveAttribute("aria-current")
   })
 
   it("treats condition detail routes as Conditions active", () => {
