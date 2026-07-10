@@ -62,6 +62,16 @@
 
     --border-hairline: rgb(26 31 31 / 0.07);
 
+    /* Patient dashboard — Phase 1 UI refactor */
+    --dashboard-bg: #f8fafc;
+    --sidebar-patient: #0a7378;
+    --sidebar-patient-foreground: #f4f7f6;
+    --sidebar-patient-muted: rgb(244 247 246 / 0.72);
+    --sidebar-patient-accent: rgb(255 255 255 / 0.14);
+    --sidebar-patient-border: rgb(255 255 255 / 0.1);
+    --sidebar-patient-cta: #5fa8a6;
+    --radius-dashboard-card: 1rem;
+
     /* Motion system */
     --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
     --duration-micro: 150ms;
@@ -123,6 +133,14 @@
     --glass-border: rgb(255 255 255 / 0.08);
 
     --border-hairline: rgb(230 236 235 / 0.08);
+
+    --dashboard-bg: #0b0f10;
+    --sidebar-patient: #0d4f52;
+    --sidebar-patient-foreground: #e6eceb;
+    --sidebar-patient-muted: rgb(230 236 235 / 0.65);
+    --sidebar-patient-accent: rgb(255 255 255 / 0.1);
+    --sidebar-patient-border: rgb(255 255 255 / 0.08);
+    --sidebar-patient-cta: #5fa8a6;
 }
 
 @theme inline {
@@ -169,6 +187,9 @@
     --color-warning-foreground: var(--warning-foreground);
     --color-info: var(--info);
     --color-info-foreground: var(--info-foreground);
+    --color-dashboard-bg: var(--dashboard-bg);
+    --color-sidebar-patient: var(--sidebar-patient);
+    --color-sidebar-patient-foreground: var(--sidebar-patient-foreground);
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
     --radius-lg: var(--radius);
@@ -246,6 +267,59 @@
   .text-warning-foreground {
     color: var(--warning-foreground);
   }
+
+  .bg-dashboard {
+    background-color: var(--dashboard-bg);
+  }
+
+  .rounded-dashboard-card {
+    border-radius: var(--radius-dashboard-card);
+  }
+
+  .dashboard-section {
+    margin-bottom: 1.75rem;
+  }
+
+  @media (min-width: 768px) {
+    .dashboard-section {
+      margin-bottom: 2rem;
+    }
+  }
+}
+
+/* Patient portal — dark teal sidebar chrome */
+[data-patient-sidebar] {
+  background-color: var(--sidebar-patient);
+  border-color: var(--sidebar-patient-border);
+  color: var(--sidebar-patient-foreground);
+}
+
+[data-patient-sidebar] [data-slot="sidebar-menu-button"] {
+  color: var(--sidebar-patient-muted);
+}
+
+[data-patient-sidebar] [data-slot="sidebar-menu-button"]:hover {
+  background-color: var(--sidebar-patient-accent);
+  color: var(--sidebar-patient-foreground);
+}
+
+[data-patient-sidebar] [data-slot="sidebar-menu-button"][data-active="true"] {
+  background-color: var(--sidebar-patient-accent);
+  color: var(--sidebar-patient-foreground);
+  font-weight: 600;
+  border-radius: 0.75rem;
+}
+
+[data-patient-sidebar] [data-patient-sidebar-cta] {
+  background-color: var(--sidebar-patient-cta);
+  color: var(--primary-foreground);
+  font-weight: 600;
+  border-radius: 9999px;
+  box-shadow: var(--shadow-primary-glow);
+}
+
+[data-patient-sidebar] [data-patient-sidebar-cta]:hover {
+  filter: brightness(1.06);
 }
 
 /* ---- Motion system (all opt-in via media query) ---- */

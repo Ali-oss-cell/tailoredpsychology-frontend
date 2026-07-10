@@ -78,6 +78,10 @@
 - Legal sign-off tracker items (`LEGAL_SIGNOFF_TRACKER.md`)
 - Broader UX review backlog in `UX_DESIGN_REVIEW.md` (password hints, email guidance, etc.)
 
+## Dashboard UI refactor (Phase 1)
+
+Patient portal dashboard + shell chrome — see **[DASHBOARD_UI_REFACTOR.md](./DASHBOARD_UI_REFACTOR.md)** for design principles, token mapping, and phased rollout (Phases 2–4: psychologist, ops/admin, forms polish).
+
 ## Commits
 
 Committed and pushed 2026-07-11.

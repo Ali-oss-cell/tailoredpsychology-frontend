@@ -43,7 +43,7 @@ export function PortalShellSearch({
         placeholder={placeholder}
         aria-label={placeholder}
         data-tutorial={dataTutorial}
-        className="bg-muted/60 w-80 max-w-full lg:w-96"
+        className="bg-muted/60 w-full max-w-none md:min-w-[16rem] lg:min-w-[22rem]"
       />
     </form>
   )

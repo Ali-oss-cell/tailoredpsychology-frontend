@@ -65,7 +65,7 @@ describe("NextSessionHero", () => {
   it("renders the join link when the window is open", () => {
     renderWithQueryClient(<NextSessionHero session={makeSession({ window: { status: "open", opensAt: "", closesAt: "" } })} />)
 
-    expect(screen.getByRole("link", { name: /Join Video Session/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /Join session/i })).toHaveAttribute(
       "href",
       "/video-session/appt_hero_001",
     )
@@ -80,20 +80,20 @@ describe("NextSessionHero", () => {
       />,
     )
 
-    expect(screen.getByRole("link", { name: /Join Video Session/i })).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /Join session/i })).toBeInTheDocument()
   })
 
   it("hides the join link and explains the window when session is far out", () => {
     renderWithQueryClient(<NextSessionHero session={makeSession()} />)
 
-    expect(screen.queryByRole("link", { name: /Join Video Session/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole("link", { name: /Join session/i })).not.toBeInTheDocument()
     expect(screen.getByText(/Join opens 15 minutes before/i)).toBeInTheDocument()
   })
 
   it("renders the book CTA when there is no upcoming session", () => {
     renderWithQueryClient(<NextSessionHero session={null} />)
 
-    expect(screen.getByRole("link", { name: /Book New Session/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /Book appointment/i })).toHaveAttribute(
       "href",
       "/patient/book-appointment",
     )

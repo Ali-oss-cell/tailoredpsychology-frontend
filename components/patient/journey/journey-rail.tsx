@@ -7,7 +7,7 @@ import * as React from "react"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import type { PatientJourneyStep } from "@/src/patient/journey/api"
@@ -63,20 +63,23 @@ export function JourneyRail() {
   const cta = step ? ctaForStep(step) : null
 
   return (
-    <Card className="interactive-lift overflow-hidden shadow-e1" data-tutorial="patient.journey.rail">
+    <Card
+      id="care-journey"
+      className="dashboard-card interactive-lift overflow-hidden rounded-2xl shadow-e1"
+      data-tutorial="patient.journey.rail"
+    >
       <CardHeader className="border-border/60 space-y-3 border-b bg-muted/15 pb-4">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-1">
-            <p className="card-eyebrow">Journey</p>
-            <CardTitle className="font-heading text-lg tracking-tight md:text-xl">Your care journey</CardTitle>
-            <CardDescription className="text-muted-foreground max-w-2xl text-xs leading-relaxed md:text-sm">
-              Every milestone from intake to invoice, always visible. Select a step for details.
+            <h2 className="font-heading text-2xl font-semibold tracking-tight">Your care journey</h2>
+            <CardDescription className="text-muted-foreground max-w-2xl text-sm leading-relaxed">
+              Track your progress from intake to invoice. Click any step for details.
             </CardDescription>
           </div>
-          <div className="text-muted-foreground hidden items-center gap-1.5 text-xs sm:flex">
+          <div className="text-muted-foreground flex items-center gap-1.5 text-xs sm:text-sm">
             <MapTrifold className="text-primary shrink-0" size={18} aria-hidden />
-            <span className="tabular-nums">
-              {doneCount}/{steps.length || "—"} recorded
+            <span className="tabular-nums font-medium">
+              {doneCount} of {steps.length || "—"} completed
             </span>
           </div>
         </div>
@@ -172,18 +175,18 @@ export function JourneyRail() {
                       onClick={() => setSelectedIndex(index)}
                       onKeyDown={(event) => handleKeyDown(event, index)}
                       className={cn(
-                        "group flex w-16 shrink-0 snap-start flex-col items-center gap-1.5 rounded-lg p-1 text-center",
+                        "group flex w-[4.5rem] shrink-0 snap-start flex-col items-center gap-1.5 rounded-lg p-1 text-center",
                         "focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-2",
                       )}
                     >
                       <span
                         className={cn(
-                          "flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all duration-250",
-                          done && "border-success/50 bg-success/10 text-success",
-                          current && !done && "border-primary bg-primary/10 text-primary shadow-primary-glow",
-                          !done && !current && "border-border bg-muted/40 text-muted-foreground",
-                          active && "scale-110",
-                          !active && "group-hover:scale-105",
+                          "flex items-center justify-center rounded-full border-2 transition-all duration-250",
+                          done && "h-10 w-10 border-success/50 bg-success/10 text-success",
+                          current && !done && "border-primary bg-primary text-primary-foreground shadow-primary-glow h-12 w-12",
+                          !done && !current && "border-border bg-muted/40 text-muted-foreground h-10 w-10",
+                          active && !current && "scale-105",
+                          active && current && "scale-105",
                         )}
                       >
                         {done ? (

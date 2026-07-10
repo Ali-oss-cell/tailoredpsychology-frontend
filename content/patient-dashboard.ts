@@ -1,8 +1,7 @@
 export const patientDashboardContent = {
   greeting: {
     title: "Hello, Sarah",
-    description:
-      "Take a deep breath. You're doing great. Here is a snapshot of your progress and upcoming activities.",
+    description: "Here's your health journey overview and what's next.",
   },
   resources: [
     {

@@ -9,7 +9,13 @@ import { ClinkLogo } from "@/components/brand/clink-logo"
 import { ClinkSidebarBrand } from "@/components/brand/clink-sidebar-brand"
 import { PatientHeaderScrollFx } from "@/components/patient/patient-header-scroll-fx"
 import { PortalShellSearch } from "@/components/shared/portal-shell-search"
-import { portalHeaderClassName, portalInsetClassName, portalSidebarClassName, PortalShellMain } from "@/components/shared/portal-shell-chrome"
+import {
+  portalHeaderClassName,
+  portalInsetClassName,
+  portalPatientMainClassName,
+  portalPatientSidebarClassName,
+  PortalShellMain,
+} from "@/components/shared/portal-shell-chrome"
 import { NotificationBell } from "@/components/notifications/notification-bell"
 import { PatientTutorialHelpButton } from "@/components/tutorials/patient-tutorial-help-button"
 import { PatientHeaderProfile } from "./patient-header-profile"
@@ -17,6 +23,7 @@ import { FloatingChatWidget } from "@/components/session/floating-chat-widget"
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
@@ -26,6 +33,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { cn } from "@/lib/utils"
 import { NavIcon } from "@/src/routes/nav-icons"
 import { getShellNavItems } from "@/src/routes/nav-utils"
 import { TUTORIAL_EXPAND_PATIENT_SIDEBAR } from "@/src/tutorials/events"
@@ -52,14 +60,23 @@ const navItems = getShellNavItems("patient")
 export function PatientShell({ children, activeRoute = "dashboard" }: PatientShellProps) {
   return (
     <SidebarProvider defaultOpen={true} storageKey="patient-sidebar-open">
-      <div className="bg-background text-foreground flex h-screen w-full overflow-hidden">
+      <div className="bg-dashboard text-foreground flex h-screen w-full overflow-hidden">
         <PatientShellTutorialSidebarSync />
-        <Sidebar collapsible="icon" className={portalSidebarClassName} data-tutorial="shell.sidebar">
+        <Sidebar
+          collapsible="icon"
+          className={cn(portalPatientSidebarClassName, "group/patient-sidebar")}
+          data-patient-sidebar
+          data-tutorial="shell.sidebar"
+        >
           <SidebarHeader className="group-data-[state=collapsed]/sidebar:mb-3">
-            <ClinkSidebarBrand dashboardHref="/patient/dashboard" portalLabel="Patient Portal" />
+            <ClinkSidebarBrand
+              dashboardHref="/patient/dashboard"
+              portalLabel="Patient Portal"
+              variant="inverse"
+            />
           </SidebarHeader>
           <SidebarContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-1.5">
               {navItems.map((item) => {
                 const tutorialAttr = item.tutorialId ? { "data-tutorial": item.tutorialId } : {}
                 return (
@@ -73,14 +90,23 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
                   </SidebarMenuItem>
                 )
               })}
-              <SidebarMenuItem className="border-border/60 mt-3 border-t pt-3">
+            </SidebarMenu>
+          </SidebarContent>
+          <SidebarFooter className="mt-auto space-y-2 border-t border-[var(--sidebar-patient-border)] pt-4">
+            <SidebarMenu>
+              <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  className="bg-primary/10 text-primary hover:bg-primary/15 font-medium"
+                  className="justify-center py-2.5 hover:bg-transparent"
+                  data-patient-sidebar-cta
                 >
-                  <Link href="/patient/book-appointment" title="Book New Appointment" data-tutorial="shell.sidebar.book-appointment">
+                  <Link
+                    href="/patient/book-appointment"
+                    title="Book Appointment"
+                    data-tutorial="shell.sidebar.book-appointment"
+                  >
                     <CalendarPlus size={18} weight="bold" />
-                    <span className="group-data-[state=collapsed]/sidebar:sr-only">Book New Appointment</span>
+                    <span className="group-data-[state=collapsed]/sidebar:sr-only">Book Appointment</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -93,25 +119,29 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
-          </SidebarContent>
+          </SidebarFooter>
         </Sidebar>
 
         <SidebarInset className={portalInsetClassName}>
           <header data-patient-header className={portalHeaderClassName} data-tutorial="shell.header">
             <PatientHeaderScrollFx />
             <div className="flex h-16 items-center justify-between gap-3 px-4 md:px-6">
-              <div className="flex min-w-0 items-center gap-3">
-                <SidebarTrigger variant="soft" className="hidden lg:inline-flex" />
-                <Link href="/patient/dashboard" className="lg:hidden" aria-label="Tailored Psychology Patient home">
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                <SidebarTrigger
+                  variant="soft"
+                  className="hidden shrink-0 lg:inline-flex"
+                />
+                <Link href="/patient/dashboard" className="shrink-0 lg:hidden" aria-label="Tailored Psychology Patient home">
                   <ClinkLogo alt="" className="size-8" />
                 </Link>
                 <PortalShellSearch
                   targetHref="/patient/appointments"
-                  placeholder="Search appointments by clinician or type…"
+                  placeholder="Search appointments, clinicians, or help…"
                   data-tutorial="shell.header.search"
+                  className="min-w-0 flex-1 md:block"
                 />
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex shrink-0 items-center gap-1 sm:gap-2">
                 <div className="flex items-center gap-0.5">
                   <div data-tutorial="shell.header.notifications">
                     <NotificationBell />
@@ -124,7 +154,9 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
               </div>
             </div>
           </header>
-          <PortalShellMain tutorialId="shell.main">{children}</PortalShellMain>
+          <PortalShellMain tutorialId="shell.main" className={portalPatientMainClassName}>
+            {children}
+          </PortalShellMain>
         </SidebarInset>
         <FloatingChatWidget role="patient" />
       </div>

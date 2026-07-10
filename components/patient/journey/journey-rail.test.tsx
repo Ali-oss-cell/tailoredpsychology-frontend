@@ -63,6 +63,6 @@ describe("JourneyRail", () => {
     renderWithQueryClient(<JourneyRail />)
 
     expect(await screen.findByRole("progressbar")).toBeInTheDocument()
-    expect(screen.getByText(/2\/7 recorded/)).toBeInTheDocument()
+    expect(screen.getByText(/2 of 7 completed/)).toBeInTheDocument()
   })
 })
