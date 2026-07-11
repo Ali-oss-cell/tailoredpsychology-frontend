@@ -595,6 +595,20 @@ html {
     }
   }
 
+  /* Subtle pulse on the current journey milestone */
+  .journey-current-pulse {
+    animation: journey-current-pulse 2.4s var(--ease-out-quint) infinite;
+  }
+  @keyframes journey-current-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgb(95 168 166 / 0.35);
+    }
+    50% {
+      box-shadow: 0 0 0 10px rgb(95 168 166 / 0);
+    }
+  }
+
   /* Skeleton shimmer (softer than pulse) */
   .skeleton-shimmer {
     position: relative;
@@ -625,6 +639,10 @@ html {
     opacity: 1;
     transform: none;
     filter: none;
+  }
+
+  .journey-current-pulse {
+    animation: none;
   }
 }
 

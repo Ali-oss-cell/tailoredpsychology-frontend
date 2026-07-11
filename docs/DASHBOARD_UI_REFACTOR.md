@@ -120,6 +120,22 @@ Dark mode: sidebar and dashboard-bg tokens have `.dark` overrides so contrast is
 - Journey rail hidden when complete (existing `isJourneyComplete` behaviour).
 - Collapsed sidebar (`collapsible="icon"`) preserved.
 
+## Care journey redesign (guided patient guide)
+
+Dashboard-only `JourneyRail` now answers: where am I, what's next, what should I do now?
+
+| Area | Implementation |
+|------|----------------|
+| Journey summary | Title, animated % bar, step count, estimated next milestone line |
+| Timeline | Human-readable labels, per-step icons, color states (success/current/muted/warning/problem), dates/times |
+| Current step | `JourneyCurrentStepCard` — consolidated former `NextSessionHero` with Join / View appointment / Add to calendar |
+| Coming next | Upcoming milestones with timing hints |
+| Motivation | Contextual reassurance copy based on remaining steps |
+| Quick actions | Contact clinic, reschedule, message clinician, download invoice |
+| Micro-motion | Progress fill transition, current-node pulse (`prefers-reduced-motion` safe), checkmarks on done steps |
+
+`NextSessionHero` remains as a thin wrapper for tests; the dashboard uses `JourneyRail` only.
+
 ## Phase 2 implementation notes
 
 - `psychologist-shell.tsx` — dark sidebar (`data-psychologist-sidebar`), pinned "View schedule" CTA, conditional "Join next session" when a room is available.

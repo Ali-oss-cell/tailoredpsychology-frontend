@@ -37,32 +37,64 @@ describe("JourneyRail", () => {
     renderWithQueryClient(<JourneyRail />)
 
     const tabs = await screen.findAllByRole("tab")
-    // 8 steps minus the pending session_no_show exception branch
     expect(tabs).toHaveLength(7)
-    expect(screen.queryByText("No-show")).not.toBeInTheDocument()
+    expect(screen.queryByText("Session missed")).not.toBeInTheDocument()
   })
 
-  it("defaults the detail panel to the first pending step with its CTA", async () => {
-    renderWithQueryClient(<JourneyRail />)
-
-    const panel = await screen.findByRole("tabpanel")
-    expect(panel).toHaveTextContent("Booking requested")
-    expect(screen.getByRole("link", { name: "View appointments" })).toBeInTheDocument()
-  })
-
-  it("shows recorded detail when selecting a done step", async () => {
-    renderWithQueryClient(<JourneyRail />)
-
-    fireEvent.click(await screen.findByRole("tab", { name: "Intake recorded" }))
-    const panel = screen.getByRole("tabpanel")
-    expect(panel).toHaveTextContent("What we logged:")
-    expect(screen.getByText("Recorded")).toBeInTheDocument()
-  })
-
-  it("shows progress summary counts", async () => {
+  it("shows journey summary progress and motivation copy", async () => {
     renderWithQueryClient(<JourneyRail />)
 
     expect(await screen.findByRole("progressbar")).toBeInTheDocument()
-    expect(screen.getByText(/2 of 7 completed/)).toBeInTheDocument()
+    expect(screen.getByText(/29% complete/i)).toBeInTheDocument()
+    expect(screen.getByText(/2 of 7 steps/i)).toBeInTheDocument()
+    expect(screen.getByText(/Everything is on track/i)).toBeInTheDocument()
+  })
+
+  it("shows upcoming milestones and quick actions", async () => {
+    renderWithQueryClient(<JourneyRail showInvoiceAction />)
+
+    await screen.findByRole("progressbar")
+    expect(screen.getAllByText("Appointment confirmed").length).toBeGreaterThan(0)
+    expect(screen.getByText("Coming next")).toBeInTheDocument()
+    expect(screen.getByText("Need help?")).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /Contact clinic/i })).toHaveAttribute("href", "/contact")
+    expect(screen.getByRole("link", { name: /Download invoice/i })).toHaveAttribute("href", "/patient/invoices")
+  })
+
+  it("shows expandable recorded detail when selecting a done step", async () => {
+    renderWithQueryClient(<JourneyRail />)
+
+    fireEvent.click(await screen.findByRole("tab", { name: /Intake complete/i }))
+    fireEvent.click(screen.getByRole("button", { name: /Intake complete/i }))
+    expect(screen.getByRole("link", { name: "View details" })).toHaveAttribute("href", "/patient/book-appointment")
+  })
+
+  it("renders the consolidated current step card with session CTAs", async () => {
+    const start = new Date(Date.now() + 2 * 60 * 60 * 1000)
+    const end = new Date(start.getTime() + 50 * 60 * 1000)
+
+    renderWithQueryClient(
+      <JourneyRail
+        nextSession={{
+          appointmentId: "appt_journey_001",
+          clinicianId: "clin_1",
+          clinicianName: "Dr. Example",
+          sessionTypeLabel: "Consultation",
+          scheduledStartAt: start.toISOString(),
+          scheduledEndAt: end.toISOString(),
+          status: "scheduled",
+          statusLabel: "Scheduled",
+          window: {
+            status: "locked",
+            opensAt: new Date(start.getTime() - 30 * 60 * 1000).toISOString(),
+            closesAt: end.toISOString(),
+          },
+        }}
+      />,
+    )
+
+    expect(await screen.findByText("Current step")).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /View appointment/i })).toHaveAttribute("href", "/patient/appointments")
+    expect(screen.getByRole("button", { name: /Add to calendar/i })).toBeInTheDocument()
   })
 })

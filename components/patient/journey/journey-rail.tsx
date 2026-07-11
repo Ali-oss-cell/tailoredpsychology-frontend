@@ -1,31 +1,175 @@
 "use client"
 
 import Link from "next/link"
-import { Check, MapTrifold } from "@phosphor-icons/react/dist/ssr"
+import {
+  CalendarPlus,
+  CaretDown,
+  CaretUp,
+  ChatCircle,
+  Check,
+  Headset,
+  MapTrifold,
+  Receipt,
+} from "@phosphor-icons/react/dist/ssr"
 import * as React from "react"
 
+import { JourneyCurrentStepCard } from "@/components/patient/journey/journey-current-step-card"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import type { PatientNextSession } from "@/src/patient/dashboard/api"
 import type { PatientJourneyStep } from "@/src/patient/journey/api"
 import {
   ctaForStep,
   deriveHeadline,
+  deriveMotivationCopy,
+  detailLinkForStep,
+  estimatedNextMilestoneLine,
   formatStepTimestamp,
   guideFor,
+  stepVisualState,
+  timelineLabelFor,
+  formatTimelineDate,
+  formatTimelineTime,
+  upcomingMilestones,
   visibleSteps,
 } from "@/src/patient/journey/step-guide"
 import { usePatientJourney } from "@/src/patient/queries/use-patient-journey"
 
+type JourneyRailProps = {
+  nextSession?: PatientNextSession | null
+  sessionLoading?: boolean
+  sessionError?: string | null
+  onSessionRetry?: () => void
+  showInvoiceAction?: boolean
+}
+
+function nodeStateClasses(state: ReturnType<typeof stepVisualState>, active: boolean, isCurrent: boolean): string {
+  if (state === "done") {
+    return cn(
+      "h-10 w-10 border-success/50 bg-success/10 text-success",
+      active && "scale-105",
+    )
+  }
+  if (state === "current" || isCurrent) {
+    return cn(
+      "journey-current-pulse border-primary bg-primary text-primary-foreground shadow-primary-glow h-14 w-14",
+      active && "scale-105",
+    )
+  }
+  if (state === "problem") {
+    return "h-10 w-10 border-destructive/50 bg-destructive/10 text-destructive"
+  }
+  if (state === "waiting") {
+    return "h-10 w-10 border-warning/50 bg-warning/10 text-warning"
+  }
+  return cn("border-border bg-muted/40 text-muted-foreground h-10 w-10", active && "scale-105")
+}
+
+function JourneyQuickActions({ showInvoiceAction }: { showInvoiceAction: boolean }) {
+  type QuickAction =
+    | { label: string; href: string; icon: typeof Headset }
+    | { label: string; event: "clink:open-chat"; icon: typeof ChatCircle }
+
+  const actions: QuickAction[] = [
+    { label: "Contact clinic", href: "/contact", icon: Headset },
+    { label: "Reschedule", href: "/patient/appointments", icon: CalendarPlus },
+    { label: "Message clinician", event: "clink:open-chat", icon: ChatCircle },
+    ...(showInvoiceAction
+      ? [{ label: "Download invoice", href: "/patient/invoices", icon: Receipt }]
+      : []),
+  ]
+
+  return (
+    <div className="space-y-3" data-tutorial="patient.dashboard.quick-actions">
+      <p className="text-foreground text-sm font-medium">Need help?</p>
+      <div className="flex flex-wrap gap-2">
+        {actions.map((action) => {
+          const Icon = action.icon
+          if ("event" in action) {
+            return (
+              <Button
+                key={action.label}
+                type="button"
+                variant="outline"
+                size="sm"
+                className="press gap-1.5"
+                onClick={() => window.dispatchEvent(new CustomEvent(action.event))}
+              >
+                <Icon size={16} />
+                {action.label}
+              </Button>
+            )
+          }
+          return (
+            <Button key={action.label} asChild variant="outline" size="sm" className="press gap-1.5">
+              <Link href={action.href}>
+                <Icon size={16} />
+                {action.label}
+              </Link>
+            </Button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function CompletedStepDetail({
+  step,
+  expanded,
+  onToggle,
+}: {
+  step: PatientJourneyStep
+  expanded: boolean
+  onToggle: () => void
+}) {
+  const guide = guideFor(step.key)
+  const detailLink = detailLinkForStep(step.key)
+
+  return (
+    <div className="border-success/20 bg-success/5 animate-in fade-in rounded-xl border p-3 duration-300">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-center justify-between gap-2 text-left"
+        aria-expanded={expanded}
+      >
+        <div className="min-w-0">
+          <p className="text-foreground text-sm font-medium">{guide?.timelineLabel ?? step.label}</p>
+          {formatStepTimestamp(step) ? (
+            <p className="text-muted-foreground text-xs tabular-nums">{formatStepTimestamp(step)}</p>
+          ) : null}
+        </div>
+        {expanded ? <CaretUp size={16} /> : <CaretDown size={16} />}
+      </button>
+      {expanded ? (
+        <div className="animate-in fade-in slide-in-from-top-1 mt-3 space-y-2 duration-200">
+          <p className="text-muted-foreground text-sm leading-relaxed">{guide?.whenDone}</p>
+          {detailLink ? (
+            <Link href={detailLink.href} className="text-primary text-sm font-medium underline-offset-2 hover:underline">
+              {detailLink.label}
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
 /**
- * Journey rail: every milestone is visible at once — done, current, waiting —
- * so patients never lose the map. Selecting a node opens its detail panel;
- * the rail itself never paginates.
+ * Action-oriented care journey — timeline, current step, upcoming milestones, and quick actions.
  */
-export function JourneyRail() {
+export function JourneyRail({
+  nextSession = null,
+  sessionLoading = false,
+  sessionError = null,
+  onSessionRetry,
+  showInvoiceAction = false,
+}: JourneyRailProps) {
   const journeyQuery = usePatientJourney()
 
   const steps = React.useMemo(
@@ -37,8 +181,15 @@ export function JourneyRail() {
   const defaultIndex = firstPendingIndex === -1 ? Math.max(steps.length - 1, 0) : firstPendingIndex
 
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null)
+  const [expandedDoneKey, setExpandedDoneKey] = React.useState<string | null>(null)
   const activeIndex = selectedIndex ?? defaultIndex
   const nodeRefs = React.useRef<(HTMLButtonElement | null)[]>([])
+
+  const nextPending = steps.find((step) => step.status === "pending")
+  const currentStep = steps[Math.min(activeIndex, Math.max(steps.length - 1, 0))]
+  const motivation = deriveMotivationCopy(steps)
+  const upcoming = upcomingMilestones(steps)
+  const milestoneLine = estimatedNextMilestoneLine(steps, nextSession)
 
   const handleKeyDown = (event: React.KeyboardEvent, index: number) => {
     let nextIndex: number | null = null
@@ -52,112 +203,110 @@ export function JourneyRail() {
     nodeRefs.current[nextIndex]?.focus()
   }
 
-  const { title: summaryTitle, subtitle: summarySubtitle, pct } = deriveHeadline(steps)
+  const { title: summaryTitle, pct } = deriveHeadline(steps)
   const doneCount = steps.filter((step) => step.status === "done").length
-  const nextPending = steps.find((step) => step.status === "pending")
-
-  const step: PatientJourneyStep | undefined = steps[Math.min(activeIndex, Math.max(steps.length - 1, 0))]
-  const guide = step ? guideFor(step.key) : null
-  const isDone = step?.status === "done"
-  const isCurrent = Boolean(step && nextPending?.key === step.key)
-  const cta = step ? ctaForStep(step) : null
 
   return (
-    <Card
-      id="care-journey"
-      className="dashboard-card interactive-lift overflow-hidden rounded-2xl shadow-e1"
-      data-tutorial="patient.journey.rail"
-    >
-      <CardHeader className="border-border/60 space-y-3 border-b bg-muted/15 pb-4">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-          <div className="space-y-1">
-            <h2 className="font-heading text-2xl font-semibold tracking-tight">Your care journey</h2>
-            <CardDescription className="text-muted-foreground max-w-2xl text-sm leading-relaxed">
-              Track your progress from intake to invoice. Click any step for details.
-            </CardDescription>
-          </div>
-          <div className="text-muted-foreground flex items-center gap-1.5 text-xs sm:text-sm">
-            <MapTrifold className="text-primary shrink-0" size={18} aria-hidden />
-            <span className="tabular-nums font-medium">
-              {doneCount} of {steps.length || "—"} completed
-            </span>
-          </div>
-        </div>
-
-        {journeyQuery.isSuccess && steps.length > 0 ? (
-          <div className="space-y-2 pt-0.5">
-            <div className="min-w-0">
-              <p className="text-foreground text-sm font-medium leading-snug">{summaryTitle}</p>
-              <p className="text-muted-foreground mt-0.5 max-w-xl text-xs leading-relaxed md:text-sm">
-                {summarySubtitle}
-              </p>
+    <div className="space-y-6" data-tutorial="patient.journey.rail">
+      <Card
+        id="care-journey"
+        className="dashboard-card interactive-lift overflow-hidden rounded-2xl shadow-e1"
+      >
+        <CardHeader className="border-border/60 space-y-4 border-b bg-muted/15 pb-5">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+            <div className="space-y-1">
+              <h2 className="font-heading text-2xl font-semibold tracking-tight">Your care journey</h2>
+              <CardDescription className="text-muted-foreground max-w-2xl text-sm leading-relaxed">
+                See where you are, what happens next, and what to do now.
+              </CardDescription>
             </div>
-            <div
-              className="bg-muted h-1.5 w-full overflow-hidden rounded-full"
-              role="progressbar"
-              aria-valuenow={pct}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label="Milestones recorded"
-            >
+            <div className="text-muted-foreground flex items-center gap-1.5 text-xs sm:text-sm">
+              <MapTrifold className="text-primary shrink-0" size={18} aria-hidden />
+              <span className="tabular-nums font-medium">
+                {journeyQuery.isSuccess ? `${pct}% complete` : "—"} · {doneCount} of {steps.length || "—"} steps
+              </span>
+            </div>
+          </div>
+
+          {journeyQuery.isSuccess && steps.length > 0 ? (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-3 text-sm">
+                <p className="text-foreground font-medium">{summaryTitle}</p>
+                <p className="text-muted-foreground tabular-nums text-xs">{pct}%</p>
+              </div>
               <div
-                className="from-primary to-primary/70 h-full rounded-full bg-gradient-to-r transition-[width] duration-500 ease-out"
-                style={{ width: `${pct}%` }}
-              />
+                className="bg-muted h-2 w-full overflow-hidden rounded-full"
+                role="progressbar"
+                aria-valuenow={pct}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="Care journey progress"
+              >
+                <div
+                  className="from-primary to-primary/70 h-full rounded-full bg-gradient-to-r transition-[width] duration-500 ease-out"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+              {milestoneLine ? (
+                <p className="text-muted-foreground text-xs leading-relaxed md:text-sm">{milestoneLine}</p>
+              ) : null}
+              <div className="bg-primary/5 border-primary/15 rounded-xl border px-4 py-3">
+                <p className="text-foreground text-sm font-medium">{motivation.title}</p>
+                <p className="text-muted-foreground mt-0.5 text-sm leading-relaxed">{motivation.body}</p>
+              </div>
             </div>
-          </div>
-        ) : null}
-      </CardHeader>
+          ) : null}
+        </CardHeader>
 
-      <CardContent className="space-y-5 pt-5">
-        {journeyQuery.isLoading ? (
-          <div className="space-y-4" aria-busy="true" aria-label="Loading journey">
-            <div className="flex gap-4 overflow-hidden">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="flex shrink-0 flex-col items-center gap-2">
-                  <Skeleton className="skeleton-shimmer h-10 w-10 rounded-full" />
-                  <Skeleton className="skeleton-shimmer h-3 w-14" />
-                </div>
-              ))}
+        <CardContent className="space-y-5 pt-5">
+          {journeyQuery.isLoading ? (
+            <div className="space-y-4" aria-busy="true" aria-label="Loading journey">
+              <div className="flex gap-4 overflow-hidden">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <div key={index} className="flex shrink-0 flex-col items-center gap-2">
+                    <Skeleton className="skeleton-shimmer h-10 w-10 rounded-full" />
+                    <Skeleton className="skeleton-shimmer h-3 w-14" />
+                  </div>
+                ))}
+              </div>
             </div>
-            <Skeleton className="skeleton-shimmer h-28 w-full rounded-xl" />
-          </div>
-        ) : null}
+          ) : null}
 
-        {journeyQuery.isError ? (
-          <DashboardStateBlock
-            variant="error"
-            message="We couldn't load your journey. Try again."
-            onRetry={() => void journeyQuery.refetch()}
-          />
-        ) : null}
+          {journeyQuery.isError ? (
+            <DashboardStateBlock
+              variant="error"
+              message="We couldn't load your journey. Try again."
+              onRetry={() => void journeyQuery.refetch()}
+            />
+          ) : null}
 
-        {journeyQuery.isSuccess && steps.length === 0 ? (
-          <DashboardStateBlock variant="empty" message="No journey data yet." />
-        ) : null}
+          {journeyQuery.isSuccess && steps.length === 0 ? (
+            <DashboardStateBlock variant="empty" message="No journey data yet." />
+          ) : null}
 
-        {journeyQuery.isSuccess && steps.length > 0 && step ? (
-          <>
+          {journeyQuery.isSuccess && steps.length > 0 ? (
             <div
               role="tablist"
               aria-label="Journey milestones"
               className="chat-scroll -mx-1 flex snap-x items-start gap-0 overflow-x-auto px-1 pb-1"
             >
-              {steps.map((s, index) => {
-                const done = s.status === "done"
-                const current = nextPending?.key === s.key
+              {steps.map((step, index) => {
+                const isCurrent = nextPending?.key === step.key
                 const active = index === activeIndex
-                const nodeGuide = guideFor(s.key)
+                const visualState = stepVisualState(step, isCurrent)
+                const nodeGuide = guideFor(step.key)
                 const NodeIcon = nodeGuide?.icon ?? MapTrifold
                 const connectorFilled = index > 0 && steps[index - 1].status === "done"
+                const dateLabel = formatTimelineDate(step, isCurrent, nextSession)
+                const timeLabel = formatTimelineTime(step, isCurrent, nextSession)
 
                 return (
-                  <React.Fragment key={s.key}>
+                  <React.Fragment key={step.key}>
                     {index > 0 ? (
                       <div
                         aria-hidden
                         className={cn(
-                          "mt-5 h-0.5 min-w-4 flex-1 rounded-full transition-colors duration-500",
+                          "mt-7 h-0.5 min-w-4 flex-1 rounded-full transition-colors duration-500",
                           connectorFilled ? "bg-success/60" : "bg-border",
                         )}
                       />
@@ -168,100 +317,123 @@ export function JourneyRail() {
                       }}
                       type="button"
                       role="tab"
-                      id={`journey-node-${s.key}`}
+                      id={`journey-node-${step.key}`}
                       aria-selected={active}
                       aria-controls="journey-step-detail"
                       tabIndex={active ? 0 : -1}
                       onClick={() => setSelectedIndex(index)}
                       onKeyDown={(event) => handleKeyDown(event, index)}
                       className={cn(
-                        "group flex w-[4.5rem] shrink-0 snap-start flex-col items-center gap-1.5 rounded-lg p-1 text-center",
+                        "group flex w-[5.5rem] shrink-0 snap-start flex-col items-center gap-1.5 rounded-lg p-1 text-center",
                         "focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-2",
                       )}
                     >
                       <span
                         className={cn(
                           "flex items-center justify-center rounded-full border-2 transition-all duration-250",
-                          done && "h-10 w-10 border-success/50 bg-success/10 text-success",
-                          current && !done && "border-primary bg-primary text-primary-foreground shadow-primary-glow h-12 w-12",
-                          !done && !current && "border-border bg-muted/40 text-muted-foreground h-10 w-10",
-                          active && !current && "scale-105",
-                          active && current && "scale-105",
+                          nodeStateClasses(visualState, active, isCurrent),
                         )}
                       >
-                        {done ? (
-                          <Check size={18} weight="bold" aria-hidden />
+                        {step.status === "done" ? (
+                          <Check size={isCurrent ? 20 : 18} weight="bold" aria-hidden />
                         ) : (
-                          <NodeIcon size={18} weight={current ? "fill" : "duotone"} aria-hidden />
+                          <NodeIcon size={isCurrent ? 22 : 18} weight={isCurrent ? "fill" : "duotone"} aria-hidden />
                         )}
                       </span>
                       <span
                         className={cn(
                           "text-[11px] leading-tight font-medium",
-                          active ? "text-foreground" : "text-muted-foreground",
+                          isCurrent || active ? "text-foreground" : "text-muted-foreground",
                         )}
                       >
-                        {nodeGuide?.shortLabel ?? s.label}
+                        {timelineLabelFor(step, isCurrent, nextSession)}
                       </span>
+                      {dateLabel ? (
+                        <span className="text-muted-foreground text-[10px] leading-tight tabular-nums">{dateLabel}</span>
+                      ) : null}
+                      {timeLabel ? (
+                        <span className="text-muted-foreground text-[10px] leading-tight tabular-nums">{timeLabel}</span>
+                      ) : null}
                       <span className="sr-only">
-                        {done ? "recorded" : current ? "in progress" : "waiting"}
+                        {step.status === "done" ? "completed" : isCurrent ? "current step" : "upcoming"}
                       </span>
                     </button>
                   </React.Fragment>
                 )
               })}
             </div>
+          ) : null}
 
+          {journeyQuery.isSuccess && currentStep && currentStep.status === "done" ? (
+            <CompletedStepDetail
+              step={currentStep}
+              expanded={expandedDoneKey === currentStep.key}
+              onToggle={() =>
+                setExpandedDoneKey((key) => (key === currentStep.key ? null : currentStep.key))
+              }
+            />
+          ) : null}
+
+          {journeyQuery.isSuccess && currentStep && currentStep.status === "pending" ? (
             <div
-              key={step.key}
               id="journey-step-detail"
               role="tabpanel"
-              aria-labelledby={`journey-node-${step.key}`}
-              className={cn(
-                "animate-in fade-in slide-in-from-bottom-2 rounded-xl border p-4 duration-300 md:p-5",
-                isCurrent
-                  ? "border-primary/35 bg-primary/5 shadow-e1"
-                  : isDone
-                    ? "border-success/25 bg-success/5"
-                    : "border-border/70 bg-card",
-              )}
+              aria-labelledby={`journey-node-${currentStep.key}`}
+              className="animate-in fade-in slide-in-from-bottom-2 space-y-2 duration-300"
             >
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="min-w-0 space-y-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-heading text-base font-semibold tracking-tight md:text-lg">{step.label}</h3>
-                    {isDone ? (
-                      <Badge className="border-success/25 bg-success/15 text-success">Recorded</Badge>
-                    ) : isCurrent ? (
-                      <Badge variant="default">In progress</Badge>
-                    ) : (
-                      <Badge variant="secondary">Waiting</Badge>
-                    )}
-                  </div>
-                  {guide?.meaning ? (
-                    <p className="text-muted-foreground text-sm leading-relaxed">{guide.meaning}</p>
-                  ) : null}
-                  <p className="text-foreground text-sm leading-relaxed">
-                    <span className="font-medium">{isDone ? "What we logged: " : "What to do: "}</span>
-                    {isDone ? (guide?.whenDone ?? "Completed.") : (guide?.whenPending ?? "Complete earlier steps first.")}
-                  </p>
-                  {formatStepTimestamp(step) ? (
-                    <p className="text-muted-foreground text-xs tabular-nums">
-                      <span className="text-foreground/80 font-medium">Recorded: </span>
-                      {formatStepTimestamp(step)}
-                    </p>
-                  ) : null}
-                </div>
-                {cta && isCurrent ? (
-                  <Button asChild size="sm" className="press w-full shrink-0 gap-1 sm:w-auto sm:self-center">
-                    <Link href={cta.href}>{cta.label}</Link>
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant="default">In progress</Badge>
+                {ctaForStep(currentStep) ? (
+                  <Button asChild variant="link" size="sm" className="h-auto px-0">
+                    <Link href={ctaForStep(currentStep)!.href}>{ctaForStep(currentStep)!.label}</Link>
                   </Button>
                 ) : null}
               </div>
             </div>
-          </>
-        ) : null}
-      </CardContent>
-    </Card>
+          ) : null}
+        </CardContent>
+      </Card>
+
+      <JourneyCurrentStepCard
+        step={nextPending ?? currentStep ?? null}
+        nextSession={nextSession}
+        loading={sessionLoading}
+        error={sessionError}
+        onRetry={onSessionRetry}
+      />
+
+      <Card className="dashboard-card rounded-2xl shadow-e1">
+        <CardHeader className="pb-3">
+          <h3 className="font-heading text-lg font-semibold">Coming next</h3>
+          <CardDescription className="text-sm">
+            {upcoming.length > 0
+              ? "Upcoming milestones after your current step."
+              : "Your session will appear here after booking."}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {upcoming.length === 0 ? (
+            <p className="text-muted-foreground text-sm">Nothing to do right now.</p>
+          ) : (
+            upcoming.map((step) => {
+              const guide = guideFor(step.key)
+              return (
+                <div
+                  key={step.key}
+                  className="border-border/70 flex items-start justify-between gap-3 rounded-xl border bg-card p-3"
+                >
+                  <div className="min-w-0">
+                    <p className="text-foreground text-sm font-medium">{guide?.timelineLabel ?? step.label}</p>
+                    <p className="text-muted-foreground text-xs">{guide?.upcomingHint ?? "After earlier steps"}</p>
+                  </div>
+                  <Badge variant="secondary">Upcoming</Badge>
+                </div>
+              )
+            })
+          )}
+          <JourneyQuickActions showInvoiceAction={showInvoiceAction} />
+        </CardContent>
+      </Card>
+    </div>
   )
 }

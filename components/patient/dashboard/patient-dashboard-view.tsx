@@ -3,7 +3,6 @@
 import { BillingSnapshotCard } from "@/components/patient/dashboard/billing-snapshot-card"
 import { DashboardSummaryCards } from "@/components/patient/dashboard/dashboard-summary-cards"
 import { DashboardWelcomeSection } from "@/components/patient/dashboard/dashboard-welcome-section"
-import { NextSessionHero } from "@/components/patient/dashboard/next-session-hero"
 import { ResourceRecommendationsCard } from "@/components/patient/dashboard/resource-recommendations-card"
 import { JourneyRail } from "@/components/patient/journey/journey-rail"
 import { PatientTelehealth101Cta } from "@/components/tutorials/patient-telehealth-101-cta"
@@ -76,7 +75,13 @@ export function PatientDashboardView() {
 
       {!hideJourneyRail ? (
         <div className="dashboard-section">
-          <JourneyRail />
+          <JourneyRail
+            nextSession={snapshot?.nextSession ?? null}
+            sessionLoading={loading}
+            sessionError={error}
+            onSessionRetry={handleRetry}
+            showInvoiceAction={(snapshot?.billing.invoiceCount ?? 0) > 0}
+          />
         </div>
       ) : journeyQuery.isSuccess && journeyTotal > 0 ? (
         <Card className="dashboard-card rounded-2xl border-success/25 bg-success/5 shadow-e1">
@@ -88,15 +93,6 @@ export function PatientDashboardView() {
           </CardContent>
         </Card>
       ) : null}
-
-      <div className="dashboard-section">
-        <NextSessionHero
-          session={snapshot?.nextSession ?? null}
-          loading={loading}
-          error={error}
-          onRetry={handleRetry}
-        />
-      </div>
 
       <div className="dashboard-section grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <ResourceRecommendationsCard items={patientDashboardContent.resources} />
