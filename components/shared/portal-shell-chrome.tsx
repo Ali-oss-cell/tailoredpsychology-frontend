@@ -15,6 +15,10 @@ export const portalOpsSidebarClassName = portalPatientSidebarClassName
 export const portalInsetClassName =
   "flex h-screen min-w-0 flex-1 flex-col overflow-hidden transition-[margin] duration-200 lg:ml-[var(--sidebar-width)] group-data-[state=collapsed]/sidebar-wrapper:lg:ml-[var(--sidebar-width-collapsed)]"
 
+/** Patient portal: sidebar is always expanded on desktop — fixed left offset, no collapse margin. */
+export const portalPatientInsetClassName =
+  "flex h-screen min-w-0 flex-1 flex-col overflow-hidden lg:ml-[var(--sidebar-width)]"
+
 export const portalHeaderClassName =
   "border-border/70 sticky top-0 z-20 shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
 

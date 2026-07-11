@@ -11,7 +11,7 @@ import { PatientHeaderScrollFx } from "@/components/patient/patient-header-scrol
 import { PortalShellSearch } from "@/components/shared/portal-shell-search"
 import {
   portalHeaderClassName,
-  portalInsetClassName,
+  portalPatientInsetClassName,
   portalPatientMainClassName,
   portalPatientSidebarClassName,
   PortalShellMain,
@@ -32,24 +32,10 @@ import {
   SidebarProvider,
   SidebarMobileRouteDismiss,
   SidebarTrigger,
-  useSidebar,
 } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
 import { NavIcon } from "@/src/routes/nav-icons"
 import { getShellNavItems } from "@/src/routes/nav-utils"
-import { TUTORIAL_EXPAND_PATIENT_SIDEBAR } from "@/src/tutorials/events"
-
-function PatientShellTutorialSidebarSync() {
-  const { setOpen } = useSidebar()
-
-  React.useEffect(() => {
-    const expand = () => setOpen(true)
-    window.addEventListener(TUTORIAL_EXPAND_PATIENT_SIDEBAR, expand)
-    return () => window.removeEventListener(TUTORIAL_EXPAND_PATIENT_SIDEBAR, expand)
-  }, [setOpen])
-
-  return null
-}
 
 type PatientShellProps = {
   children: React.ReactNode
@@ -60,18 +46,17 @@ const navItems = getShellNavItems("patient")
 
 export function PatientShell({ children, activeRoute = "dashboard" }: PatientShellProps) {
   return (
-    <SidebarProvider defaultOpen={true} storageKey="patient-sidebar-open">
+    <SidebarProvider defaultOpen={true}>
       <div className="bg-dashboard text-foreground flex h-screen w-full overflow-hidden">
-        <PatientShellTutorialSidebarSync />
         <SidebarMobileRouteDismiss />
         <Sidebar
-          collapsible="icon"
+          collapsible="none"
           mobileTitle="Patient navigation"
           className={cn(portalPatientSidebarClassName, "group/patient-sidebar")}
           data-patient-sidebar
           data-tutorial="shell.sidebar"
         >
-          <SidebarHeader className="group-data-[state=collapsed]/sidebar:mb-3">
+          <SidebarHeader>
             <ClinkSidebarBrand
               dashboardHref="/patient/dashboard"
               portalLabel="Patient Portal"
@@ -87,7 +72,7 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
                     <SidebarMenuButton asChild isActive={item.key === activeRoute}>
                       <Link href={item.href} title={item.label} {...tutorialAttr}>
                         {item.icon ? <NavIcon icon={item.icon} /> : null}
-                        <span className="group-data-[state=collapsed]/sidebar:sr-only">{item.label}</span>
+                        <span>{item.label}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -109,7 +94,7 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
                     data-tutorial="shell.sidebar.book-appointment"
                   >
                     <CalendarPlus size={18} weight="bold" />
-                    <span className="group-data-[state=collapsed]/sidebar:sr-only">Book Appointment</span>
+                    <span>Book Appointment</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -117,7 +102,7 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
                 <SidebarMenuButton asChild>
                   <Link href="/patient/account" title="Settings">
                     <Gear size={18} />
-                    <span className="group-data-[state=collapsed]/sidebar:sr-only">Settings</span>
+                    <span>Settings</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -125,7 +110,7 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
                 <SidebarMenuButton asChild>
                   <Link href="/contact" title="Support">
                     <Question size={18} />
-                    <span className="group-data-[state=collapsed]/sidebar:sr-only">Support</span>
+                    <span>Support</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -133,7 +118,7 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
                 <SidebarMenuButton asChild>
                   <LogoutLink className="flex w-full items-center gap-3">
                     <SignOut size={18} />
-                    <span className="group-data-[state=collapsed]/sidebar:sr-only">Logout</span>
+                    <span>Logout</span>
                   </LogoutLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -141,15 +126,12 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
           </SidebarFooter>
         </Sidebar>
 
-        <SidebarInset className={portalInsetClassName}>
+        <SidebarInset className={portalPatientInsetClassName}>
           <header data-patient-header className={portalHeaderClassName} data-tutorial="shell.header">
             <PatientHeaderScrollFx />
             <div className="flex h-16 items-center justify-between gap-3 px-4 md:px-6">
               <div className="flex min-w-0 flex-1 items-center gap-3">
-                <SidebarTrigger
-                  variant="soft"
-                  className="inline-flex shrink-0"
-                />
+                <SidebarTrigger variant="soft" className="inline-flex shrink-0 lg:hidden" />
                 <Link href="/patient/dashboard" className="shrink-0 lg:hidden" aria-label="Tailored Psychology Patient home">
                   <ClinkLogo alt="" className="size-8" />
                 </Link>
