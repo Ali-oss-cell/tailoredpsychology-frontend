@@ -30,6 +30,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
+  SidebarMobileRouteDismiss,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
@@ -50,8 +51,10 @@ export function PsychologistShell({
   return (
     <SidebarProvider defaultOpen={true} storageKey="clink-sidebar-psychologist">
       <div className="bg-dashboard text-foreground flex h-screen w-full overflow-hidden">
+        <SidebarMobileRouteDismiss />
         <Sidebar
           collapsible="icon"
+          mobileTitle="Psychologist navigation"
           className={cn(portalPsychologistSidebarClassName, "group/psychologist-sidebar")}
           data-psychologist-sidebar
         >
@@ -108,7 +111,7 @@ export function PsychologistShell({
             <PortalHeaderScrollFx headerSelector="[data-psychologist-header]" />
             <div className="flex h-16 items-center justify-between gap-3 px-4 md:px-6">
               <div className="flex min-w-0 flex-1 items-center gap-3">
-                <SidebarTrigger variant="soft" className="hidden shrink-0 lg:inline-flex" />
+                <SidebarTrigger variant="soft" className="inline-flex shrink-0" />
                 <Link href="/psychologist/dashboard" className="shrink-0 lg:hidden" aria-label="Tailored Psychology Psychologist home">
                   <ClinkLogo alt="" className="size-8" />
                 </Link>

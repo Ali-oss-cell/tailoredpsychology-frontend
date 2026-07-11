@@ -38,6 +38,8 @@ export function PortalFormField({
       {React.isValidElement(children)
         ? React.cloneElement(children as React.ReactElement<Record<string, unknown>>, {
             id,
+            required: required ? true : undefined,
+            "aria-required": required ? true : undefined,
             "aria-invalid": error ? true : undefined,
             "aria-describedby": describedBy,
           })

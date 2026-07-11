@@ -3,6 +3,18 @@ export const patientDashboardContent = {
     title: "Hello, Sarah",
     description: "Here's your health journey overview and what's next.",
   },
+  moodOptions: [
+    { emoji: "😔", label: "Low" },
+    { emoji: "😐", label: "Okay" },
+    { emoji: "🙂", label: "Good" },
+    { emoji: "😊", label: "Great" },
+    { emoji: "✨", label: "Excellent" },
+  ],
+  quickActions: [
+    { title: "Book appointment", subtitle: "Schedule your next session", icon: "book" as const },
+    { title: "Message clinic", subtitle: "Open secure chat", icon: "message" as const },
+    { title: "View invoices", subtitle: "Billing and receipts", icon: "invoice" as const },
+  ],
   resources: [
     {
       title: "Morning Grounding Exercise",

@@ -1,16 +1,42 @@
 "use client"
 
 import * as React from "react"
+import { usePathname } from "next/navigation"
 import { Slot } from "radix-ui"
 import { Rows } from "@phosphor-icons/react/dist/ssr"
 
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
+
+const MOBILE_BREAKPOINT_PX = 1024
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = React.useState(false)
+
+  React.useEffect(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+      return
+    }
+
+    const query = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT_PX - 1}px)`)
+    const update = () => setIsMobile(query.matches)
+    update()
+    query.addEventListener("change", update)
+    return () => query.removeEventListener("change", update)
+  }, [])
+
+  return isMobile
+}
 
 type SidebarContextValue = {
   open: boolean
   setOpen: (open: boolean) => void
   toggleSidebar: () => void
   state: "expanded" | "collapsed"
+  isMobile: boolean
+  mobileOpen: boolean
+  setMobileOpen: (open: boolean) => void
+  toggleMobileSidebar: () => void
 }
 
 const SidebarContext = React.createContext<SidebarContextValue | null>(null)
@@ -32,7 +58,9 @@ export function SidebarProvider({
   ...props
 }: SidebarProviderProps) {
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen)
+  const [mobileOpen, setMobileOpen] = React.useState(false)
   const hasLoadedStoredPreference = React.useRef(false)
+  const isMobile = useIsMobile()
   const open = controlledOpen ?? uncontrolledOpen
 
   const setOpen = React.useCallback(
@@ -48,6 +76,10 @@ export function SidebarProvider({
   const toggleSidebar = React.useCallback(() => {
     setOpen(!open)
   }, [open, setOpen])
+
+  const toggleMobileSidebar = React.useCallback(() => {
+    setMobileOpen((current) => !current)
+  }, [])
 
   React.useEffect(() => {
     if (controlledOpen !== undefined || !storageKey || typeof window === "undefined") {
@@ -77,9 +109,24 @@ export function SidebarProvider({
     window.localStorage.setItem(storageKey, open ? "1" : "0")
   }, [controlledOpen, open, storageKey])
 
+  React.useEffect(() => {
+    if (!isMobile) {
+      setMobileOpen(false)
+    }
+  }, [isMobile])
+
   return (
     <SidebarContext.Provider
-      value={{ open, setOpen, toggleSidebar, state: open ? "expanded" : "collapsed" }}
+      value={{
+        open,
+        setOpen,
+        toggleSidebar,
+        state: open ? "expanded" : "collapsed",
+        isMobile,
+        mobileOpen,
+        setMobileOpen,
+        toggleMobileSidebar,
+      }}
     >
       <div className={cn("group/sidebar-wrapper flex min-h-screen w-full", className)} {...props}>
         {children}
@@ -96,10 +143,26 @@ export function useSidebar() {
   return context
 }
 
+/** Closes the mobile drawer after route changes. Mount once inside each portal shell. */
+export function SidebarMobileRouteDismiss() {
+  const pathname = usePathname()
+  const { isMobile, setMobileOpen } = useSidebar()
+
+  React.useEffect(() => {
+    if (isMobile) {
+      setMobileOpen(false)
+    }
+  }, [pathname, isMobile, setMobileOpen])
+
+  return null
+}
+
 type SidebarProps = React.ComponentProps<"aside"> & {
   side?: "left" | "right"
   variant?: "sidebar" | "floating" | "inset"
   collapsible?: "offcanvas" | "icon" | "none"
+  /** Accessible title for the mobile drawer (required for dialog semantics). */
+  mobileTitle?: string
 }
 
 export function Sidebar({
@@ -107,10 +170,22 @@ export function Sidebar({
   children,
   collapsible = "icon",
   variant = "sidebar",
+  mobileTitle = "Navigation",
   ...props
 }: SidebarProps) {
-  const { state } = useSidebar()
+  const { state, isMobile, mobileOpen, setMobileOpen } = useSidebar()
   const collapsed = collapsible === "icon" && state === "collapsed"
+
+  if (isMobile) {
+    return (
+      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+        <SheetContent side="left" className={cn("border-r p-0", className)}>
+          <SheetTitle className="sr-only">{mobileTitle}</SheetTitle>
+          <div className="flex h-full flex-col overflow-y-auto p-5">{children}</div>
+        </SheetContent>
+      </Sheet>
+    )
+  }
 
   return (
     <aside
@@ -154,15 +229,23 @@ type SidebarTriggerProps = React.ComponentProps<"button"> & {
 }
 
 export function SidebarTrigger({ className, variant = "default", ...props }: SidebarTriggerProps) {
-  const { toggleSidebar, open } = useSidebar()
+  const { toggleSidebar, open, isMobile, toggleMobileSidebar, mobileOpen } = useSidebar()
+  const expanded = isMobile ? mobileOpen : open
 
   return (
     <button
       type="button"
       data-slot="sidebar-trigger"
       data-trigger-variant={variant}
-      aria-expanded={open}
-      onClick={toggleSidebar}
+      aria-expanded={expanded}
+      aria-controls="portal-navigation"
+      onClick={() => {
+        if (isMobile) {
+          toggleMobileSidebar()
+          return
+        }
+        toggleSidebar()
+      }}
       className={cn(
         "inline-flex items-center justify-center transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none",
         variant === "default" &&
@@ -183,7 +266,7 @@ export function SidebarTrigger({ className, variant = "default", ...props }: Sid
         )}
         weight="bold"
       />
-      <span className="sr-only">Toggle navigation sidebar</span>
+      <span className="sr-only">{isMobile ? "Open navigation menu" : "Toggle navigation sidebar"}</span>
     </button>
   )
 }
@@ -224,3 +307,4 @@ export function SidebarMenuButton({
   )
 }
 
+export { useIsMobile, MOBILE_BREAKPOINT_PX }

@@ -2,9 +2,13 @@
 
 import { useState } from "react"
 
+import { Receipt } from "@phosphor-icons/react/dist/ssr"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { CardSectionHeading } from "@/components/shared/card-section-heading"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { EmptyState } from "@/components/shared/empty-state"
 import { PortalListRow } from "@/components/shared/portal-list-row"
 import { cn } from "@/lib/utils"
 import { downloadPatientInvoice, type InvoiceSummary } from "@/src/patient/billing/api"
@@ -17,9 +21,12 @@ function InvoiceStatusBadge({ status }: { status: string }) {
     <span
       className={cn(
         "inline-flex rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize",
-        normalized === "paid"
-          ? "border-primary/25 bg-primary/10 text-primary"
-          : "border-border/70 bg-background text-foreground/80",
+        normalized === "paid" && "border-success/30 bg-success/10 text-success",
+        normalized === "pending" && "border-warning/35 bg-warning/10 text-warning",
+        normalized === "overdue" && "border-destructive/35 bg-destructive/10 text-destructive",
+        normalized === "failed" && "border-destructive/40 bg-destructive/15 text-destructive font-semibold",
+        !["paid", "pending", "overdue", "failed"].includes(normalized) &&
+          "border-border/70 bg-background text-foreground/80",
       )}
     >
       {status}
@@ -93,7 +100,7 @@ export function PatientInvoicesSection() {
   return (
     <Card className="dashboard-card interactive-lift">
       <CardHeader className="pb-3">
-        <p className="card-eyebrow">History</p>
+        <CardSectionHeading>History</CardSectionHeading>
         <CardTitle className="text-lg">Invoice history</CardTitle>
         <p className="text-muted-foreground text-xs leading-relaxed">
           Downloads use the file your clinic issues (often PDF or plain text). The saved filename matches what the
@@ -106,10 +113,15 @@ export function PatientInvoicesSection() {
           <DashboardStateBlock variant="error" message={error} onRetry={() => void invoicesQuery.refetch()} />
         ) : null}
         {!isLoading && !error && invoices.length === 0 ? (
-          <DashboardStateBlock variant="empty" message="No invoices yet." />
+          <EmptyState
+            icon={<Receipt size={28} weight="duotone" aria-hidden />}
+            title="No invoices yet"
+            description="When your clinic issues a bill, it will appear here for download."
+          />
         ) : null}
         {!isLoading && !error && invoices.length > 0 ? (
-          <div className="space-y-2">
+          <div className="overflow-x-auto">
+            <div className="min-w-[36rem] space-y-2">
             {invoices.map((invoice) => (
               <InvoiceRow
                 key={invoice.invoiceId}
@@ -118,6 +130,7 @@ export function PatientInvoicesSection() {
                 onDownload={() => void handleDownload(invoice.invoiceId)}
               />
             ))}
+            </div>
           </div>
         ) : null}
       </CardContent>

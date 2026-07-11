@@ -13,6 +13,7 @@ import {
   PortalTextarea,
 } from "@/components/shared/portal-form-field"
 import { PatientPortalPage } from "@/components/patient/patient-portal-page"
+import { CardSectionHeading } from "@/components/shared/card-section-heading"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import {
   emptyPatientContactProfile,
@@ -232,7 +233,7 @@ export function PatientAccountSettings({
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="dashboard-card interactive-lift">
           <CardHeader className="pb-3">
-            <p className="card-eyebrow">Profile</p>
+            <CardSectionHeading level={3}>Profile</CardSectionHeading>
             <CardTitle className="text-lg">Profile</CardTitle>
             {user?.updatedAt ? (
               <p className="text-muted-foreground text-xs">Last updated: {formatDateTimeAu(user.updatedAt)}</p>
@@ -363,7 +364,7 @@ export function PatientAccountSettings({
 
         <Card className="dashboard-card interactive-lift">
           <CardHeader className="pb-3">
-            <p className="card-eyebrow">Security</p>
+            <CardSectionHeading level={3}>Security</CardSectionHeading>
             <CardTitle className="text-lg">Security and Privacy</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">

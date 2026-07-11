@@ -28,6 +28,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
+  SidebarMobileRouteDismiss,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
@@ -70,8 +71,10 @@ export function OpsShell({ children, activeRoute }: OpsShellProps) {
   return (
     <SidebarProvider defaultOpen={true} storageKey="clink-sidebar-ops">
       <div className="bg-dashboard text-foreground flex h-screen w-full overflow-hidden">
+        <SidebarMobileRouteDismiss />
         <Sidebar
           collapsible="icon"
+          mobileTitle="Operations navigation"
           className={cn(portalOpsSidebarClassName, "group/ops-sidebar")}
           data-ops-sidebar
         >
@@ -127,7 +130,7 @@ export function OpsShell({ children, activeRoute }: OpsShellProps) {
             <PortalHeaderScrollFx headerSelector="[data-ops-header]" />
             <div className="flex h-16 items-center justify-between gap-3 px-4 md:px-6">
               <div className="flex min-w-0 flex-1 items-center gap-3">
-                <SidebarTrigger variant="soft" className="hidden shrink-0 lg:inline-flex" />
+                <SidebarTrigger variant="soft" className="inline-flex shrink-0" />
                 <Link href={opsDashboardHref} className="flex shrink-0 items-center gap-2 lg:hidden" aria-label="Tailored Psychology Operations home">
                   <ClinkLogo alt="" className="size-8" />
                   <span className="text-muted-foreground text-sm font-semibold tracking-tight">Ops</span>

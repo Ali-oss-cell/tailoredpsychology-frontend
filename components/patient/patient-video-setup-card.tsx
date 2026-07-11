@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { CardSectionHeading } from "@/components/shared/card-section-heading"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -47,7 +48,7 @@ export function PatientVideoSetupCard() {
   return (
     <Card className="dashboard-card interactive-lift">
       <CardHeader className="pb-3">
-        <p className="card-eyebrow">Device check</p>
+        <CardSectionHeading>Device check</CardSectionHeading>
         <CardTitle>Video setup check</CardTitle>
         <CardDescription>
           Test your camera, microphone, and a quick network hint. Nothing is recorded; we only request permission

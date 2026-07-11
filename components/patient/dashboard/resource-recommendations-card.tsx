@@ -5,6 +5,7 @@ import Link from "next/link"
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr"
 
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { CardSectionHeading } from "@/components/shared/card-section-heading"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
@@ -25,7 +26,7 @@ export function ResourceRecommendationsCard({ items }: ResourceRecommendationsCa
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
         <div>
-          <p className="card-eyebrow">For you</p>
+          <CardSectionHeading level={3}>For you</CardSectionHeading>
           <h3 className="font-heading text-lg font-semibold tracking-tight md:text-xl">Recommended</h3>
         </div>
         <Link

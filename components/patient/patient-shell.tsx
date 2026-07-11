@@ -30,6 +30,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
+  SidebarMobileRouteDismiss,
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar"
@@ -62,8 +63,10 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
     <SidebarProvider defaultOpen={true} storageKey="patient-sidebar-open">
       <div className="bg-dashboard text-foreground flex h-screen w-full overflow-hidden">
         <PatientShellTutorialSidebarSync />
+        <SidebarMobileRouteDismiss />
         <Sidebar
           collapsible="icon"
+          mobileTitle="Patient navigation"
           className={cn(portalPatientSidebarClassName, "group/patient-sidebar")}
           data-patient-sidebar
           data-tutorial="shell.sidebar"
@@ -129,7 +132,7 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
               <div className="flex min-w-0 flex-1 items-center gap-3">
                 <SidebarTrigger
                   variant="soft"
-                  className="hidden shrink-0 lg:inline-flex"
+                  className="inline-flex shrink-0"
                 />
                 <Link href="/patient/dashboard" className="shrink-0 lg:hidden" aria-label="Tailored Psychology Patient home">
                   <ClinkLogo alt="" className="size-8" />

@@ -4,36 +4,21 @@ import * as React from "react"
 import { Clock } from "@phosphor-icons/react"
 
 import { CompactDatePicker, dateKey as toYmdKey } from "@/components/patient/booking/compact-date-picker"
+import {
+  NATIVE_DATETIME_MINUTE_STEPS,
+  combineDatetimeLocal,
+  formatHourLabel,
+  nativeDatetimeRowClassName,
+  nativeDatetimeSelectClassName,
+  nextDateKey,
+  pad2,
+  parseDatetimeLocal,
+  snapTimeUp,
+} from "@/components/shared/native-datetime-picker"
 import { australianEasternTimezoneLabel } from "@/src/lib/format-au"
 import { RESCHEDULE_MAX_DAYS, RESCHEDULE_MIN_LEAD_MS } from "@/src/patient/booking/reschedule-policy"
 
-const MINUTE_STEPS = [0, 15, 30, 45] as const
-
-function pad2(n: number): string {
-  return `${n}`.padStart(2, "0")
-}
-
-function parseDatetimeLocal(value: string): { dateKey: string; hour: number; minute: number } | null {
-  const m = /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})$/.exec(value.trim())
-  if (!m) return null
-  const hour = Number(m[2])
-  const minute = Number(m[3])
-  if (!Number.isFinite(hour) || !Number.isFinite(minute)) return null
-  return { dateKey: m[1], hour, minute }
-}
-
-function combineDatetimeLocal(dateKey: string, hour: number, minute: number): string {
-  return `${dateKey}T${pad2(hour)}:${pad2(minute)}`
-}
-
-function snapTimeUp(hour: number, minute: number): [number, number] {
-  const total = hour * 60 + minute
-  const snapped = Math.ceil(total / 15) * 15
-  if (snapped >= 24 * 60) return [23, 45]
-  const nh = Math.floor(snapped / 60)
-  const nm = snapped % 60
-  return [nh, nm]
-}
+const MINUTE_STEPS = NATIVE_DATETIME_MINUTE_STEPS
 
 function minAllowedMsForDate(dayKey: string, now: Date): number {
   const today = toYmdKey(now)
@@ -56,25 +41,6 @@ function firstAllowedQuarter(dayKey: string, now: Date): [number, number] | null
   }
   return null
 }
-
-function nextDateKey(dk: string): string {
-  const d = new Date(`${dk}T12:00:00`)
-  d.setDate(d.getDate() + 1)
-  return toYmdKey(d)
-}
-
-function formatHourLabel(h: number): string {
-  if (h === 0) return "12 AM"
-  if (h < 12) return `${h} AM`
-  if (h === 12) return "12 PM"
-  return `${h - 12} PM`
-}
-
-const rowClass =
-  "border-border/70 grid gap-2 rounded-xl border border-border/60 bg-muted/20 p-3 sm:grid-cols-[1fr_auto] sm:items-end"
-
-const selectClass =
-  "border-border focus-visible:ring-ring bg-background h-9 w-full rounded-md border px-2 text-sm outline-none transition-colors focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-60"
 
 export type RescheduleDatetimeFieldProps = {
   id?: string
@@ -165,7 +131,7 @@ export function RescheduleDatetimeField({ id, value, onChange, disabled }: Resch
 
   return (
     <div className="space-y-2">
-      <div className={rowClass}>
+      <div className={nativeDatetimeRowClassName}>
         <CompactDatePicker
           id={id ? `${id}-date` : undefined}
           label="New date"
@@ -181,7 +147,7 @@ export function RescheduleDatetimeField({ id, value, onChange, disabled }: Resch
           <div className="flex gap-2">
             <select
               aria-label="Hour"
-              className={selectClass}
+              className={nativeDatetimeSelectClassName}
               disabled={disabled}
               value={hour}
               onChange={(e) => {
@@ -200,7 +166,7 @@ export function RescheduleDatetimeField({ id, value, onChange, disabled }: Resch
             </select>
             <select
               aria-label="Minutes"
-              className={`${selectClass} max-w-[4.5rem]`}
+              className={`${nativeDatetimeSelectClassName} max-w-[4.5rem]`}
               disabled={disabled}
               value={minute}
               onChange={(e) => {

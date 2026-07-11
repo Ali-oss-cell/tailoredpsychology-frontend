@@ -3,6 +3,8 @@
 import * as React from "react"
 import { CalendarBlank, CaretLeft, CaretRight } from "@phosphor-icons/react"
 
+import { dateKeyFromDate } from "@/components/shared/native-datetime-picker"
+
 function monthStart(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), 1)
 }
@@ -12,10 +14,7 @@ function shiftMonth(date: Date, offset: number): Date {
 }
 
 export function dateKey(date: Date): string {
-  const y = date.getFullYear()
-  const m = `${date.getMonth() + 1}`.padStart(2, "0")
-  const d = `${date.getDate()}`.padStart(2, "0")
-  return `${y}-${m}-${d}`
+  return dateKeyFromDate(date)
 }
 
 function monthGridDays(currentMonth: Date): Date[] {

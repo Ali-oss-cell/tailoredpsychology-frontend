@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { CardSectionHeading } from "@/components/shared/card-section-heading"
 import { EmptyState, EmptyStateAction } from "@/components/shared/empty-state"
 import { PortalListRow } from "@/components/shared/portal-list-row"
 import { useUrlSearchQuery } from "@/components/shared/use-url-search-query"
@@ -94,7 +95,7 @@ export function PatientAppointmentsSection() {
     <>
       <Card className="dashboard-card interactive-lift">
         <CardHeader className="pb-3">
-          <p className="card-eyebrow">Schedule</p>
+          <CardSectionHeading>Schedule</CardSectionHeading>
           <CardTitle className="text-lg">Upcoming appointments</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -168,7 +169,7 @@ export function PatientAppointmentsSection() {
 
       <Card className="dashboard-card interactive-lift">
         <CardHeader className="pb-3">
-          <p className="card-eyebrow">History</p>
+          <CardSectionHeading>History</CardSectionHeading>
           <CardTitle className="text-lg">Recent sessions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">

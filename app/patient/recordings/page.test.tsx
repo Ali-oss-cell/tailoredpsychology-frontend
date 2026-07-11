@@ -20,6 +20,11 @@ jest.mock("@/components/patient/patient-portal-page", () => ({
 jest.mock("@/src/auth/current-user", () => ({
   getCurrentUser: jest.fn().mockResolvedValue({ id: "user_patient_001", role: "patient" }),
 }))
+jest.mock("@/src/patient/care-team/api", () => ({
+  getMyCareTeam: jest.fn().mockResolvedValue([
+    { clinicianId: "clinician_001", displayName: "Dr. Alex Chen" },
+  ]),
+}))
 jest.mock("@/src/psychologist/videos/api", () => ({
   getPatientSessionVideos: jest.fn().mockResolvedValue([
     {
@@ -39,13 +44,28 @@ jest.mock("@/src/psychologist/videos/api", () => ({
 }))
 
 describe("PatientRecordingsPage", () => {
-  it("requests tokenized access before opening download", async () => {
+  it("shows human-readable session labels and requests tokenized access", async () => {
     const openSpy = jest.spyOn(window, "open").mockImplementation(() => null)
     render(<PatientRecordingsPage />)
-    const button = await screen.findByRole("button", { name: "Request access" })
+    expect(await screen.findByText(/Session with Dr\. Alex Chen/i)).toBeInTheDocument()
+    const button = screen.getByRole("button", { name: "Request access" })
     fireEvent.click(button)
     await waitFor(() => expect(requestAccessMock).toHaveBeenCalledWith("video_appt_open_001"))
     await waitFor(() => expect(openSpy).toHaveBeenCalled())
     openSpy.mockRestore()
+  })
+
+  it("disables request button while access is in flight", async () => {
+    requestAccessMock.mockImplementationOnce(
+      () => new Promise((resolve) => setTimeout(() => resolve({
+        videoId: "video_appt_open_001",
+        canDownload: false,
+        denialReason: "Denied",
+      }), 100)),
+    )
+    render(<PatientRecordingsPage />)
+    const button = await screen.findByRole("button", { name: "Request access" })
+    fireEvent.click(button)
+    expect(screen.getByRole("button", { name: "Requesting…" })).toBeDisabled()
   })
 })

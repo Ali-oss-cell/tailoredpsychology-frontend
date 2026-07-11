@@ -4,6 +4,7 @@ import Link from "next/link"
 import { ArrowRight, Receipt } from "@phosphor-icons/react/dist/ssr"
 
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
+import { CardSectionHeading } from "@/components/shared/card-section-heading"
 import { EmptyState } from "@/components/shared/empty-state"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -39,7 +40,7 @@ export function BillingSnapshotCard({
   return (
     <Card className="dashboard-card interactive-lift rounded-2xl shadow-e1">
       <CardHeader className="flex flex-row items-center justify-between pb-3">
-        <p className="card-eyebrow">Billing</p>
+        <CardSectionHeading level={3}>Billing</CardSectionHeading>
         <Link
           href="/patient/invoices"
           className="text-primary inline-flex items-center gap-1 text-xs font-medium underline-offset-2 hover:underline"

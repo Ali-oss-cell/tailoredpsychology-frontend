@@ -27,7 +27,7 @@ export function DashboardPageHeader({
       )}
     >
       <div className="min-w-0 space-y-2">
-        {eyebrow ? <p className="card-eyebrow">{eyebrow}</p> : null}
+        {eyebrow ? <h2 className="card-eyebrow">{eyebrow}</h2> : null}
         <h1
           className={cn(
             "font-heading text-2xl font-semibold tracking-tight md:text-[2rem] md:leading-tight",

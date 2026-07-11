@@ -82,6 +82,10 @@
 
 Patient portal dashboard + shell chrome — see **[DASHBOARD_UI_REFACTOR.md](./DASHBOARD_UI_REFACTOR.md)** for design principles, token mapping, and phased rollout (Phases 2–4: psychologist, ops/admin, forms polish).
 
+## Patient experience refactor (Top 20)
+
+Full audit plan and implementation checklist — see **[REFACTOR_PLAN.md](./REFACTOR_PLAN.md)** (mirrors repo-root `refactor.md`). Completed 2026-07-11: mobile nav drawer, contrast fix, patient route boundaries, dashboard cards, recordings/data-requests polish, and shared form primitives.
+
 ## Commits
 
 Committed and pushed 2026-07-11.

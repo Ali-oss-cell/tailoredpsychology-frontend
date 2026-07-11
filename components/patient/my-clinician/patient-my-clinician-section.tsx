@@ -4,6 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 
 import { ClinicianPublicProfileHeader } from "@/components/shared/clinician-public-profile-header"
+import { CardSectionHeading } from "@/components/shared/card-section-heading"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { EmptyState, EmptyStateAction } from "@/components/shared/empty-state"
 import { PortalListRow } from "@/components/shared/portal-list-row"
@@ -148,7 +149,7 @@ export function PatientMyClinicianSection() {
               return (
                 <Card key={clinician.clinicianId} className="dashboard-card interactive-lift border-border/70">
                   <CardHeader className="pb-2">
-                    <p className="card-eyebrow">Clinician</p>
+                    <CardSectionHeading level={3}>Clinician</CardSectionHeading>
                     <ClinicianPublicProfileHeader
                       density="care"
                       name={clinician.displayName}
@@ -181,7 +182,7 @@ export function PatientMyClinicianSection() {
                     {appointmentLists ? (
                       <>
                         <div className="space-y-2">
-                          <p className="text-foreground font-medium">Upcoming</p>
+                          <h3 className="text-foreground font-medium">Upcoming</h3>
                           {upcoming.length === 0 ? (
                             <EmptyState
                               className="px-4 py-5"
@@ -224,7 +225,7 @@ export function PatientMyClinicianSection() {
                         </div>
 
                         <div className="space-y-2">
-                          <p className="text-foreground font-medium">Recent sessions</p>
+                          <h3 className="text-foreground font-medium">Recent sessions</h3>
                           {past.length === 0 ? (
                             <EmptyState
                               className="px-4 py-5"
