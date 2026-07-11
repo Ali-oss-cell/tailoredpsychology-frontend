@@ -19,7 +19,7 @@ export function BookingActions({
   return (
     <div
       className={cn(
-        "border-border/50 bg-card/95 supports-[backdrop-filter]:bg-card/90 -mx-6 flex flex-wrap justify-end gap-3 border-t px-6 py-4 backdrop-blur-sm",
+        "border-border/50 bg-card/95 supports-[backdrop-filter]:bg-card/90 -mx-4 flex flex-wrap justify-end gap-3 border-t px-4 py-4 backdrop-blur-sm md:-mx-6 md:px-6",
         "sticky bottom-0 z-10 md:relative md:bottom-auto md:bg-muted/15 md:backdrop-blur-none",
       )}
     >

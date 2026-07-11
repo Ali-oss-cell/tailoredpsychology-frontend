@@ -70,6 +70,35 @@ type GetAvailabilityParams = {
 
 const DEFAULT_API_BASE = "http://localhost:3001/api"
 
+export class ApiRequestError extends Error {
+  readonly status: number
+
+  constructor(message: string, status: number) {
+    super(message)
+    this.name = "ApiRequestError"
+    this.status = status
+  }
+}
+
+async function readApiErrorMessage(response: Response, fallback: string): Promise<string> {
+  try {
+    const body = (await response.json()) as { message?: string | string[] }
+    if (body.message) {
+      return Array.isArray(body.message) ? body.message.join(", ") : body.message
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return fallback
+}
+
+async function assertApiOk(response: Response, fallback: string): Promise<void> {
+  if (!response.ok) {
+    const detail = await readApiErrorMessage(response, `${fallback} (${response.status})`)
+    throw new ApiRequestError(detail, response.status)
+  }
+}
+
 const DEMO_ROLE_CREDENTIALS: Record<string, { email: string; password: string }> = {
   patient: { email: "patient@clink.test", password: "Patient123!" },
   psychologist: { email: "psychologist@clink.test", password: "Psych123!" },
@@ -290,10 +319,7 @@ export async function getClinicianAvailability(
     cache: "no-store",
   })
 
-  if (!response.ok) {
-    throw new Error(`Availability API failed (${response.status})`)
-  }
-
+  await assertApiOk(response, "We could not load clinician availability. Please try again.")
   return (await response.json()) as ClinicianAvailabilityResponse[]
 }
 
@@ -308,10 +334,7 @@ export async function createBookingRequest(
     cache: "no-store",
   })
 
-  if (!response.ok) {
-    throw new Error(`Create booking request failed (${response.status})`)
-  }
-
+  await assertApiOk(response, "We could not create your booking request. Please try again.")
   return (await response.json()) as BookingRequestCreatedResponse
 }
 
@@ -346,16 +369,8 @@ export async function createBookingCheckout(bookingRequestId: string): Promise<B
   })
 
   if (!response.ok) {
-    let detail = `Payment checkout failed (${response.status})`
-    try {
-      const body = (await response.json()) as { message?: string | string[] }
-      if (body.message) {
-        detail = Array.isArray(body.message) ? body.message.join(", ") : body.message
-      }
-    } catch {
-      // ignore parse errors
-    }
-    throw new Error(detail)
+    const detail = await readApiErrorMessage(response, `Payment checkout failed (${response.status})`)
+    throw new ApiRequestError(detail, response.status)
   }
 
   return (await response.json()) as BookingCheckoutResponse
@@ -385,7 +400,8 @@ export async function uploadReferralDocument(params: {
   })
 
   if (!response.ok) {
-    throw new Error(`Referral upload failed (${response.status})`)
+    const detail = await readApiErrorMessage(response, `Referral upload failed (${response.status})`)
+    throw new ApiRequestError(detail, response.status)
   }
 
   return (await response.json()) as ReferralDocumentResponse
@@ -587,7 +603,8 @@ export async function saveIntakeDraftDelta(params: {
     cache: "no-store",
   })
   if (!response.ok) {
-    throw new Error(`Save intake draft failed (${response.status})`)
+    const detail = await readApiErrorMessage(response, `Save intake draft failed (${response.status})`)
+    throw new ApiRequestError(detail, response.status)
   }
   return (await response.json()) as IntakeDraftSaveResponse
 }

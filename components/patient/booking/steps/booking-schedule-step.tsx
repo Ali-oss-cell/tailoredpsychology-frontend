@@ -21,6 +21,7 @@ export function BookingScheduleStep() {
   const {
     draft,
     updateDraft,
+    fieldErrors,
     bookingEligibility,
     matchSource,
     preselectedClinicianName,
@@ -85,34 +86,51 @@ export function BookingScheduleStep() {
           </Button>
         </div>
       ) : null}
-      <div className="grid gap-3 md:grid-cols-2">
-        {liveClinicians.map((clinician) => {
-          const selected = draft.scheduleSelection.selectedClinicianId === clinician.id
-          return (
-            <ClinicianBookingOptionCard
-              key={clinician.id}
-              name={clinician.name}
-              specialtyLine={clinician.specialty}
-              bio={clinician.bio}
-              profileImageUrl={clinician.profileImageUrl}
-              nextAvailableLabel={clinician.nextAvailable}
-              selected={selected}
-              onSelect={() =>
-                updateDraft("scheduleSelection", {
-                  ...draft.scheduleSelection,
-                  selectedClinicianId: clinician.id,
-                  selectedSlotId: "",
-                })
-              }
-            />
-          )
-        })}
-      </div>
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] xl:items-start">
+        <div id="booking-clinician" className="space-y-3">
+          <label className="text-sm font-medium">Choose a clinician</label>
+          {fieldErrors.selectedClinicianId ? (
+            <p className="text-destructive text-xs" role="alert">
+              {fieldErrors.selectedClinicianId}
+            </p>
+          ) : null}
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-1">
+            {liveClinicians.map((clinician) => {
+              const selected = draft.scheduleSelection.selectedClinicianId === clinician.id
+              return (
+                <ClinicianBookingOptionCard
+                  key={clinician.id}
+                  name={clinician.name}
+                  specialtyLine={clinician.specialty}
+                  bio={clinician.bio}
+                  profileImageUrl={clinician.profileImageUrl}
+                  nextAvailableLabel={clinician.nextAvailable}
+                  selected={selected}
+                  onSelect={() =>
+                    updateDraft("scheduleSelection", {
+                      ...draft.scheduleSelection,
+                      selectedClinicianId: clinician.id,
+                      selectedSlotId: "",
+                    })
+                  }
+                />
+              )
+            })}
+          </div>
+        </div>
 
-      <div className="space-y-3">
-        <label className="text-sm font-medium">Choose date (monthly schedule)</label>
-        <div className="dashboard-card rounded-dashboard-card p-4 md:p-5">
-          <div className="mb-3 flex items-center justify-between">
+        <div className="space-y-4">
+          <div className="space-y-3">
+            <label className="text-sm font-medium" id="booking-date">
+              Choose date (monthly schedule)
+            </label>
+            {fieldErrors.selectedDate ? (
+              <p className="text-destructive text-xs" role="alert">
+                {fieldErrors.selectedDate}
+              </p>
+            ) : null}
+            <div className="dashboard-card rounded-dashboard-card p-4 md:p-5">
+              <div className="mb-3 flex items-center justify-between">
             <button
               type="button"
               onClick={() => setCalendarMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))}
@@ -170,38 +188,45 @@ export function BookingScheduleStep() {
               )
             })}
           </div>
-        </div>
-      </div>
-
-      {draft.scheduleSelection.selectedDate ? (
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Choose available slot</label>
-          <div className="flex flex-wrap gap-2">
-            {availableSlotsForDate(draft.scheduleSelection.selectedDate).map((slot) => (
-              <button
-                key={slot.id}
-                type="button"
-                onClick={() =>
-                  updateDraft("scheduleSelection", {
-                    ...draft.scheduleSelection,
-                    selectedSlotId: slot.id,
-                  })
-                }
-                className={`min-h-10 rounded-full border px-4 py-2 text-sm sm:min-h-11 ${
-                  draft.scheduleSelection.selectedSlotId === slot.id
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-background"
-                }`}
-              >
-                {slot.label}
-              </button>
-            ))}
+            </div>
           </div>
-          {draft.scheduleSelection.selectedSlotId ? (
-            <p className="text-muted-foreground text-xs">{bookingContent.helper.slotHold}</p>
+
+          {draft.scheduleSelection.selectedDate ? (
+            <div className="space-y-2" id="booking-slot">
+              <label className="text-sm font-medium">Choose available slot</label>
+              {fieldErrors.selectedSlotId ? (
+                <p className="text-destructive text-xs" role="alert">
+                  {fieldErrors.selectedSlotId}
+                </p>
+              ) : null}
+              <div className="flex flex-wrap gap-2">
+                {availableSlotsForDate(draft.scheduleSelection.selectedDate).map((slot) => (
+                  <button
+                    key={slot.id}
+                    type="button"
+                    onClick={() =>
+                      updateDraft("scheduleSelection", {
+                        ...draft.scheduleSelection,
+                        selectedSlotId: slot.id,
+                      })
+                    }
+                    className={`min-h-10 rounded-full border px-4 py-2 text-sm sm:min-h-11 ${
+                      draft.scheduleSelection.selectedSlotId === slot.id
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-background"
+                    }`}
+                  >
+                    {slot.label}
+                  </button>
+                ))}
+              </div>
+              {draft.scheduleSelection.selectedSlotId ? (
+                <p className="text-muted-foreground text-xs">{bookingContent.helper.slotHold}</p>
+              ) : null}
+            </div>
           ) : null}
         </div>
-      ) : null}
+      </div>
     </div>
   )
 }

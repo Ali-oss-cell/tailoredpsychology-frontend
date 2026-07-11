@@ -43,6 +43,7 @@ export function BookingWizard() {
       }
       eyebrow="Book care"
       tutorialId="patient.page.book-appointment"
+      className="space-y-5 pb-2"
     >
       {wizard.paymentCancelled ? (
         <div className="border-warning/40 bg-warning/10 text-warning-foreground rounded-lg border p-4 text-sm">
@@ -52,10 +53,10 @@ export function BookingWizard() {
       ) : null}
       <BookingWizardProvider value={wizard.contextValue}>
         {wizard.activeStep !== "submitted" ? (
-          <div className="space-y-4">
+          <div className="w-full space-y-4">
             <BookingStepper steps={wizard.visibleSteps} currentIndex={wizard.stepIndex} />
-            <Card className="dashboard-card gap-0 overflow-hidden p-0 shadow-e1">
-              <CardHeader className="border-border/50 gap-3 border-b px-6 pt-6 pb-5">
+            <Card className="dashboard-card w-full gap-0 overflow-hidden p-0 shadow-e1">
+              <CardHeader className="border-border/50 gap-3 border-b px-4 pt-5 pb-4 md:px-6 md:pt-6 md:pb-5">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                   <div className="min-w-0 space-y-1">
                     <p className="card-eyebrow">
@@ -79,7 +80,7 @@ export function BookingWizard() {
                   />
                 </div>
               </CardHeader>
-              <CardContent className="space-y-5 px-6 pt-5 pb-0">
+              <CardContent className="space-y-5 px-4 pt-5 pb-0 md:px-6">
                 {wizard.errors.length > 0 ? (
                   <div className="border-destructive/40 bg-destructive/10 text-destructive rounded-xl border p-3 text-xs">
                     <p className="mb-2 flex items-center gap-1 font-medium">

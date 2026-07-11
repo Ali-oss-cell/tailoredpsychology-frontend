@@ -40,11 +40,18 @@ import { getShellNavItems } from "@/src/routes/nav-utils"
 type PatientShellProps = {
   children: React.ReactNode
   activeRoute?: string
+  mainClassName?: string
+  mainContentClassName?: string
 }
 
 const navItems = getShellNavItems("patient")
 
-export function PatientShell({ children, activeRoute = "dashboard" }: PatientShellProps) {
+export function PatientShell({
+  children,
+  activeRoute = "dashboard",
+  mainClassName,
+  mainContentClassName,
+}: PatientShellProps) {
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="bg-dashboard text-foreground flex h-screen w-full overflow-hidden">
@@ -155,7 +162,11 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
               </div>
             </div>
           </header>
-          <PortalShellMain tutorialId="shell.main" className={portalPatientMainClassName}>
+          <PortalShellMain
+            tutorialId="shell.main"
+            className={cn(portalPatientMainClassName, mainClassName)}
+            contentClassName={mainContentClassName}
+          >
             {children}
           </PortalShellMain>
         </SidebarInset>

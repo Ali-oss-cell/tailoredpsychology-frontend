@@ -12,7 +12,7 @@ import { publicPricing } from "@/content/public-pricing"
 import type { BookingRequestDraft } from "@/src/patient/booking/types"
 
 export function BookingMedicareStep() {
-  const { draft, updateDraft } = useBookingWizardContext()
+  const { draft, updateDraft, fieldErrors } = useBookingWizardContext()
 
   if (draft.bookingMeta.bookingType === "follow_up" && draft.bookingMeta.changesSinceLastVisit === "no") {
     return (
@@ -32,7 +32,12 @@ export function BookingMedicareStep() {
         description={bookingContent.helper.medicare}
       />
       <div className="dashboard-card rounded-dashboard-card grid gap-4 p-5 md:grid-cols-2 md:p-6">
-        <PortalFormField id="mhtp-status" label="Mental Health Treatment Plan (MHTP)">
+        <PortalFormField
+          id="medicare-mhtp"
+          label="Mental Health Treatment Plan (MHTP)"
+          error={fieldErrors.hasMhtp}
+          required
+        >
           <PortalSelect
             value={draft.medicarePath.hasMhtp}
             onChange={(event) =>
@@ -41,13 +46,19 @@ export function BookingMedicareStep() {
                 hasMhtp: event.target.value as BookingRequestDraft["medicarePath"]["hasMhtp"],
               })
             }
+            hasError={Boolean(fieldErrors.hasMhtp)}
           >
             <option value="unsure">Not sure yet</option>
             <option value="yes">Yes, I have one</option>
             <option value="no">No, I do not have one</option>
           </PortalSelect>
         </PortalFormField>
-        <PortalFormField id="referral-available" label="Referral available now?">
+        <PortalFormField
+          id="medicare-referral"
+          label="Referral available now?"
+          error={fieldErrors.hasReferral}
+          required
+        >
           <PortalSelect
             value={draft.medicarePath.hasReferral}
             onChange={(event) =>
@@ -56,6 +67,7 @@ export function BookingMedicareStep() {
                 hasReferral: event.target.value as "yes" | "no",
               })
             }
+            hasError={Boolean(fieldErrors.hasReferral)}
           >
             <option value="no">No</option>
             <option value="yes">Yes</option>
@@ -63,7 +75,13 @@ export function BookingMedicareStep() {
         </PortalFormField>
 
         {draft.medicarePath.hasReferral === "yes" ? (
-          <PortalFormField id="referral-type" label="Referral type" className="md:col-span-2">
+          <PortalFormField
+            id="medicare-referral-type"
+            label="Referral type"
+            error={fieldErrors.referralType}
+            required
+            className="md:col-span-2"
+          >
             <PortalSelect
               value={draft.medicarePath.referralType}
               onChange={(event) =>
@@ -72,6 +90,7 @@ export function BookingMedicareStep() {
                   referralType: event.target.value as BookingRequestDraft["medicarePath"]["referralType"],
                 })
               }
+              hasError={Boolean(fieldErrors.referralType)}
             >
               <option value="">Select referral type</option>
               {referralSourceOptions.map((option) => (

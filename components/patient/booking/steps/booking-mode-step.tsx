@@ -44,7 +44,7 @@ export function BookingModeStep() {
           {bookingEligibility.pastAppointmentCount === 1 ? "" : "s"} on file.
         </p>
       ) : null}
-      <div className={`grid gap-4 ${typeOptions.length > 1 ? "md:grid-cols-2" : ""}`}>
+      <div className={`grid gap-4 ${typeOptions.length > 1 ? "md:grid-cols-2" : ""}`} id="booking-type">
         {typeOptions.map((option) => {
           const selected = draft.bookingMeta.bookingType === option.value
           return (

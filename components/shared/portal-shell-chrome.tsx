@@ -34,10 +34,11 @@ export const skipToMainContentClassName =
 type PortalShellMainProps = {
   children: React.ReactNode
   className?: string
+  contentClassName?: string
   tutorialId?: string
 }
 
-export function PortalShellMain({ children, className, tutorialId }: PortalShellMainProps) {
+export function PortalShellMain({ children, className, contentClassName, tutorialId }: PortalShellMainProps) {
   return (
     <>
       <a href="#main" className={skipToMainContentClassName}>
@@ -49,7 +50,7 @@ export function PortalShellMain({ children, className, tutorialId }: PortalShell
         className={cn("flex-1 overflow-y-auto scroll-smooth p-4 md:p-6 lg:p-8", className)}
         data-tutorial={tutorialId}
       >
-        <div className="mx-auto w-full max-w-[1200px]">{children}</div>
+        <div className={cn("mx-auto w-full max-w-[1200px]", contentClassName)}>{children}</div>
       </main>
     </>
   )

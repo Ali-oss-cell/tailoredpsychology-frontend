@@ -18,6 +18,7 @@ import {
   getClinicianAvailability,
   getLatestIntakeDraft,
   saveIntakeDraftDelta,
+  ApiRequestError,
   type BookingRequestStatusResponse,
 } from "@/src/patient/booking/api"
 import {
@@ -284,8 +285,7 @@ export function useBookingWizard() {
           lastSyncedSnapshotRef.current = snapshot
           setRemoteSyncState("saved")
         } catch (error) {
-          const message = error instanceof Error ? error.message : ""
-          setRemoteSyncState(message.includes("409") ? "conflict" : "error")
+          setRemoteSyncState(error instanceof ApiRequestError && error.status === 409 ? "conflict" : "error")
         }
       }
       void sync()
@@ -354,7 +354,7 @@ export function useBookingWizard() {
         setLiveScheduleByDate(toScheduleByDate(payload))
       } catch {
         if (isCancelled) return
-        setScheduleLoadError("Live availability unavailable. Showing local fallback schedule.")
+        setScheduleLoadError("Live availability is unavailable right now. Showing local fallback schedule.")
         setLiveClinicians(mapStaticCliniciansToLiveOptions())
         setLiveScheduleByDate(scheduleByDate)
       } finally {

@@ -46,10 +46,18 @@ export function PatientShellLayout({ children }: { children: React.ReactNode }) 
     }
   }, [activeRoute])
 
+  const isBookingRoute = pathname?.includes("/book-appointment") ?? false
+
   return (
     <>
       <PortalNetworkBanner />
-      <PatientShell activeRoute={activeRoute}>{children}</PatientShell>
+      <PatientShell
+        activeRoute={activeRoute}
+        mainClassName={isBookingRoute ? "p-3 md:p-4 lg:p-5" : undefined}
+        mainContentClassName={isBookingRoute ? "max-w-none" : undefined}
+      >
+        {children}
+      </PatientShell>
     </>
   )
 }

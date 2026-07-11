@@ -71,7 +71,7 @@ export function BookingReviewSummary({
         </p>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         <ReviewSection title="Patient and contact">
           <p>
             {draft.patientIdentity.fullName || "—"} · {draft.patientIdentity.mobile || "—"} ·{" "}
