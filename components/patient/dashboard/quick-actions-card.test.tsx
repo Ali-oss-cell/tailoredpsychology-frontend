@@ -4,19 +4,17 @@ import { QuickActionsCard } from "@/components/patient/dashboard/quick-actions-c
 
 describe("QuickActionsCard", () => {
   const actions = [
-    { title: "Book New Session", subtitle: "Schedule an appointment", icon: "book" as const },
-    { title: "Message Clinic", subtitle: "Secure communication", icon: "message" as const },
-    { title: "View Invoices", subtitle: "Latest billing info", icon: "invoice" as const },
+    { title: "Message clinic", icon: "message" as const },
+    { title: "Test camera & mic", icon: "video" as const },
   ]
 
-  it("wires quick navigation links for booking and invoices", () => {
+  it("wires quick navigation link for video setup", () => {
     render(<QuickActionsCard actions={actions} />)
 
-    expect(screen.getByRole("link", { name: /book new session/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /test camera & mic/i })).toHaveAttribute(
       "href",
-      "/patient/book-appointment",
+      "/patient/video-setup",
     )
-    expect(screen.getByRole("link", { name: /view invoices/i })).toHaveAttribute("href", "/patient/invoices")
   })
 
   it("dispatches open-chat event for message action", () => {
@@ -28,5 +26,10 @@ describe("QuickActionsCard", () => {
 
     expect(eventSpy).toHaveBeenCalledTimes(1)
     window.removeEventListener("clink:open-chat", eventSpy)
+  })
+
+  it("renders nothing when actions are empty", () => {
+    const { container } = render(<QuickActionsCard actions={[]} />)
+    expect(container).toBeEmptyDOMElement()
   })
 })

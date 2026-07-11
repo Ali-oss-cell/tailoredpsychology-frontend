@@ -4,9 +4,8 @@ export const patientDashboardContent = {
     description: "Here's your health journey overview and what's next.",
   },
   quickActions: [
-    { title: "Book appointment", subtitle: "Schedule your next session", icon: "book" as const },
-    { title: "Message clinic", subtitle: "Open secure chat", icon: "message" as const },
-    { title: "View invoices", subtitle: "Billing and receipts", icon: "invoice" as const },
+    { title: "Message clinic", icon: "message" as const },
+    { title: "Test camera & mic", icon: "video" as const },
   ],
   resources: [
     {

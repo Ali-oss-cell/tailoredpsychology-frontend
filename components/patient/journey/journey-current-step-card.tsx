@@ -20,7 +20,6 @@ import { cn } from "@/lib/utils"
 import { formatDateAu, formatTimeAu } from "@/src/lib/format-au"
 import type { PatientNextSession } from "@/src/patient/dashboard/api"
 import { isJoinImminent } from "@/src/patient/dashboard/join-cta"
-import { downloadAppointmentIcs } from "@/src/patient/journey/calendar-ics"
 import { guideFor, resolveJourneyCta } from "@/src/patient/journey/step-guide"
 import type { PatientJourneyStep } from "@/src/patient/journey/api"
 import { joinSessionHref } from "@/src/session/join-session"
@@ -159,21 +158,20 @@ export function JourneyCurrentStepCard({
       )}
       data-tutorial="patient.dashboard.current-step"
     >
-      <CardContent className="space-y-5 p-6 md:p-8">
-        <div className="space-y-2">
-          <h2 className="font-heading text-xl font-semibold tracking-tight md:text-2xl">{title}</h2>
-          <p className="text-muted-foreground text-sm leading-relaxed md:text-base">{status}</p>
-          {countdown && !hero ? <p className="text-primary text-sm font-medium">{countdown}</p> : null}
-          {hero && countdown ? <p className="text-primary text-sm font-medium">{countdown}</p> : null}
+      <CardContent className="space-y-4 p-5 md:p-6">
+        <div className="space-y-1.5">
+          <h2 className="font-heading text-lg font-semibold tracking-tight md:text-xl">{title}</h2>
+          <p className="text-muted-foreground text-sm leading-relaxed">{status}</p>
+          {countdown ? <p className="text-primary text-sm font-medium">{countdown}</p> : null}
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center" data-tutorial="patient.dashboard.join-session">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center" data-tutorial="patient.dashboard.join-session">
           {joinOpen && nextSession ? (
             <Button
               asChild
               size="lg"
               className={cn(
-                "press w-full sm:w-auto",
+                "press w-full rounded-full sm:w-auto",
                 nextSession.window.status === "open" && "join-live-pulse shadow-primary-glow",
               )}
               data-tutorial="patient.dashboard.hero-join"
@@ -186,41 +184,36 @@ export function JourneyCurrentStepCard({
           ) : null}
 
           {!joinOpen && !hero && cta ? (
-            <Button asChild size="lg" className="press w-full sm:w-auto">
+            <Button asChild size="lg" className="press w-full rounded-full sm:w-auto">
               <Link href={cta.href}>{cta.label}</Link>
             </Button>
           ) : null}
 
           {nextSession ? (
             <div className="flex flex-wrap gap-2">
-              <Button asChild variant="outline" size="sm" className="press">
-                <Link href="/patient/video-setup" data-tutorial="patient.dashboard.video-setup-link">
-                  <Microphone size={16} />
-                  Test camera &amp; mic
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="sm" className="press">
+              {joinOpen || hero ? (
+                <Button asChild variant="outline" size="sm" className="press rounded-full">
+                  <Link href="/patient/video-setup" data-tutorial="patient.dashboard.video-setup-link">
+                    <Microphone size={16} />
+                    Test camera &amp; mic
+                  </Link>
+                </Button>
+              ) : null}
+              <Button asChild variant="outline" size="sm" className="press rounded-full">
                 <Link href="/patient/appointments">View appointment</Link>
               </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="press"
-                onClick={() => downloadAppointmentIcs(nextSession)}
-              >
-                <CalendarPlus size={16} />
-                Add to calendar
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="press"
-                aria-expanded={showManage}
-                onClick={() => setShowManage((open) => !open)}
-              >
-                {showManage ? "Close manage" : "Manage"}
-              </Button>
+              {!joinOpen && !hero ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="press rounded-full"
+                  aria-expanded={showManage}
+                  onClick={() => setShowManage((open) => !open)}
+                >
+                  {showManage ? "Close" : "Manage"}
+                </Button>
+              ) : null}
             </div>
           ) : null}
 
@@ -233,7 +226,7 @@ export function JourneyCurrentStepCard({
         </div>
 
         {showManage && nextSession ? (
-          <div className="border-border/60 border-t pt-5">
+          <div className="border-border/60 border-t pt-4">
             <AppointmentManagePanel appointmentId={nextSession.appointmentId} />
           </div>
         ) : null}

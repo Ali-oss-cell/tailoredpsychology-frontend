@@ -69,13 +69,13 @@ export function FirstTimeDashboardHero({ loading = false }: FirstTimeDashboardHe
 
   return (
     <Card
-      className="dashboard-card border-primary/25 bg-gradient-to-br from-primary/[0.08] via-card to-card shadow-e2"
+      className="dashboard-card border-primary/25 bg-gradient-to-br from-primary/[0.08] via-card to-card shadow-e1"
       data-tutorial="patient.dashboard.first-time-hero"
     >
-      <CardContent className="flex flex-col gap-5 p-6 md:flex-row md:items-center md:justify-between md:p-8">
-        <div className="min-w-0 space-y-2">
-          <h2 className="font-heading text-xl font-semibold tracking-tight md:text-2xl">{title}</h2>
-          <p className="text-muted-foreground text-sm leading-relaxed md:text-base">{description}</p>
+      <CardContent className="flex flex-col gap-4 p-5 md:flex-row md:items-center md:justify-between">
+        <div className="min-w-0 space-y-1.5">
+          <h2 className="font-heading text-lg font-semibold tracking-tight md:text-xl">{title}</h2>
+          <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
           {showProgress ? (
             <div className="pt-1">
               <div
@@ -95,7 +95,7 @@ export function FirstTimeDashboardHero({ loading = false }: FirstTimeDashboardHe
             </div>
           ) : null}
         </div>
-        <Button asChild size="lg" className="w-full shrink-0 md:w-auto" data-tutorial="patient.dashboard.hero-book">
+        <Button asChild size="lg" className="w-full shrink-0 rounded-full md:w-auto" data-tutorial="patient.dashboard.hero-book">
           <Link href="/patient/book-appointment">
             {ctaLabel}
             <ArrowRight size={18} aria-hidden />

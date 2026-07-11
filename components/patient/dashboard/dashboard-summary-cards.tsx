@@ -1,11 +1,10 @@
 "use client"
 
-import Link from "next/link"
-import { CalendarBlank, ChatCircle, FileText, Heartbeat, Receipt } from "@phosphor-icons/react/dist/ssr"
+import { ChatCircle, FileText, Heartbeat, Receipt } from "@phosphor-icons/react/dist/ssr"
 
 import {
-  DashboardSummaryCard,
-  DashboardSummaryCardsRow,
+  DashboardSummaryPill,
+  DashboardSummaryPillsRow,
 } from "@/components/shared/dashboard-summary-card"
 
 type DashboardSummaryCardsProps = {
@@ -29,52 +28,47 @@ export function DashboardSummaryCards({
 }: DashboardSummaryCardsProps) {
   const careValue =
     careProgress && careProgress.total > 0
-      ? `${careProgress.done} of ${careProgress.total} steps`
+      ? `${careProgress.done}/${careProgress.total} steps`
       : "Getting started"
 
   const messagesValue =
-    unreadMessages === null ? "—" : unreadMessages === 0 ? "All caught up" : `${unreadMessages} unread`
+    unreadMessages === null ? "—" : unreadMessages === 0 ? "Caught up" : `${unreadMessages} unread`
 
   const documentsValue =
-    documentCount === null ? "Available" : documentCount === 0 ? "None yet" : `${documentCount} available`
+    documentCount === null ? "Available" : documentCount === 0 ? "None yet" : `${documentCount}`
 
-  const billingValue = billingStatus ?? "View billing"
+  const billingValue = billingStatus ?? "Up to date"
 
   return (
-    <DashboardSummaryCardsRow data-tutorial="patient.dashboard.summary-cards">
-      <DashboardSummaryCard
-        title="Care progress"
+    <DashboardSummaryPillsRow data-tutorial="patient.dashboard.summary-cards">
+      <DashboardSummaryPill
+        label="Care"
         value={careValue}
         href="/patient/dashboard#care-journey"
-        linkLabel="View journey"
-        icon={<Heartbeat size={20} weight="duotone" aria-hidden />}
-        progressPct={careProgress?.pct}
+        icon={<Heartbeat size={16} weight="duotone" aria-hidden />}
         loading={loading}
       />
-      <DashboardSummaryCard
-        title="Messages"
+      <DashboardSummaryPill
+        label="Messages"
         value={messagesValue}
-        linkLabel="View messages"
-        icon={<ChatCircle size={20} weight="duotone" aria-hidden />}
+        icon={<ChatCircle size={16} weight="duotone" aria-hidden />}
         onClick={openPatientChat}
         loading={loading}
       />
-      <DashboardSummaryCard
-        title="Documents"
+      <DashboardSummaryPill
+        label="Documents"
         value={documentsValue}
         href="/patient/recordings"
-        linkLabel="View documents"
-        icon={<FileText size={20} weight="duotone" aria-hidden />}
+        icon={<FileText size={16} weight="duotone" aria-hidden />}
         loading={loading}
       />
-      <DashboardSummaryCard
-        title="Billing"
+      <DashboardSummaryPill
+        label="Billing"
         value={billingValue}
         href="/patient/invoices"
-        linkLabel="View billing"
-        icon={<Receipt size={20} weight="duotone" aria-hidden />}
+        icon={<Receipt size={16} weight="duotone" aria-hidden />}
         loading={loading}
       />
-    </DashboardSummaryCardsRow>
+    </DashboardSummaryPillsRow>
   )
 }

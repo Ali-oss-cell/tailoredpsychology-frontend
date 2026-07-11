@@ -39,7 +39,7 @@ export function BillingSnapshotCard({
 }: BillingSnapshotCardProps) {
   return (
     <Card className="dashboard-card rounded-2xl shadow-e1">
-      <CardHeader className="flex flex-row items-center justify-between pb-3">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 px-4 py-3">
         <CardSectionHeading level={3}>Billing</CardSectionHeading>
         <Link
           href="/patient/invoices"
@@ -48,7 +48,7 @@ export function BillingSnapshotCard({
           View all <ArrowRight size={12} />
         </Link>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4 pb-4 pt-0">
         {loading ? (
           <div className="space-y-3" aria-busy="true" aria-label="Loading billing snapshot">
             <Skeleton className="skeleton-shimmer h-8 w-28" />

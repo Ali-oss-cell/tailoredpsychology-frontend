@@ -1,16 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 import {
-  CalendarPlus,
   CaretDown,
   CaretUp,
-  ChatCircle,
   Check,
-  Headset,
   MapTrifold,
-  Receipt,
 } from "@phosphor-icons/react/dist/ssr"
 import * as React from "react"
 
@@ -43,7 +38,6 @@ type JourneyRailProps = {
   sessionLoading?: boolean
   sessionError?: string | null
   onSessionRetry?: () => void
-  showInvoiceAction?: boolean
 }
 
 function nodeStateClasses(state: ReturnType<typeof stepVisualState>, active: boolean, isCurrent: boolean): string {
@@ -63,52 +57,6 @@ function nodeStateClasses(state: ReturnType<typeof stepVisualState>, active: boo
     return "h-10 w-10 border-warning/50 bg-warning/10 text-warning"
   }
   return cn("border-border bg-muted/40 text-muted-foreground h-10 w-10", active && "scale-105")
-}
-
-function JourneyQuickActions({ showInvoiceAction }: { showInvoiceAction: boolean }) {
-  type QuickAction =
-    | { label: string; href: string; icon: typeof Headset }
-    | { label: string; event: "clink:open-chat"; icon: typeof ChatCircle }
-
-  const actions: QuickAction[] = [
-    { label: "Contact clinic", href: "/contact", icon: Headset },
-    { label: "Reschedule", href: "/patient/appointments", icon: CalendarPlus },
-    { label: "Message clinician", event: "clink:open-chat", icon: ChatCircle },
-    ...(showInvoiceAction
-      ? [{ label: "Download invoice", href: "/patient/invoices", icon: Receipt }]
-      : []),
-  ]
-
-  return (
-    <div className="border-border/60 flex flex-wrap gap-2 border-t pt-4" data-tutorial="patient.dashboard.quick-actions">
-      {actions.map((action) => {
-        const Icon = action.icon
-        if ("event" in action) {
-          return (
-            <Button
-              key={action.label}
-              type="button"
-              variant="outline"
-              size="sm"
-              className="press gap-1.5"
-              onClick={() => window.dispatchEvent(new CustomEvent(action.event))}
-            >
-              <Icon size={16} />
-              {action.label}
-            </Button>
-          )
-        }
-        return (
-          <Button key={action.label} asChild variant="outline" size="sm" className="press gap-1.5">
-            <Link href={action.href}>
-              <Icon size={16} />
-              {action.label}
-            </Link>
-          </Button>
-        )
-      })}
-    </div>
-  )
 }
 
 function CompletedStepDetail({
@@ -175,7 +123,6 @@ export function JourneyRail({
   sessionLoading = false,
   sessionError = null,
   onSessionRetry,
-  showInvoiceAction = false,
 }: JourneyRailProps) {
   const portalContext = usePatientPortalContext()
   const journeyQuery = usePatientJourney()
@@ -211,7 +158,7 @@ export function JourneyRail({
   }
 
   return (
-    <div className="space-y-4" data-tutorial="patient.journey.rail">
+    <div className="space-y-3" data-tutorial="patient.journey.rail">
       {showCurrentStepCard ? (
         <JourneyCurrentStepCard
           step={nextPending ?? currentStep ?? null}
@@ -223,31 +170,29 @@ export function JourneyRail({
       ) : null}
 
       <Card id="care-journey" className="dashboard-card overflow-hidden rounded-2xl shadow-e1">
-        <CardHeader className="border-border/60 space-y-3 border-b bg-muted/15 pb-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="space-y-1">
-              <h2 className="font-heading text-lg font-semibold tracking-tight">Your care journey</h2>
-              {journeyQuery.isSuccess && steps.length > 0 ? (
-                <p className="text-muted-foreground text-sm">{compactStatusLine(steps, nextPending)}</p>
-              ) : null}
-            </div>
+        <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0 px-4 py-3">
+          <div className="min-w-0">
+            <h2 className="font-heading text-base font-semibold tracking-tight">Care journey</h2>
             {journeyQuery.isSuccess && steps.length > 0 ? (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="gap-1.5"
-                aria-expanded={timelineExpanded}
-                onClick={() => setTimelineExpanded((open) => !open)}
-              >
-                {timelineExpanded ? "Hide steps" : "View all steps"}
-                {timelineExpanded ? <CaretUp size={14} aria-hidden /> : <CaretDown size={14} aria-hidden />}
-              </Button>
+              <p className="text-muted-foreground truncate text-xs">{compactStatusLine(steps, nextPending)}</p>
             ) : null}
           </div>
+          {journeyQuery.isSuccess && steps.length > 0 ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="shrink-0 gap-1 rounded-full"
+              aria-expanded={timelineExpanded}
+              onClick={() => setTimelineExpanded((open) => !open)}
+            >
+              {timelineExpanded ? "Hide" : "All steps"}
+              {timelineExpanded ? <CaretUp size={14} aria-hidden /> : <CaretDown size={14} aria-hidden />}
+            </Button>
+          ) : null}
         </CardHeader>
 
-        <CardContent className="space-y-4 pt-4">
+        <CardContent className="space-y-3 px-4 pb-4 pt-0">
           {journeyQuery.isLoading ? (
             <div className="space-y-3" aria-busy="true" aria-label="Loading journey">
               <Skeleton className="skeleton-shimmer h-4 w-48" />
@@ -356,10 +301,6 @@ export function JourneyRail({
                 setExpandedDoneKey((key) => (key === currentStep.key ? null : currentStep.key))
               }
             />
-          ) : null}
-
-          {journeyQuery.isSuccess && steps.length > 0 ? (
-            <JourneyQuickActions showInvoiceAction={showInvoiceAction} />
           ) : null}
         </CardContent>
       </Card>

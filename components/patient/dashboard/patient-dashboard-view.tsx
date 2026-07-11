@@ -9,16 +9,8 @@ import { ResourceRecommendationsCard } from "@/components/patient/dashboard/reso
 import { JourneyRail } from "@/components/patient/journey/journey-rail"
 import { PatientTelehealth101Cta } from "@/components/tutorials/patient-telehealth-101-cta"
 import { PatientTutorialOnboardingCta } from "@/components/tutorials/patient-tutorial-onboarding-cta"
-import { Card, CardContent } from "@/components/ui/card"
 import { patientDashboardContent } from "@/content/patient-dashboard"
-import type { PatientNextSession } from "@/src/patient/dashboard/api"
-import { isJoinImminent } from "@/src/patient/dashboard/join-cta"
-import {
-  currentPendingStep,
-  isJourneyComplete,
-  resolveJourneyCta,
-  visibleSteps,
-} from "@/src/patient/journey/step-guide"
+import { isJourneyComplete, visibleSteps } from "@/src/patient/journey/step-guide"
 import { usePatientDashboard } from "@/src/patient/queries/use-patient-dashboard"
 import { usePatientJourney } from "@/src/patient/queries/use-patient-journey"
 import { useNotificationUnreadCount } from "@/src/patient/queries/use-notification-unread-count"
@@ -34,25 +26,6 @@ function billingStatusLabel(unpaidCount: number, latestStatus: string | undefine
   if (latestStatus?.toLowerCase() === "paid") return "Up to date"
   if (latestStatus) return latestStatus
   return "Up to date"
-}
-
-function hasPrimaryDashboardAction(input: {
-  isFirstTime: boolean
-  nextSession: PatientNextSession | null
-  pendingStep: ReturnType<typeof currentPendingStep>
-}): boolean {
-  const { isFirstTime, nextSession, pendingStep } = input
-  if (isFirstTime) return true
-  if (
-    nextSession &&
-    (nextSession.status === "in_progress" ||
-      nextSession.window.status === "open" ||
-      isJoinImminent(nextSession))
-  ) {
-    return true
-  }
-  if (pendingStep && resolveJourneyCta(pendingStep, { nextSession })) return true
-  return false
 }
 
 export function PatientDashboardView() {
@@ -71,59 +44,42 @@ export function PatientDashboardView() {
 
   const firstName = firstNameOf(snapshot?.user.displayName)
   const journeySteps = visibleSteps(journeyQuery.data?.steps ?? [])
-  const pendingStep = currentPendingStep(journeySteps)
   const journeyDone = portalContext.journeyProgress?.done ?? 0
   const journeyTotal = portalContext.journeyProgress?.total ?? journeySteps.length
   const journeyPct = portalContext.journeyProgress?.pct ?? 0
   const hideJourneyRail = journeyQuery.isSuccess && isJourneyComplete(journeyQuery.data?.steps ?? [])
   const nextSession = snapshot?.nextSession ?? null
+  const unpaidCount = snapshot?.billing.unpaidCount ?? 0
 
-  const showPrimaryAction = hasPrimaryDashboardAction({
-    isFirstTime: portalContext.isFirstTime,
-    nextSession,
-    pendingStep,
-  })
+  const showSummaryPills = !portalContext.isFirstTime && hideJourneyRail
+  const showBillingSnapshot = unpaidCount > 0
 
   const billingStatus = snapshot
-    ? billingStatusLabel(snapshot.billing.unpaidCount, snapshot.billing.latestInvoice?.status)
+    ? billingStatusLabel(unpaidCount, snapshot.billing.latestInvoice?.status)
     : null
 
   return (
-    <section className="space-y-6 pb-4" data-tutorial="patient.page.dashboard">
-      <DashboardWelcomeSection
-        firstName={firstName}
-        loading={loading}
-        portalMode={portalContext.mode}
-      />
+    <section className="space-y-4 pb-4" data-tutorial="patient.page.dashboard">
+      <DashboardWelcomeSection firstName={firstName} loading={loading} />
 
-      <FirstTimeDashboardHero loading={loading} />
+      {portalContext.isFirstTime ? <FirstTimeDashboardHero loading={loading} /> : null}
 
-      {!hideJourneyRail ? (
-        <div className="dashboard-section">
-          <JourneyRail
-            nextSession={nextSession}
-            sessionLoading={loading}
-            sessionError={error}
-            onSessionRetry={handleRetry}
-            showInvoiceAction={(snapshot?.billing.invoiceCount ?? 0) > 0}
-          />
-        </div>
-      ) : journeyQuery.isSuccess && journeyTotal > 0 ? (
-        <Card className="dashboard-card rounded-2xl border-success/25 bg-success/5 shadow-e1">
-          <CardContent className="p-6">
-            <p className="font-heading text-lg font-semibold">Care journey complete</p>
-            <p className="text-muted-foreground mt-1 text-sm">
-              All milestones are recorded. New bookings or sessions will update your journey.
-            </p>
-          </CardContent>
-        </Card>
+      {!portalContext.isFirstTime && !hideJourneyRail ? (
+        <JourneyRail
+          nextSession={nextSession}
+          sessionLoading={loading}
+          sessionError={error}
+          onSessionRetry={handleRetry}
+        />
       ) : null}
 
-      <div className="dashboard-section">
-        <QuickActionsCard actions={patientDashboardContent.quickActions} />
-      </div>
+      {!portalContext.isFirstTime && hideJourneyRail && journeyQuery.isSuccess && journeyTotal > 0 ? (
+        <p className="text-muted-foreground text-sm">
+          Care journey complete — new bookings or sessions will update your progress.
+        </p>
+      ) : null}
 
-      {!portalContext.isFirstTime && !showPrimaryAction ? (
+      {showSummaryPills ? (
         <DashboardSummaryCards
           careProgress={
             journeyQuery.isSuccess && journeyTotal > 0
@@ -137,20 +93,28 @@ export function PatientDashboardView() {
         />
       ) : null}
 
-      {portalContext.isFirstTime ? <PatientTutorialOnboardingCta /> : null}
-      {portalContext.isFirstTime ? <PatientTelehealth101Cta /> : null}
+      <QuickActionsCard actions={patientDashboardContent.quickActions} />
 
-      <div className="dashboard-section grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <ResourceRecommendationsCard items={patientDashboardContent.resources} />
-        <div className="lg:sticky lg:top-24 lg:self-start">
-          <BillingSnapshotCard
-            latestInvoice={snapshot?.billing.latestInvoice ?? null}
-            unpaidCount={snapshot?.billing.unpaidCount ?? 0}
-            loading={loading}
-            error={error}
-            onRetry={handleRetry}
-          />
+      {portalContext.isFirstTime ? (
+        <div className="space-y-3">
+          <PatientTutorialOnboardingCta />
+          <PatientTelehealth101Cta />
         </div>
+      ) : null}
+
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <ResourceRecommendationsCard items={patientDashboardContent.resources} />
+        {showBillingSnapshot ? (
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            <BillingSnapshotCard
+              latestInvoice={snapshot?.billing.latestInvoice ?? null}
+              unpaidCount={unpaidCount}
+              loading={loading}
+              error={error}
+              onRetry={handleRetry}
+            />
+          </div>
+        ) : null}
       </div>
     </section>
   )

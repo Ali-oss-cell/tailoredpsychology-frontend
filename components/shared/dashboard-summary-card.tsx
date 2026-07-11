@@ -114,3 +114,83 @@ export function DashboardSummaryCardsRow({
     </section>
   )
 }
+
+export type DashboardSummaryPillProps = {
+  label: string
+  value: string
+  href?: string
+  icon: React.ReactNode
+  onClick?: () => void
+  loading?: boolean
+  className?: string
+}
+
+export function DashboardSummaryPill({
+  label,
+  value,
+  href = "#",
+  icon,
+  onClick,
+  loading = false,
+  className,
+}: DashboardSummaryPillProps) {
+  const body = (
+    <>
+      <span className="text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+        {icon}
+      </span>
+      <span className="min-w-0">
+        <span className="text-muted-foreground block text-xs font-medium">{label}</span>
+        {loading ? (
+          <Skeleton className="skeleton-shimmer mt-1 h-4 w-20" />
+        ) : (
+          <span className="text-foreground block truncate text-sm font-semibold">{value}</span>
+        )}
+      </span>
+    </>
+  )
+
+  const classNames = cn(
+    "dashboard-card flex min-w-0 items-center gap-2.5 rounded-full border border-border/50 bg-card px-3 py-2 shadow-e1",
+    "focus-visible:ring-ring outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+    className,
+  )
+
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className={cn(classNames, "text-left")} aria-label={`${label}: ${value}`}>
+        {body}
+      </button>
+    )
+  }
+
+  return (
+    <Link href={href} className={classNames} aria-label={`${label}: ${value}`}>
+      {body}
+    </Link>
+  )
+}
+
+type DashboardSummaryPillsRowProps = {
+  children: React.ReactNode
+  className?: string
+  "aria-label"?: string
+  "data-tutorial"?: string
+}
+
+export function DashboardSummaryPillsRow({
+  children,
+  className,
+  "aria-label": ariaLabel = "Quick summary",
+  "data-tutorial": dataTutorial,
+}: DashboardSummaryPillsRowProps) {
+  return (
+    <section
+      className={cn("grid grid-cols-2 gap-2 sm:grid-cols-4", className)}
+      aria-label={ariaLabel}
+      data-tutorial={dataTutorial}
+    >
+      {children}
+    </section>
+  )
+}

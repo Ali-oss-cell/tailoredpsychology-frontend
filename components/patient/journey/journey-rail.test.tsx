@@ -57,25 +57,26 @@ describe("JourneyRail", () => {
   it("expands all visible milestones and hides pending no-show branch", async () => {
     renderWithQueryClient(<JourneyRail />)
 
-    fireEvent.click(await screen.findByRole("button", { name: /View all steps/i }))
+    fireEvent.click(await screen.findByRole("button", { name: /All steps/i }))
 
     const tabs = await screen.findAllByRole("tab")
     expect(tabs).toHaveLength(7)
     expect(screen.queryByText("Session missed")).not.toBeInTheDocument()
   })
 
-  it("shows journey help actions without the coming next card", async () => {
-    renderWithQueryClient(<JourneyRail showInvoiceAction />)
+  it("does not render duplicate journey quick actions", async () => {
+    renderWithQueryClient(<JourneyRail />)
 
-    expect(await screen.findByRole("link", { name: /Contact clinic/i })).toHaveAttribute("href", "/contact")
+    await screen.findByText(/Step 3 of 7 · Requested/i)
+    expect(screen.queryByRole("link", { name: /Contact clinic/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole("link", { name: /Download invoice/i })).not.toBeInTheDocument()
     expect(screen.queryByText("Coming next")).not.toBeInTheDocument()
-    expect(screen.getByRole("link", { name: /Download invoice/i })).toHaveAttribute("href", "/patient/invoices")
   })
 
   it("shows expandable recorded detail when selecting a done step", async () => {
     renderWithQueryClient(<JourneyRail />)
 
-    fireEvent.click(await screen.findByRole("button", { name: /View all steps/i }))
+    fireEvent.click(await screen.findByRole("button", { name: /All steps/i }))
     fireEvent.click(await screen.findByRole("tab", { name: /Intake complete/i }))
     fireEvent.click(screen.getByRole("button", { name: /Intake complete/i }))
     expect(screen.getByRole("link", { name: "View details" })).toHaveAttribute("href", "/patient/book-appointment")
@@ -107,6 +108,7 @@ describe("JourneyRail", () => {
 
     expect(await screen.findByText("Upcoming session")).toBeInTheDocument()
     expect(screen.getByRole("link", { name: /View appointment/i })).toHaveAttribute("href", "/patient/appointments")
-    expect(screen.getByRole("button", { name: /Add to calendar/i })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: /Manage/i })).toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: /Add to calendar/i })).not.toBeInTheDocument()
   })
 })
