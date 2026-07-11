@@ -75,6 +75,10 @@ describe("step-guide journey CTAs", () => {
       label: "Join session",
       href: "/video-session/appt_1",
     })
+    expect(ctaForStep(pendingStep("session_started"), { nextSession: session })).toEqual({
+      label: "View appointment",
+      href: "/patient/appointments",
+    })
   })
 })
 

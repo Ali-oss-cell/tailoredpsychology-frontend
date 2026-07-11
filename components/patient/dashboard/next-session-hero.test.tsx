@@ -81,6 +81,7 @@ describe("NextSessionHero", () => {
     )
 
     expect(screen.getByRole("link", { name: /Join session/i })).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /Test camera & mic/i })).toBeInTheDocument()
   })
 
   it("hides the join link and explains the window when session is far out", () => {

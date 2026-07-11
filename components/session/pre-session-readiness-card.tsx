@@ -111,7 +111,9 @@ export function PreSessionReadinessCard({ appointmentId, onReadinessChange, reru
     <section className="dashboard-card rounded-dashboard-card overflow-hidden">
       <header className="border-border/50 space-y-1 border-b px-5 py-4 md:px-6">
         <h2 className="font-heading text-lg font-semibold tracking-tight">Telehealth readiness</h2>
-        <p className="text-muted-foreground text-sm">Quick pre-session checks for smoother video care</p>
+        <p className="text-muted-foreground text-sm">
+          Optional prep before you join — you can still enter the session if any check fails.
+        </p>
       </header>
       <div className="space-y-4 px-5 py-5 md:px-6">
         {isLoading ? <DashboardStateBlock variant="loading" message="Loading readiness checks…" /> : null}

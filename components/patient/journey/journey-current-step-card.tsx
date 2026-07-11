@@ -56,7 +56,8 @@ function useCountdownLabel(startIso: string | undefined): string | null {
 
 function sessionStatusTitle(session: PatientNextSession | null): string {
   if (session?.status === "in_progress") return "Session in progress"
-  if (session && (session.window.status === "open" || isJoinImminent(session))) return "Your session is ready"
+  if (session?.window.status === "open") return "Ready to join"
+  if (session && isJoinImminent(session)) return "Your session is almost here"
   if (session) return "Upcoming session"
   return "Ready when you are"
 }
@@ -75,7 +76,10 @@ function stepTitle(step: PatientJourneyStep | null, session: PatientNextSession 
 function statusLine(step: PatientJourneyStep | null, session: PatientNextSession | null): string {
   if (session) {
     if (session.status === "in_progress" || session.window.status === "open") {
-      return "Join your telehealth visit when you're ready."
+      return "You can join now. Testing your camera and mic is optional prep."
+    }
+    if (isJoinImminent(session)) {
+      return "Get comfortable — join opens soon. Device checks are optional and won't block you."
     }
     const date = formatDateAu(session.scheduledStartAt)
     const time = formatTimeAu(session.scheduledStartAt)
@@ -181,15 +185,6 @@ export function JourneyCurrentStepCard({
             </Button>
           ) : null}
 
-          {hero && nextSession && !joinOpen ? (
-            <Button asChild size="lg" variant="outline" className="press w-full sm:w-auto">
-              <Link href="/patient/video-setup" data-tutorial="patient.dashboard.video-setup-link">
-                <Microphone size={20} />
-                Test camera &amp; mic
-              </Link>
-            </Button>
-          ) : null}
-
           {!joinOpen && !hero && cta ? (
             <Button asChild size="lg" className="press w-full sm:w-auto">
               <Link href={cta.href}>{cta.label}</Link>
@@ -198,14 +193,12 @@ export function JourneyCurrentStepCard({
 
           {nextSession ? (
             <div className="flex flex-wrap gap-2">
-              {!hero ? (
-                <Button asChild variant="outline" size="sm" className="press">
-                  <Link href="/patient/video-setup" data-tutorial="patient.dashboard.video-setup-link">
-                    <Microphone size={16} />
-                    Test camera &amp; mic
-                  </Link>
-                </Button>
-              ) : null}
+              <Button asChild variant="outline" size="sm" className="press">
+                <Link href="/patient/video-setup" data-tutorial="patient.dashboard.video-setup-link">
+                  <Microphone size={16} />
+                  Test camera &amp; mic
+                </Link>
+              </Button>
               <Button asChild variant="outline" size="sm" className="press">
                 <Link href="/patient/appointments">View appointment</Link>
               </Button>

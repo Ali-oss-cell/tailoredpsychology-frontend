@@ -79,7 +79,7 @@ export const STEP_GUIDE: Record<OrderedJourneyKey, JourneyStepGuide> = {
     shortLabel: "Session",
     timelineLabel: "Session",
     meaning: "You joined the telehealth session (or the session officially opened).",
-    whenPending: "On the day of care, join from the dashboard when your session window opens.",
+    whenPending: "When your session window opens, join from the dashboard. Camera and mic checks are optional prep.",
     whenDone: "Session start was recorded for your record.",
     icon: PlayCircle,
   },
@@ -203,10 +203,7 @@ export function ctaForStep(step: PatientJourneyStep, ctx: JourneyCtaContext = {}
       if (joinOpen && nextSession) {
         return { label: "Join session", href: joinSessionHref(nextSession.appointmentId) }
       }
-      if (nextSession) {
-        return { label: "View appointment", href: "/patient/appointments" }
-      }
-      return { label: "Test camera & mic", href: "/patient/video-setup" }
+      return { label: "View appointment", href: "/patient/appointments" }
     case "session_completed":
       return { label: "View billing", href: "/patient/invoices" }
     case "invoice_downloaded":

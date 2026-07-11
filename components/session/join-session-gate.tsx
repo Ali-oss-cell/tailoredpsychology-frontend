@@ -13,6 +13,12 @@ import {
   postJoinSession,
   type TelehealthReadinessResponse,
 } from "@/src/patient/booking/api"
+import {
+  devicePrepWarnings,
+  hardBlockMessage,
+  joinButtonLabel,
+  shouldAutoAcknowledgeWarnings,
+} from "@/src/session/join-session-gate.helpers"
 
 type JoinSessionGateProps = {
   appointmentId: string
@@ -21,14 +27,6 @@ type JoinSessionGateProps = {
   onRunChecks: () => void
   onJoinedChange?: (joined: boolean) => void
   onConnectionStatusChange?: (status: "connecting" | "connected" | "error" | "idle") => void
-}
-
-function warningCopyFromReasons(reasons: string[]): string {
-  if (reasons.includes("session_window_locked")) return "Your session window is not open yet."
-  if (reasons.includes("session_window_closed")) return "Your session window has already closed."
-  if (reasons.includes("readiness_attention")) return "Some readiness checks still need attention."
-  if (reasons.includes("readiness_unknown")) return "Readiness has not been checked recently."
-  return "Please review readiness before joining."
 }
 
 export function JoinSessionGate({
@@ -48,9 +46,8 @@ export function JoinSessionGate({
   const [sessionToken, setSessionToken] = React.useState<JoinSessionTokenResponse | null>(null)
   const [showNotes, setShowNotes] = React.useState(false)
 
-  const isWarning = (readiness?.overallStatus ?? "attention") !== "ready"
-  const joinLabel =
-    role === "psychologist" && isWarning ? "Override warning and join" : role === "patient" ? "Join session" : "Proceed to session"
+  const prepWarnings = devicePrepWarnings(readiness)
+  const joinLabel = joinButtonLabel(role, readiness, isSubmitting)
 
   const leaveCall = React.useCallback(() => {
     setIsJoined(false)
@@ -62,6 +59,7 @@ export function JoinSessionGate({
   const evaluateJoin = async (acknowledgementNote?: string) => {
     setIsSubmitting(true)
     setError(null)
+    setShowConfirm(false)
     try {
       const next = await postJoinAttempt(appointmentId, {
         channel: "video",
@@ -69,11 +67,21 @@ export function JoinSessionGate({
         overrideReason: overrideReason.trim() || undefined,
       })
       setDecision(next)
-      if (!next.allowed) return
-      if (next.reasons.length > 0 && !acknowledgementNote) {
+
+      if (!next.allowed) {
+        setError(hardBlockMessage(next))
+        return
+      }
+
+      const ack =
+        acknowledgementNote ??
+        (shouldAutoAcknowledgeWarnings(role, next.reasons) ? "warning_acknowledged" : undefined)
+
+      if (next.reasons.length > 0 && !ack) {
         setShowConfirm(true)
         return
       }
+
       const token = await postJoinSession(appointmentId, {
         channel: "video",
         overrideReason: overrideReason.trim() || undefined,
@@ -81,9 +89,10 @@ export function JoinSessionGate({
       setSessionToken(token)
       setIsJoined(true)
       onJoinedChange?.(true)
-      setShowConfirm(false)
     } catch {
-      setError("We couldn't start the video session. Check that telehealth is configured and try again.")
+      setError(
+        "We couldn't start the video session. Check your connection and try again, or contact support if this keeps happening.",
+      )
     } finally {
       setIsSubmitting(false)
     }
@@ -132,43 +141,55 @@ export function JoinSessionGate({
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <h2 className="font-heading text-lg font-semibold tracking-tight">Join session</h2>
+          <h2 className="font-heading text-lg font-semibold tracking-tight">Ready to join</h2>
           <p className="text-muted-foreground text-sm">
-            Complete readiness checks above, then join when you are ready.
+            You can join now. Testing your camera and mic above is optional prep — not required to enter.
           </p>
         </div>
-        <Button
-          type="button"
-          onClick={() => void evaluateJoin()}
-          disabled={isSubmitting}
-          className="h-12 min-w-[11rem] shrink-0 rounded-xl px-6 text-base font-semibold"
-        >
-          {isSubmitting ? "Connecting…" : joinLabel}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            onClick={() => void evaluateJoin()}
+            disabled={isSubmitting}
+            className="h-12 min-w-[11rem] shrink-0 rounded-xl px-6 text-base font-semibold"
+          >
+            {joinLabel}
+          </Button>
+          <Button type="button" variant="outline" className="h-12 rounded-xl" onClick={onRunChecks} disabled={isSubmitting}>
+            Test camera &amp; mic
+          </Button>
+        </div>
       </div>
 
-      {decision?.reasons.length ? (
+      {prepWarnings.map((warning) => (
         <div
+          key={warning}
           className="border-warning bg-warning/10 text-warning-foreground rounded-xl border px-4 py-3 text-sm"
+          role="status"
+        >
+          {warning}
+        </div>
+      ))}
+
+      {decision && !decision.allowed ? (
+        <div
+          className="border-destructive/40 bg-destructive/10 text-destructive rounded-xl border px-4 py-3 text-sm"
           role="alert"
         >
-          {warningCopyFromReasons(decision.reasons)}
+          {hardBlockMessage(decision)}
         </div>
       ) : null}
 
       {showConfirm ? (
         <div className="dashboard-card rounded-dashboard-card border-border/60 bg-muted/20 space-y-3 p-4 text-sm">
-          <p className="font-medium">You can still continue.</p>
-          <p className="text-muted-foreground">Proceed anyway or run checks again first.</p>
+          <p className="font-medium">Some checks need attention — you can still join.</p>
+          <p className="text-muted-foreground">Proceed now or run checks again first.</p>
           <div className="flex flex-wrap gap-2">
-            <Button
-              size="lg"
-              onClick={() => void evaluateJoin("warning_acknowledged")}
-            >
-              Proceed anyway
+            <Button size="lg" onClick={() => void evaluateJoin("warning_acknowledged")}>
+              Join anyway
             </Button>
             <Button size="lg" variant="outline" onClick={onRunChecks}>
-              Run checks now
+              Run checks again
             </Button>
           </div>
         </div>
@@ -190,9 +211,12 @@ export function JoinSessionGate({
       ) : null}
 
       {error ? (
-        <p className="text-destructive text-sm" role="alert">
-          {error}
-        </p>
+        <div className="space-y-2" role="alert">
+          <p className="text-destructive text-sm">{error}</p>
+          <Button type="button" variant="outline" size="sm" onClick={() => void evaluateJoin()} disabled={isSubmitting}>
+            Try again
+          </Button>
+        </div>
       ) : null}
     </section>
   )
