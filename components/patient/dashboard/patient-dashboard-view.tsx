@@ -4,7 +4,6 @@ import { BillingSnapshotCard } from "@/components/patient/dashboard/billing-snap
 import { DashboardSummaryCards } from "@/components/patient/dashboard/dashboard-summary-cards"
 import { DashboardWelcomeSection } from "@/components/patient/dashboard/dashboard-welcome-section"
 import { FirstTimeDashboardHero } from "@/components/patient/dashboard/first-time-dashboard-hero"
-import { MoodCheckinCard } from "@/components/patient/dashboard/mood-checkin-card"
 import { QuickActionsCard } from "@/components/patient/dashboard/quick-actions-card"
 import { ResourceRecommendationsCard } from "@/components/patient/dashboard/resource-recommendations-card"
 import { JourneyRail } from "@/components/patient/journey/journey-rail"
@@ -104,13 +103,8 @@ export function PatientDashboardView() {
         </Card>
       ) : null}
 
-      <div className="dashboard-section grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-12">
-        <div className="md:col-span-1 lg:col-span-5" data-tutorial="patient.dashboard.mood-checkin">
-          <MoodCheckinCard options={patientDashboardContent.moodOptions} />
-        </div>
-        <div className="md:col-span-1 lg:col-span-7">
-          <QuickActionsCard actions={patientDashboardContent.quickActions} />
-        </div>
+      <div className="dashboard-section">
+        <QuickActionsCard actions={patientDashboardContent.quickActions} />
       </div>
 
       <div className="dashboard-section grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
