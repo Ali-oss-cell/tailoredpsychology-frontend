@@ -258,6 +258,7 @@ Every item above is additive or a targeted swap inside files that already exist 
 ## Implementation Status
 
 **Completed:** 2026-07-11  
+**Frontend commit:** `01db632`  
 **Build:** `npm run build` ✅  
 **Tests:** `npm test` — 52 suites, 135 tests ✅  
 **Migrations:** Not required (frontend-only)
