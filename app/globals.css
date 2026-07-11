@@ -49,11 +49,30 @@
     --info-foreground: #eff6ff;
     --gradient-brand: linear-gradient(135deg, #8fa7a8, #9eaa9f);
 
-    /* Layered elevation — replaces flat 1px borders as the primary separator */
-    --shadow-e1: 0 1px 2px rgb(16 24 24 / 0.04), 0 1px 3px rgb(16 24 24 / 0.06);
-    --shadow-e2: 0 2px 4px rgb(16 24 24 / 0.04), 0 6px 16px rgb(16 24 24 / 0.07);
-    --shadow-e3: 0 4px 8px rgb(16 24 24 / 0.05), 0 16px 40px rgb(16 24 24 / 0.10);
+    /* Stitch-aligned diffused ambient shadows — replaces flat 1px borders as the primary separator */
+    --shadow-e1: 0 2px 4px rgb(15 23 42 / 0.04), 0 4px 20px rgb(15 23 42 / 0.05);
+    --shadow-e2: 0 4px 8px rgb(15 23 42 / 0.06), 0 10px 30px rgb(15 23 42 / 0.1);
+    --shadow-e3: 0 6px 12px rgb(15 23 42 / 0.07), 0 20px 48px rgb(15 23 42 / 0.14);
     --shadow-primary-glow: 0 8px 24px rgb(95 168 166 / 0.28);
+
+    /* Darker teal for icon/text-on-light contexts (Stitch M3 "primary") — distinct from --primary (CTAs/focus) */
+    --primary-strong: #156968;
+
+    /* Low-saturation status pill tints (Stitch "Pills/Chips" spec) */
+    --pill-success-bg: color-mix(in oklab, var(--success) 14%, white);
+    --pill-success-fg: var(--success);
+    --pill-warning-bg: color-mix(in oklab, var(--warning) 16%, white);
+    --pill-warning-fg: var(--warning);
+    --pill-info-bg: color-mix(in oklab, var(--info) 14%, white);
+    --pill-info-fg: var(--info);
+    --pill-destructive-bg: color-mix(in oklab, var(--destructive) 12%, white);
+    --pill-destructive-fg: var(--destructive);
+    --pill-neutral-bg: var(--muted);
+    --pill-neutral-fg: var(--muted-foreground);
+
+    /* Sidebar — Stitch spec: 260px desktop width */
+    --sidebar-width: 16.25rem;
+    --sidebar-width-collapsed: 4.5rem;
 
     /* Glass tokens — hero + sticky surfaces only */
     --glass-bg: rgb(255 255 255 / 0.72);
@@ -141,6 +160,19 @@
     --shadow-e3: 0 4px 8px rgb(0 0 0 / 0.4), 0 16px 40px rgb(0 0 0 / 0.55);
     --shadow-primary-glow: 0 8px 24px rgb(95 168 166 / 0.35);
 
+    --primary-strong: #8ad3d1;
+
+    --pill-success-bg: color-mix(in oklab, var(--success) 22%, transparent);
+    --pill-success-fg: var(--success);
+    --pill-warning-bg: color-mix(in oklab, var(--warning) 22%, transparent);
+    --pill-warning-fg: var(--warning);
+    --pill-info-bg: color-mix(in oklab, var(--info) 22%, transparent);
+    --pill-info-fg: var(--info);
+    --pill-destructive-bg: color-mix(in oklab, var(--destructive) 20%, transparent);
+    --pill-destructive-fg: var(--destructive);
+    --pill-neutral-bg: var(--muted);
+    --pill-neutral-fg: var(--muted-foreground);
+
     --glass-bg: rgb(22 28 29 / 0.66);
     --glass-border: rgb(255 255 255 / 0.08);
 
@@ -196,6 +228,7 @@
     --color-secondary: var(--secondary);
     --color-primary-foreground: var(--primary-foreground);
     --color-primary: var(--primary);
+    --color-primary-strong: var(--primary-strong);
     --color-popover-foreground: var(--popover-foreground);
     --color-popover: var(--popover);
     --color-card-foreground: var(--card-foreground);
@@ -294,6 +327,43 @@
 
   .bg-dashboard {
     background-color: var(--dashboard-bg);
+  }
+
+  .text-primary-strong {
+    color: var(--primary-strong);
+  }
+
+  /* Low-saturation status pills (Stitch spec) — pair with an icon, not for small body text alone */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border-radius: 9999px;
+    padding: 0.1875rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  .pill-success {
+    background-color: var(--pill-success-bg);
+    color: var(--pill-success-fg);
+  }
+  .pill-warning {
+    background-color: var(--pill-warning-bg);
+    color: var(--pill-warning-fg);
+  }
+  .pill-info {
+    background-color: var(--pill-info-bg);
+    color: var(--pill-info-fg);
+  }
+  .pill-destructive {
+    background-color: var(--pill-destructive-bg);
+    color: var(--pill-destructive-fg);
+  }
+  .pill-neutral {
+    background-color: var(--pill-neutral-bg);
+    color: var(--pill-neutral-fg);
   }
 
   .rounded-dashboard-card {

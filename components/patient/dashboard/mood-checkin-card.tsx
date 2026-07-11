@@ -76,9 +76,12 @@ export function MoodCheckinCard({ options }: MoodCheckinCardProps) {
   }
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-3">
-        <CardTitle className="text-lg">Mood Check-in</CardTitle>
+    <Card className="dashboard-card h-full rounded-2xl shadow-e1">
+      <CardHeader className="flex flex-row items-start justify-between gap-2 pb-2">
+        <div className="space-y-1">
+          <CardTitle className="font-heading text-lg font-semibold">How are you feeling today?</CardTitle>
+          <p className="text-muted-foreground text-sm">Your clinician will see this update.</p>
+        </div>
         <Button
           variant="ghost"
           size="icon-xs"
@@ -90,7 +93,7 @@ export function MoodCheckinCard({ options }: MoodCheckinCardProps) {
           <Plus size={14} />
         </Button>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pt-2">
         {options.length === 0 ? (
           <DashboardStateBlock variant="empty" message="No options yet." />
         ) : (
@@ -98,19 +101,21 @@ export function MoodCheckinCard({ options }: MoodCheckinCardProps) {
             {showAddHint ? (
               <p className="text-muted-foreground text-center text-xs">Tap an emoji below to log how you feel.</p>
             ) : null}
-            <p className="text-muted-foreground text-center text-xs">How are you feeling today?</p>
             {loading ? (
               <MoodCheckinSkeleton />
             ) : !patientId ? (
               <p className="text-muted-foreground text-center text-xs">Sign in as a patient to save moods.</p>
             ) : (
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center justify-between gap-1.5 sm:gap-2">
                 {options.map((option) => (
                   <button
                     key={option.label}
                     type="button"
                     disabled={saving}
-                    className="hover:bg-muted/80 flex h-12 w-12 items-center justify-center rounded-full text-xl transition-colors disabled:opacity-50"
+                    className={cn(
+                      "hover:bg-muted/80 flex h-12 w-12 items-center justify-center rounded-full text-2xl transition-all disabled:opacity-50",
+                      latestLabel === option.label && "bg-primary/10 ring-2 ring-primary/40",
+                    )}
                     aria-label={option.label}
                     aria-pressed={latestLabel === option.label}
                     onClick={() => void submitMood(option.label)}

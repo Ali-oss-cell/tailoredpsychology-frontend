@@ -12,6 +12,20 @@ export type HomeTrustBarItem = {
   icon: "evidence" | "licensed" | "video" | "matching" | "australia" | "privacy"
 }
 
+export type HomeCertificationBadge = {
+  label: string
+  icon: "aapi" | "medicare" | "ahpra" | "iso27001"
+  /** Present only for claims not yet cleared by counsel — renders as a muted "pending review" chip. */
+  pendingReview?: boolean
+}
+
+export type HomeCareJourneyStep = {
+  step: number
+  title: string
+  description: string
+  icon: "match" | "meet" | "manage"
+}
+
 export type HomeHowItWorksStep = {
   title: string
   description: string
@@ -59,6 +73,12 @@ export type HomePageContent = {
     floatingStats: HomeHeroStat[]
   }
   trustBar: HomeTrustBarItem[]
+  certificationBadges: HomeCertificationBadge[]
+  careJourneySteps: {
+    title: string
+    description: string
+    steps: HomeCareJourneyStep[]
+  }
   howItWorks: {
     title: string
     description: string
@@ -178,6 +198,40 @@ export const homepageContent: HomePageContent = {
       icon: "privacy",
     },
   ],
+  certificationBadges: [
+    { label: "AAPi Member", icon: "aapi", pendingReview: true },
+    { label: "Medicare", icon: "medicare" },
+    { label: "AHPRA Registered", icon: "ahpra" },
+    { label: "ISO 27001", icon: "iso27001", pendingReview: true },
+  ],
+  careJourneySteps: {
+    title: "Your path to better mental health",
+    description:
+      "A streamlined, secure process designed around your needs, so you get the right support without unnecessary friction.",
+    steps: [
+      {
+        step: 1,
+        title: "Match",
+        description:
+          "Complete a brief assessment to find a highly qualified practitioner tailored to your specific clinical needs.",
+        icon: "match",
+      },
+      {
+        step: 2,
+        title: "Meet",
+        description:
+          "Connect securely from any device. Our platform ensures high-definition video with clinical-grade privacy.",
+        icon: "meet",
+      },
+      {
+        step: 3,
+        title: "Manage",
+        description:
+          "Track your progress, access therapeutic resources, and manage appointments easily through your patient dashboard.",
+        icon: "manage",
+      },
+    ],
+  },
   howItWorks: {
     title: "How it works",
     description:

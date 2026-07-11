@@ -38,7 +38,7 @@ export function BookingStepper({ steps, currentIndex }: BookingStepperProps) {
         </div>
       </div>
 
-      <ol className="chat-scroll flex snap-x items-start gap-0 overflow-x-auto px-3 py-4 md:px-4">
+      <ol className="chat-scroll flex snap-x items-start gap-0 overflow-x-auto px-4 py-5 md:px-6">
         {steps.map((step, index) => {
           const isDone = index < currentIndex
           const isCurrent = index === currentIndex
@@ -51,27 +51,27 @@ export function BookingStepper({ steps, currentIndex }: BookingStepperProps) {
                 <div
                   aria-hidden
                   className={cn(
-                    "mt-5 h-0.5 min-w-4 flex-1 rounded-full transition-colors duration-500",
-                    connectorFilled ? "bg-primary/50" : "bg-border",
+                    "mt-6 h-0.5 min-w-6 flex-1 rounded-full transition-colors duration-500",
+                    connectorFilled ? "bg-primary" : "bg-border",
                   )}
                 />
               ) : null}
               <div
                 aria-current={isCurrent ? "step" : undefined}
                 className={cn(
-                  "flex w-[4.75rem] shrink-0 snap-start flex-col items-center gap-1.5 rounded-lg px-1 text-center",
+                  "flex w-[5.25rem] shrink-0 snap-start flex-col items-center gap-2 rounded-lg px-1 text-center",
                   isCurrent && "scale-105",
                 )}
               >
                 <span
                   className={cn(
-                    "flex items-center justify-center rounded-full border-2 transition-all duration-250",
-                    isDone && "border-success/50 bg-success/10 text-success h-10 w-10",
-                    isCurrent && "border-primary bg-primary text-primary-foreground shadow-primary-glow h-11 w-11",
-                    isUpcoming && "border-border bg-muted/40 text-muted-foreground h-10 w-10",
+                    "flex items-center justify-center rounded-full border-2 font-semibold transition-all duration-250",
+                    isDone && "border-primary bg-primary text-primary-foreground h-11 w-11",
+                    isCurrent && "border-primary bg-primary text-primary-foreground shadow-primary-glow h-12 w-12",
+                    isUpcoming && "border-border bg-card text-muted-foreground h-11 w-11",
                   )}
                 >
-                  {isDone ? <Check size={16} weight="bold" aria-hidden /> : <span className="text-xs font-semibold">{index + 1}</span>}
+                  {isDone ? <Check size={18} weight="bold" aria-hidden /> : <span className="text-sm">{index + 1}</span>}
                 </span>
                 <span
                   className={cn(

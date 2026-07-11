@@ -86,6 +86,12 @@ Patient portal dashboard + shell chrome — see **[DASHBOARD_UI_REFACTOR.md](./D
 
 Full audit plan and implementation checklist — see **[REFACTOR_PLAN.md](./REFACTOR_PLAN.md)** (mirrors repo-root `refactor.md`). Completed 2026-07-11: mobile nav drawer, contrast fix, patient route boundaries, dashboard cards, recordings/data-requests polish, and shared form primitives.
 
+## Stitch design alignment (2026-07-11)
+
+Full token reconciliation and screen-by-screen merge decisions — see **[STITCH_UI_MERGE_PLAN.md](./STITCH_UI_MERGE_PLAN.md)**.
+
+Summary: adopted Stitch's diffused ambient shadow tiers, added `--primary-strong` (darker teal for icon/text-on-light contexts), low-saturation `.pill-*` status tint utilities, 260px sidebar width, and `rounded-xl` input radius. Restyled marketing home (certification badge strip, "Match/Meet/Manage" section, asymmetric services grid), patient dashboard cards (mood check-in, quick actions), booking stepper, appointments page (new Care Team + Cancellation Policy sidebar cards), psychologist "Today's Schedule" (Join Now button), and video session room (new collapsible Session Notes panel). No existing logic, routes, or accessibility fixes were regressed — see the merge plan's "Constraints honoured" section.
+
 ## Commits
 
 Committed and pushed 2026-07-11.

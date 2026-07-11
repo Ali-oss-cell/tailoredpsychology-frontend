@@ -195,7 +195,7 @@ export function Sidebar({
       data-variant={variant}
       className={cn(
         "group/sidebar bg-surface-2/80 border-border/70 hidden border-r transition-[width] duration-200 lg:flex lg:flex-col",
-        collapsed ? "w-18 p-3" : "w-64 p-5",
+        collapsed ? "w-[var(--sidebar-width-collapsed)] p-3" : "w-[var(--sidebar-width)] p-5",
         className,
       )}
       {...props}

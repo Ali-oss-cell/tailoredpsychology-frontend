@@ -13,7 +13,7 @@ export const portalPsychologistSidebarClassName = portalPatientSidebarClassName
 export const portalOpsSidebarClassName = portalPatientSidebarClassName
 
 export const portalInsetClassName =
-  "flex h-screen min-w-0 flex-1 flex-col overflow-hidden transition-[margin] duration-200 lg:ml-64 group-data-[state=collapsed]/sidebar-wrapper:lg:ml-[4.5rem]"
+  "flex h-screen min-w-0 flex-1 flex-col overflow-hidden transition-[margin] duration-200 lg:ml-[var(--sidebar-width)] group-data-[state=collapsed]/sidebar-wrapper:lg:ml-[var(--sidebar-width-collapsed)]"
 
 export const portalHeaderClassName =
   "border-border/70 sticky top-0 z-20 shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"

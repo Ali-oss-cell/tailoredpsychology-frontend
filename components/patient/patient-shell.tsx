@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { CalendarPlus, SignOut } from "@phosphor-icons/react/dist/ssr"
+import { CalendarPlus, Gear, Question, SignOut } from "@phosphor-icons/react/dist/ssr"
 
 import { LogoutLink } from "@/components/auth/logout-link"
 import { ClinkLogo } from "@/components/brand/clink-logo"
@@ -110,6 +110,22 @@ export function PatientShell({ children, activeRoute = "dashboard" }: PatientShe
                   >
                     <CalendarPlus size={18} weight="bold" />
                     <span className="group-data-[state=collapsed]/sidebar:sr-only">Book Appointment</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/patient/account" title="Settings">
+                    <Gear size={18} />
+                    <span className="group-data-[state=collapsed]/sidebar:sr-only">Settings</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/contact" title="Support">
+                    <Question size={18} />
+                    <span className="group-data-[state=collapsed]/sidebar:sr-only">Support</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -20,13 +20,12 @@ function InvoiceStatusBadge({ status }: { status: string }) {
   return (
     <span
       className={cn(
-        "inline-flex rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize",
-        normalized === "paid" && "border-success/30 bg-success/10 text-success",
-        normalized === "pending" && "border-warning/35 bg-warning/10 text-warning",
-        normalized === "overdue" && "border-destructive/35 bg-destructive/10 text-destructive",
-        normalized === "failed" && "border-destructive/40 bg-destructive/15 text-destructive font-semibold",
-        !["paid", "pending", "overdue", "failed"].includes(normalized) &&
-          "border-border/70 bg-background text-foreground/80",
+        "pill capitalize",
+        normalized === "paid" && "pill-success",
+        normalized === "pending" && "pill-warning",
+        normalized === "overdue" && "pill-destructive font-semibold",
+        normalized === "failed" && "pill-destructive font-semibold",
+        !["paid", "pending", "overdue", "failed"].includes(normalized) && "pill-neutral",
       )}
     >
       {status}

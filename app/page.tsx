@@ -6,6 +6,8 @@ import { CtaStrip } from "@/components/marketing/cta-strip"
 import { FaqSection } from "@/components/marketing/faq-section"
 import { FeaturedPsychologistsSection } from "@/components/marketing/featured-psychologists-section"
 import { HeroSection } from "@/components/marketing/hero-section"
+import { HomeCareJourneyStepsSection } from "@/components/marketing/home-care-journey-steps-section"
+import { HomeCertificationStrip } from "@/components/marketing/home-certification-strip"
 import { HomeHowItWorksSection } from "@/components/marketing/home-how-it-works-section"
 import { HomeServicesGrid } from "@/components/marketing/home-services-grid"
 import { HomeTrustStrip } from "@/components/marketing/home-trust-strip"
@@ -27,7 +29,11 @@ export default function HomePage() {
       <PublicHeader />
       <main>
         <HeroSection {...homepageContent.hero} />
+        <HomeCertificationStrip items={homepageContent.certificationBadges} />
         <HomeTrustStrip items={homepageContent.trustBar} />
+        <ScrollSection variant="process">
+          <HomeCareJourneyStepsSection {...homepageContent.careJourneySteps} />
+        </ScrollSection>
         <ScrollSection variant="process">
           <HomeHowItWorksSection {...homepageContent.howItWorks} />
         </ScrollSection>

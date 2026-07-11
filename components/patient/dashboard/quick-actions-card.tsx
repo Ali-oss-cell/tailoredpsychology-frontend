@@ -35,20 +35,20 @@ export function QuickActionsCard({ actions }: QuickActionsCardProps) {
   }
 
   return (
-    <Card className="md:col-span-4" data-tutorial="patient.dashboard.quick-actions">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg">Quick Actions</CardTitle>
+    <Card className="dashboard-card h-full rounded-2xl shadow-e1" data-tutorial="patient.dashboard.quick-actions">
+      <CardHeader className="pb-2">
+        <CardTitle className="font-heading text-lg font-semibold">Quick Actions</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-2">
+      <CardContent className="space-y-1.5">
         {actions.length === 0 ? <DashboardStateBlock variant="empty" message="No actions yet." /> : null}
         {actions.map((action) => {
           const href = getActionHref(action)
           const content = (
             <>
-              <span className="bg-muted text-primary flex h-9 w-9 items-center justify-center rounded-full">
+              <span className="bg-primary/10 text-primary-strong flex h-11 w-11 shrink-0 items-center justify-center rounded-full">
                 {getIcon(action.icon)}
               </span>
-              <span>
+              <span className="min-w-0">
                 <p className="text-sm font-medium">{action.title}</p>
                 <p className="text-muted-foreground text-xs">{action.subtitle}</p>
               </span>
@@ -60,7 +60,7 @@ export function QuickActionsCard({ actions }: QuickActionsCardProps) {
               <Link
                 key={action.title}
                 href={href}
-                className="hover:bg-muted/70 flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors"
+                className="hover:bg-muted/60 press flex w-full items-center gap-3 rounded-xl p-3 text-left transition-colors"
               >
                 {content}
               </Link>
@@ -72,7 +72,7 @@ export function QuickActionsCard({ actions }: QuickActionsCardProps) {
               key={action.title}
               type="button"
               onClick={() => handleActionClick(action)}
-              className="hover:bg-muted/70 flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors"
+              className="hover:bg-muted/60 press flex w-full items-center gap-3 rounded-xl p-3 text-left transition-colors"
             >
               {content}
             </button>

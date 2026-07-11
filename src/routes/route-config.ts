@@ -270,7 +270,7 @@ export const APP_ROUTES: AppRoute[] = [
     allowGuests: false,
     allowedRoles: ["patient"],
     requiredPermissions: ["patient.portal.read"],
-    navLabel: "Resources",
+    navLabel: "Documents",
     navGroup: "care",
     navIcon: "books",
     navKey: "resources",

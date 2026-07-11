@@ -1,7 +1,9 @@
 "use client"
 
+import { ChatCircleText } from "@phosphor-icons/react/dist/ssr"
 import * as React from "react"
 
+import { SessionNotesPanel } from "@/components/session/session-notes-panel"
 import { TwilioVideoRoom } from "@/components/session/twilio-video-room"
 import { Button } from "@/components/ui/button"
 import {
@@ -44,6 +46,7 @@ export function JoinSessionGate({
   const [error, setError] = React.useState<string | null>(null)
   const [overrideReason, setOverrideReason] = React.useState("")
   const [sessionToken, setSessionToken] = React.useState<JoinSessionTokenResponse | null>(null)
+  const [showNotes, setShowNotes] = React.useState(false)
 
   const isWarning = (readiness?.overallStatus ?? "attention") !== "ready"
   const joinLabel =
@@ -87,14 +90,38 @@ export function JoinSessionGate({
   }
 
   if (isJoined && sessionToken) {
+    const viewerRole = role === "psychologist" ? "psychologist" : "patient"
     return (
-      <TwilioVideoRoom
-        accessToken={sessionToken.accessToken}
-        roomName={sessionToken.roomName}
-        participantIdentity={sessionToken.participantIdentity}
-        onLeave={leaveCall}
-        onConnectionStatusChange={onConnectionStatusChange}
-      />
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className="space-y-3">
+          <TwilioVideoRoom
+            accessToken={sessionToken.accessToken}
+            roomName={sessionToken.roomName}
+            participantIdentity={sessionToken.participantIdentity}
+            onLeave={leaveCall}
+            onConnectionStatusChange={onConnectionStatusChange}
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="press gap-1.5 lg:hidden"
+            aria-expanded={showNotes}
+            onClick={() => setShowNotes((open) => !open)}
+          >
+            <ChatCircleText size={16} aria-hidden />
+            {showNotes ? "Hide session notes" : "Show session notes"}
+          </Button>
+          {showNotes ? (
+            <div className="h-[22rem] lg:hidden">
+              <SessionNotesPanel appointmentId={appointmentId} viewerRole={viewerRole} />
+            </div>
+          ) : null}
+        </div>
+        <div className="hidden lg:block">
+          <SessionNotesPanel appointmentId={appointmentId} viewerRole={viewerRole} />
+        </div>
+      </div>
     )
   }
 

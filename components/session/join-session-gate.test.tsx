@@ -13,6 +13,10 @@ jest.mock("@/components/session/twilio-video-room", () => ({
   ),
 }))
 
+jest.mock("@/components/session/session-notes-panel", () => ({
+  SessionNotesPanel: () => <div>Session notes panel</div>,
+}))
+
 import { postJoinAttempt, postJoinSession } from "@/src/patient/booking/api"
 
 const mockedPostJoinAttempt = postJoinAttempt as jest.MockedFunction<typeof postJoinAttempt>

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { CalendarBlank, SignOut } from "@phosphor-icons/react/dist/ssr"
+import { CalendarBlank, Gear, Question, SignOut } from "@phosphor-icons/react/dist/ssr"
 
 import { LogoutLink } from "@/components/auth/logout-link"
 import { ClinkLogo } from "@/components/brand/clink-logo"
@@ -94,6 +94,22 @@ export function PsychologistShell({
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <PsychologistJoinNextSession />
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/psychologist/profile" title="Settings">
+                    <Gear size={18} />
+                    <span className="group-data-[state=collapsed]/sidebar:sr-only">Settings</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/contact" title="Support">
+                    <Question size={18} />
+                    <span className="group-data-[state=collapsed]/sidebar:sr-only">Support</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <LogoutLink className="flex w-full items-center gap-3">

@@ -7,6 +7,7 @@ export const patientQueryKeys = {
   invoices: ["patient", "invoices"] as const,
   appointmentSessionDetails: (patientId?: string) => ["patient", "appointment-session-details", patientId] as const,
   journey: ["patient", "journey"] as const,
+  careTeam: ["patient", "care-team"] as const,
 }
 
 export const patientQueryStaleTime = {
@@ -16,4 +17,5 @@ export const patientQueryStaleTime = {
   invoices: 2 * 60_000,
   appointmentSessionDetails: 60_000,
   journey: 60_000,
+  careTeam: 2 * 60_000,
 } as const

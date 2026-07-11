@@ -2,7 +2,7 @@
 
 import type * as React from "react"
 import Link from "next/link"
-import { ShieldCheck, SignOut } from "@phosphor-icons/react/dist/ssr"
+import { Question, ShieldCheck, SignOut } from "@phosphor-icons/react/dist/ssr"
 
 import { LogoutLink } from "@/components/auth/logout-link"
 import { ClinkLogo } from "@/components/brand/clink-logo"
@@ -110,6 +110,14 @@ export function OpsShell({ children, activeRoute }: OpsShellProps) {
                   <Link href={complianceHref} title="Open compliance tools">
                     <ShieldCheck size={18} weight="bold" />
                     <span className="group-data-[state=collapsed]/sidebar:sr-only">Compliance tools</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/contact" title="Support">
+                    <Question size={18} />
+                    <span className="group-data-[state=collapsed]/sidebar:sr-only">Support</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
