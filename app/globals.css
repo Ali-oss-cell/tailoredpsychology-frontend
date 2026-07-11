@@ -57,6 +57,7 @@
 
     /* Darker Soft Teal for icon/text-on-light contexts — distinct from --primary (CTAs/focus) */
     --primary-strong: #5a7a9e;
+    --primary-strong-foreground: #f6efe7;
 
     /* Low-saturation status pill tints (Stitch "Pills/Chips" spec) */
     --pill-success-bg: color-mix(in oklab, var(--success) 14%, white);
@@ -161,6 +162,7 @@
     --shadow-primary-glow: 0 8px 24px rgb(159 188 225 / 0.35);
 
     --primary-strong: #b8cfe8;
+    --primary-strong-foreground: #1a1f1f;
 
     --pill-success-bg: color-mix(in oklab, var(--success) 22%, transparent);
     --pill-success-fg: var(--success);
@@ -229,6 +231,7 @@
     --color-primary-foreground: var(--primary-foreground);
     --color-primary: var(--primary);
     --color-primary-strong: var(--primary-strong);
+    --color-primary-strong-foreground: var(--primary-strong-foreground);
     --color-popover-foreground: var(--popover-foreground);
     --color-popover: var(--popover);
     --color-card-foreground: var(--card-foreground);
@@ -421,6 +424,10 @@
     font-size: 0.9375rem;
     line-height: 1.55;
     color: var(--muted-foreground);
+  }
+
+  .bg-primary-strong .marketing-small {
+    color: color-mix(in oklab, var(--primary-strong-foreground) 85%, transparent);
   }
 
   .marketing-cta {

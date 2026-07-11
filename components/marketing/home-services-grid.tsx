@@ -60,26 +60,26 @@ export function HomeServicesGrid({ title, description, items }: HomeServicesGrid
                 className={cn(
                   "flex h-full flex-col rounded-2xl p-4 sm:p-5 shadow-e1",
                   isAccent
-                    ? "bg-primary-strong text-primary-foreground xl:col-span-2"
+                    ? "bg-primary-strong text-primary-strong-foreground xl:col-span-2"
                     : "marketing-card",
                 )}
               >
-                <h3 className={cn("marketing-h3 mb-1.5 text-balance", isAccent && "text-primary-foreground")}>
-                  {service.title}
-                </h3>
-                <p
+                <h3
                   className={cn(
-                    "marketing-small mb-3 flex-1 line-clamp-2 leading-snug sm:line-clamp-3",
-                    isAccent && "text-primary-foreground/85",
+                    "marketing-h3 mb-1.5 text-balance",
+                    isAccent && "text-primary-strong-foreground",
                   )}
                 >
+                  {service.title}
+                </h3>
+                <p className="marketing-small mb-3 flex-1 line-clamp-2 leading-snug sm:line-clamp-3">
                   {service.description}
                 </p>
                 <Link
                   href={`/conditions/${service.slug}`}
                   className={cn(
                     "inline-flex items-center gap-2 text-sm font-semibold underline-offset-2 hover:underline",
-                    isAccent ? "text-primary-foreground" : "text-primary-strong",
+                    isAccent ? "text-primary-strong-foreground" : "text-primary-strong",
                   )}
                 >
                   Learn more <ArrowRight size={16} aria-hidden />
