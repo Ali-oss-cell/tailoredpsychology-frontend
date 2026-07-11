@@ -62,8 +62,6 @@ export function joinButtonLabel(
   return "Proceed to session"
 }
 
-type JoinSessionGateRole = "patient" | "psychologist" | "practice_manager" | "admin" | null
-
 export function shouldAutoAcknowledgeWarnings(
   role: JoinSessionGateRole,
   reasons: string[],
