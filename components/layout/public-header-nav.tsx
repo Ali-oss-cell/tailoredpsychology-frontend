@@ -13,7 +13,7 @@ import {
 import { cn } from "@/lib/utils"
 
 const linkBase =
-  "inline-flex min-h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-medium outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+  "inline-flex min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-4xl px-3 py-1.5 text-sm font-medium outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 
 export function PublicHeaderNav() {
   const pathname = usePathname() ?? ""
@@ -32,7 +32,7 @@ export function PublicHeaderNav() {
 
   return (
     <div className="hidden min-h-0 min-w-0 flex-1 items-center justify-start lg:flex">
-      <nav aria-label="Primary" className="flex max-w-full items-center gap-1 xl:gap-1.5">
+      <nav aria-label="Primary" className="flex max-w-full items-center gap-0.5 xl:gap-1">
         {PUBLIC_PRIMARY_NAV_ITEMS.map((item) => {
           if (item.type === "mega") {
             return <PublicNavMegaMenuDropdown key={item.id} menu={item} pathname={pathname} />
@@ -54,7 +54,7 @@ export function PublicHeaderNav() {
             </Link>
           )
         })}
-        <span className="bg-border/70 mx-1 hidden h-6 w-px xl:inline-block" aria-hidden />
+        <span className="bg-border/60 mx-0.5 hidden h-5 w-px xl:inline-block" aria-hidden />
         {PUBLIC_SECONDARY_NAV_ITEMS.map((item) => {
           const isAnchor = item.href.startsWith("/#")
           const sectionId = isAnchor ? item.href.slice(2) : ""

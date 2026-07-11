@@ -162,13 +162,12 @@ export function JoinSessionGate({
           <p className="text-muted-foreground">Proceed anyway or run checks again first.</p>
           <div className="flex flex-wrap gap-2">
             <Button
-              size="default"
-              className="h-11 rounded-xl"
+              size="lg"
               onClick={() => void evaluateJoin("warning_acknowledged")}
             >
               Proceed anyway
             </Button>
-            <Button size="default" variant="outline" className="h-11 rounded-xl" onClick={onRunChecks}>
+            <Button size="lg" variant="outline" onClick={onRunChecks}>
               Run checks now
             </Button>
           </div>

@@ -136,7 +136,7 @@ function CompletedStepDetail({
   const detailLink = detailLinkForStep(step.key)
 
   return (
-    <div className="border-success/20 bg-success/5 animate-in fade-in rounded-xl border p-3 duration-300">
+    <div className="border-success/20 bg-success/5 rounded-xl border p-3">
       <button
         type="button"
         onClick={onToggle}
@@ -152,7 +152,7 @@ function CompletedStepDetail({
         {expanded ? <CaretUp size={16} /> : <CaretDown size={16} />}
       </button>
       {expanded ? (
-        <div className="animate-in fade-in slide-in-from-top-1 mt-3 space-y-2 duration-200">
+        <div className="mt-3 space-y-2">
           <p className="text-muted-foreground text-sm leading-relaxed">{guide?.whenDone}</p>
           {detailLink ? (
             <Link href={detailLink.href} className="text-primary text-sm font-medium underline-offset-2 hover:underline">
@@ -190,6 +190,8 @@ export function JourneyRail({
 
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null)
   const [expandedDoneKey, setExpandedDoneKey] = React.useState<string | null>(null)
+  const [timelineExpanded, setTimelineExpanded] = React.useState(false)
+  const compact = portalContext.isFirstTime
   const activeIndex = selectedIndex ?? defaultIndex
   const nodeRefs = React.useRef<(HTMLButtonElement | null)[]>([])
 
@@ -222,7 +224,7 @@ export function JourneyRail({
     <div className="space-y-6" data-tutorial="patient.journey.rail">
       <Card
         id="care-journey"
-        className="dashboard-card interactive-lift overflow-hidden rounded-2xl shadow-e1"
+        className="dashboard-card overflow-hidden rounded-2xl shadow-e1"
       >
         <CardHeader className="border-border/60 space-y-4 border-b bg-muted/15 pb-5">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -262,10 +264,12 @@ export function JourneyRail({
               {milestoneLine ? (
                 <p className="text-muted-foreground text-xs leading-relaxed md:text-sm">{milestoneLine}</p>
               ) : null}
-              <div className="bg-primary/5 border-primary/15 rounded-xl border px-4 py-3">
-                <p className="text-foreground text-sm font-medium">{motivation.title}</p>
-                <p className="text-muted-foreground mt-0.5 text-sm leading-relaxed">{motivation.body}</p>
-              </div>
+              {!compact ? (
+                <div className="bg-primary/5 border-primary/15 rounded-xl border px-4 py-3">
+                  <p className="text-foreground text-sm font-medium">{motivation.title}</p>
+                  <p className="text-muted-foreground mt-0.5 text-sm leading-relaxed">{motivation.body}</p>
+                </div>
+              ) : null}
             </div>
           ) : null}
         </CardHeader>
@@ -297,6 +301,27 @@ export function JourneyRail({
           ) : null}
 
           {journeyQuery.isSuccess && steps.length > 0 ? (
+            <>
+              {compact && !timelineExpanded ? (
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-muted-foreground text-sm">
+                    {nextPending
+                      ? `Current: ${guideFor(nextPending.key)?.timelineLabel ?? nextPending.label}`
+                      : summaryTitle}
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={() => setTimelineExpanded(true)}
+                  >
+                    View full journey
+                    <CaretDown size={14} aria-hidden />
+                  </Button>
+                </div>
+              ) : null}
+              {(!compact || timelineExpanded) ? (
             <div
               role="tablist"
               aria-label="Journey milestones"
@@ -375,6 +400,8 @@ export function JourneyRail({
                 )
               })}
             </div>
+              ) : null}
+            </>
           ) : null}
 
           {journeyQuery.isSuccess && currentStep && displayStepStatus(currentStep, steps) === "done" ? (
@@ -395,7 +422,7 @@ export function JourneyRail({
               id="journey-step-detail"
               role="tabpanel"
               aria-labelledby={`journey-node-${currentStep.key}`}
-              className="animate-in fade-in slide-in-from-bottom-2 space-y-3 duration-300"
+              className="space-y-3"
             >
               <div className="flex flex-wrap items-center gap-3">
                 <Badge variant="default">In progress</Badge>
@@ -415,13 +442,15 @@ export function JourneyRail({
         </CardContent>
       </Card>
 
-      <JourneyCurrentStepCard
-        step={nextPending ?? currentStep ?? null}
-        nextSession={nextSession}
-        loading={sessionLoading}
-        error={sessionError}
-        onRetry={onSessionRetry}
-      />
+      {!compact ? (
+        <JourneyCurrentStepCard
+          step={nextPending ?? currentStep ?? null}
+          nextSession={nextSession}
+          loading={sessionLoading}
+          error={sessionError}
+          onRetry={onSessionRetry}
+        />
+      ) : null}
 
       <Card className="dashboard-card rounded-2xl shadow-e1">
         <CardHeader className="pb-3">

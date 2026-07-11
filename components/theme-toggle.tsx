@@ -14,11 +14,11 @@ export function ThemeToggle() {
       ref={ref}
       type="button"
       variant="ghost"
-      size="icon"
+      size="icon-sm"
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}
       onClick={() => void toggleTheme()}
-      className="relative min-h-11 min-w-11 rounded-xl"
+      className="relative"
     >
       <Sun size={18} weight="duotone" className="hidden dark:block" />
       <Moon size={18} weight="duotone" className="block dark:hidden" />

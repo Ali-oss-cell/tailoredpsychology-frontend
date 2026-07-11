@@ -23,13 +23,12 @@ export default function ConditionsIndexPage() {
             Explore care pathways and start intake with the context that matters to your goals.
           </p>
         </section>
-        <ScrollReveal delayMs={40}>
-          <section className="grid gap-3 md:grid-cols-2">
+        <section className="grid gap-3 md:grid-cols-2">
             {conditionPages.map((item) => (
               <article
                 key={item.slug}
                 className={cn(
-                  "interactive-lift rounded-md border border-border/70 bg-card p-4 shadow-e1 transition-colors",
+                  "rounded-md border border-border/70 bg-card p-4 shadow-e1 transition-colors",
                   "hover:border-primary/30",
                 )}
               >
@@ -41,7 +40,6 @@ export default function ConditionsIndexPage() {
               </article>
             ))}
           </section>
-        </ScrollReveal>
         <ScrollReveal delayMs={60}>
           <CtaStrip
             title="Not sure which pathway fits?"

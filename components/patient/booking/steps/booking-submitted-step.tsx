@@ -11,11 +11,7 @@ export function BookingSubmittedStep() {
   return (
     <div className="space-y-3 rounded-lg border border-primary/30 bg-primary/10 p-4">
       <p className="flex items-center gap-2 text-sm font-medium">
-        <CheckCircle
-          size={16}
-          className="motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 motion-safe:duration-200"
-          aria-hidden
-        />
+        <CheckCircle size={16} aria-hidden />
         Booking request submitted
       </p>
       <p className="text-sm">

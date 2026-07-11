@@ -5,58 +5,58 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-    --background: #f4f7f6;
-    --foreground: #1a1f1f;
+    --background: #f6efe7;
+    --foreground: #616362;
     --card: #ffffff;
-    --card-foreground: #1a1f1f;
+    --card-foreground: #616362;
     --popover: #ffffff;
-    --popover-foreground: #1a1f1f;
-    --primary: #5fa8a6;
+    --popover-foreground: #616362;
+    --primary: #9fbce1;
     --primary-foreground: #1a1f1f;
-    --secondary: #9eaa9f;
+    --secondary: #aebfb2;
     --secondary-foreground: #1a1f1f;
-    --muted: #e8efed;
-    --muted-foreground: #566665;
-    --accent: #8fa7a8;
+    --muted: #ebe4dc;
+    --muted-foreground: #787977;
+    --accent: #aebfb2;
     --accent-foreground: #1a1f1f;
     --destructive: #c05656;
     --destructive-foreground: #fef2f2;
-    --border: #d5dfdd;
-    --input: #d5dfdd;
-    --ring: #3e7c7a;
-    --chart-1: #5fa8a6;
-    --chart-2: #8fa7a8;
-    --chart-3: #9eaa9f;
-    --chart-4: #3e7c7a;
-    --chart-5: #00c2b8;
+    --border: #ddd5cb;
+    --input: #ddd5cb;
+    --ring: #7a9fc4;
+    --chart-1: #9fbce1;
+    --chart-2: #aebfb2;
+    --chart-3: #5a7a9e;
+    --chart-4: #787977;
+    --chart-5: #616362;
     --radius: 0.625rem;
-    --sidebar: #edf3f1;
-    --sidebar-foreground: #1a1f1f;
-    --sidebar-primary: #5fa8a6;
-    --sidebar-primary-foreground: #f4f7f6;
-    --sidebar-accent: #dce5e2;
-    --sidebar-accent-foreground: #1a1f1f;
-    --sidebar-border: #c8d3d0;
-    --sidebar-ring: #3e7c7a;
+    --sidebar: #f0e9e1;
+    --sidebar-foreground: #616362;
+    --sidebar-primary: #9fbce1;
+    --sidebar-primary-foreground: #1a1f1f;
+    --sidebar-accent: #ebe4dc;
+    --sidebar-accent-foreground: #616362;
+    --sidebar-border: #ddd5cb;
+    --sidebar-ring: #7a9fc4;
     --surface-1: #ffffff;
-    --surface-2: #edf3f1;
-    --surface-3: #dce5e2;
+    --surface-2: #f0e9e1;
+    --surface-3: #ebe4dc;
     --success: #3f8c67;
     --success-foreground: #f0fdf4;
     --warning: #b9852c;
     --warning-foreground: #fffbeb;
     --info: #4f8dbd;
     --info-foreground: #eff6ff;
-    --gradient-brand: linear-gradient(135deg, #8fa7a8, #9eaa9f);
+    --gradient-brand: linear-gradient(135deg, #9fbce1, #aebfb2);
 
     /* Stitch-aligned diffused ambient shadows — replaces flat 1px borders as the primary separator */
-    --shadow-e1: 0 2px 4px rgb(15 23 42 / 0.04), 0 4px 20px rgb(15 23 42 / 0.05);
-    --shadow-e2: 0 4px 8px rgb(15 23 42 / 0.06), 0 10px 30px rgb(15 23 42 / 0.1);
-    --shadow-e3: 0 6px 12px rgb(15 23 42 / 0.07), 0 20px 48px rgb(15 23 42 / 0.14);
-    --shadow-primary-glow: 0 8px 24px rgb(95 168 166 / 0.28);
+    --shadow-e1: 0 2px 4px rgb(97 99 98 / 0.04), 0 4px 20px rgb(97 99 98 / 0.05);
+    --shadow-e2: 0 4px 8px rgb(97 99 98 / 0.06), 0 10px 30px rgb(97 99 98 / 0.1);
+    --shadow-e3: 0 6px 12px rgb(97 99 98 / 0.07), 0 20px 48px rgb(97 99 98 / 0.14);
+    --shadow-primary-glow: 0 8px 24px rgb(159 188 225 / 0.28);
 
-    /* Darker teal for icon/text-on-light contexts (Stitch M3 "primary") — distinct from --primary (CTAs/focus) */
-    --primary-strong: #156968;
+    /* Darker Soft Teal for icon/text-on-light contexts — distinct from --primary (CTAs/focus) */
+    --primary-strong: #5a7a9e;
 
     /* Low-saturation status pill tints (Stitch "Pills/Chips" spec) */
     --pill-success-bg: color-mix(in oklab, var(--success) 14%, white);
@@ -81,26 +81,26 @@
 
     --border-hairline: rgb(26 31 31 / 0.07);
 
-    /* Patient dashboard — Phase 1 UI refactor */
-    --dashboard-bg: #f8fafc;
-    --sidebar-patient: #0a7378;
-    --sidebar-patient-foreground: #f4f7f6;
-    --sidebar-patient-muted: rgb(244 247 246 / 0.72);
+    /* Patient dashboard — Track A brand canvas */
+    --dashboard-bg: #f6efe7;
+    --sidebar-patient: #4a6b6e;
+    --sidebar-patient-foreground: #f6efe7;
+    --sidebar-patient-muted: rgb(246 239 231 / 0.72);
     --sidebar-patient-accent: rgb(255 255 255 / 0.14);
     --sidebar-patient-border: rgb(255 255 255 / 0.1);
-    --sidebar-patient-cta: #5fa8a6;
-    --sidebar-psychologist: #0a7378;
-    --sidebar-psychologist-foreground: #f4f7f6;
-    --sidebar-psychologist-muted: rgb(244 247 246 / 0.72);
+    --sidebar-patient-cta: #9fbce1;
+    --sidebar-psychologist: #4a6b6e;
+    --sidebar-psychologist-foreground: #f6efe7;
+    --sidebar-psychologist-muted: rgb(246 239 231 / 0.72);
     --sidebar-psychologist-accent: rgb(255 255 255 / 0.14);
     --sidebar-psychologist-border: rgb(255 255 255 / 0.1);
-    --sidebar-psychologist-cta: #5fa8a6;
-    --sidebar-ops: #0a7378;
-    --sidebar-ops-foreground: #f4f7f6;
-    --sidebar-ops-muted: rgb(244 247 246 / 0.72);
+    --sidebar-psychologist-cta: #9fbce1;
+    --sidebar-ops: #4a6b6e;
+    --sidebar-ops-foreground: #f6efe7;
+    --sidebar-ops-muted: rgb(246 239 231 / 0.72);
     --sidebar-ops-accent: rgb(255 255 255 / 0.14);
     --sidebar-ops-border: rgb(255 255 255 / 0.1);
-    --sidebar-ops-cta: #5fa8a6;
+    --sidebar-ops-cta: #9fbce1;
     --radius-dashboard-card: 1rem;
 
     /* Motion system */
@@ -112,55 +112,55 @@
 }
 
 .dark {
-    --background: #0b0f10;
-    --foreground: #e6eceb;
-    --card: #161c1d;
-    --card-foreground: #e6eceb;
-    --popover: #161c1d;
-    --popover-foreground: #e6eceb;
-    --primary: #5fa8a6;
-    --primary-foreground: #0b0f10;
-    --secondary: #9eaa9f;
-    --secondary-foreground: #0b0f10;
-    --muted: #1f2728;
-    --muted-foreground: #afbebc;
-    --accent: #8fa7a8;
-    --accent-foreground: #0b0f10;
+    --background: #1a1918;
+    --foreground: #e8e4df;
+    --card: #242322;
+    --card-foreground: #e8e4df;
+    --popover: #242322;
+    --popover-foreground: #e8e4df;
+    --primary: #9fbce1;
+    --primary-foreground: #1a1f1f;
+    --secondary: #aebfb2;
+    --secondary-foreground: #1a1f1f;
+    --muted: #2e2d2c;
+    --muted-foreground: #b5b0aa;
+    --accent: #aebfb2;
+    --accent-foreground: #1a1f1f;
     --destructive: #cf6c6c;
     --destructive-foreground: #fff1f1;
-    --border: #2a3333;
-    --input: #2a3333;
-    --ring: #5fa8a6;
-    --chart-1: #5fa8a6;
-    --chart-2: #8fa7a8;
-    --chart-3: #9eaa9f;
-    --chart-4: #3e7c7a;
-    --chart-5: #00c2b8;
-    --sidebar: #111617;
-    --sidebar-foreground: #e6eceb;
-    --sidebar-primary: #5fa8a6;
-    --sidebar-primary-foreground: #0b0f10;
-    --sidebar-accent: #1f2728;
-    --sidebar-accent-foreground: #e6eceb;
-    --sidebar-border: #2a3333;
-    --sidebar-ring: #5fa8a6;
-    --surface-1: #111617;
-    --surface-2: #161c1d;
-    --surface-3: #1f2728;
+    --border: #3a3938;
+    --input: #3a3938;
+    --ring: #9fbce1;
+    --chart-1: #9fbce1;
+    --chart-2: #aebfb2;
+    --chart-3: #5a7a9e;
+    --chart-4: #787977;
+    --chart-5: #b5b0aa;
+    --sidebar: #1f1e1d;
+    --sidebar-foreground: #e8e4df;
+    --sidebar-primary: #9fbce1;
+    --sidebar-primary-foreground: #1a1f1f;
+    --sidebar-accent: #2e2d2c;
+    --sidebar-accent-foreground: #e8e4df;
+    --sidebar-border: #3a3938;
+    --sidebar-ring: #9fbce1;
+    --surface-1: #1f1e1d;
+    --surface-2: #242322;
+    --surface-3: #2e2d2c;
     --success: #5ea884;
     --success-foreground: #03180d;
     --warning: #d3a25a;
     --warning-foreground: #1b1204;
     --info: #76a9d6;
     --info-foreground: #05111d;
-    --gradient-brand: linear-gradient(135deg, #8fa7a8, #5fa8a6);
+    --gradient-brand: linear-gradient(135deg, #9fbce1, #aebfb2);
 
     --shadow-e1: 0 1px 2px rgb(0 0 0 / 0.4);
     --shadow-e2: 0 2px 4px rgb(0 0 0 / 0.35), 0 6px 16px rgb(0 0 0 / 0.45);
     --shadow-e3: 0 4px 8px rgb(0 0 0 / 0.4), 0 16px 40px rgb(0 0 0 / 0.55);
-    --shadow-primary-glow: 0 8px 24px rgb(95 168 166 / 0.35);
+    --shadow-primary-glow: 0 8px 24px rgb(159 188 225 / 0.35);
 
-    --primary-strong: #8ad3d1;
+    --primary-strong: #b8cfe8;
 
     --pill-success-bg: color-mix(in oklab, var(--success) 22%, transparent);
     --pill-success-fg: var(--success);
@@ -178,25 +178,25 @@
 
     --border-hairline: rgb(230 236 235 / 0.08);
 
-    --dashboard-bg: #0b0f10;
-    --sidebar-patient: #0d4f52;
-    --sidebar-patient-foreground: #e6eceb;
-    --sidebar-patient-muted: rgb(230 236 235 / 0.65);
+    --dashboard-bg: #1a1918;
+    --sidebar-patient: #3d5658;
+    --sidebar-patient-foreground: #e8e4df;
+    --sidebar-patient-muted: rgb(232 228 223 / 0.65);
     --sidebar-patient-accent: rgb(255 255 255 / 0.1);
     --sidebar-patient-border: rgb(255 255 255 / 0.08);
-    --sidebar-patient-cta: #5fa8a6;
-    --sidebar-psychologist: #0d4f52;
-    --sidebar-psychologist-foreground: #e6eceb;
-    --sidebar-psychologist-muted: rgb(230 236 235 / 0.65);
+    --sidebar-patient-cta: #9fbce1;
+    --sidebar-psychologist: #3d5658;
+    --sidebar-psychologist-foreground: #e8e4df;
+    --sidebar-psychologist-muted: rgb(232 228 223 / 0.65);
     --sidebar-psychologist-accent: rgb(255 255 255 / 0.1);
     --sidebar-psychologist-border: rgb(255 255 255 / 0.08);
-    --sidebar-psychologist-cta: #5fa8a6;
-    --sidebar-ops: #0d4f52;
-    --sidebar-ops-foreground: #e6eceb;
-    --sidebar-ops-muted: rgb(230 236 235 / 0.65);
+    --sidebar-psychologist-cta: #9fbce1;
+    --sidebar-ops: #3d5658;
+    --sidebar-ops-foreground: #e8e4df;
+    --sidebar-ops-muted: rgb(232 228 223 / 0.65);
     --sidebar-ops-accent: rgb(255 255 255 / 0.1);
     --sidebar-ops-border: rgb(255 255 255 / 0.08);
-    --sidebar-ops-cta: #5fa8a6;
+    --sidebar-ops-cta: #9fbce1;
 }
 
 @theme inline {
@@ -389,7 +389,7 @@
 
   /* Marketing / landing page typography */
   .marketing-h1 {
-    font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-heading), Gabriola, "Times New Roman", serif;
     font-size: clamp(2.5rem, 4.5vw + 1rem, 4rem);
     font-weight: 700;
     line-height: 1.08;
@@ -397,7 +397,7 @@
   }
 
   .marketing-h2 {
-    font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-heading), Gabriola, "Times New Roman", serif;
     font-size: clamp(1.875rem, 2.5vw + 0.75rem, 2.5rem);
     font-weight: 600;
     line-height: 1.15;
@@ -405,7 +405,7 @@
   }
 
   .marketing-h3 {
-    font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-heading), Gabriola, "Times New Roman", serif;
     font-size: clamp(1.25rem, 1.5vw + 0.5rem, 1.75rem);
     font-weight: 600;
     line-height: 1.25;
@@ -426,7 +426,6 @@
   .marketing-cta {
     min-height: 3rem;
     padding-inline: 1.25rem;
-    border-radius: 1rem;
     font-size: 1rem;
     font-weight: 600;
   }
@@ -635,33 +634,16 @@ html {
     }
   }
 
-  /* Hero headline word stagger */
-  .hero-word {
-    display: inline-block;
-    opacity: 0;
-    transform: translateY(0.75em) scale(0.98);
-    filter: blur(4px);
-    animation: hero-word-rise 0.85s var(--ease-out-quint) forwards;
-    animation-delay: calc(var(--word-index, 0) * 70ms + 80ms);
-  }
-  @keyframes hero-word-rise {
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      filter: blur(0);
-    }
-  }
-
   /* One-shot glow pulse when the join window opens */
   .join-live-pulse {
     animation: join-pulse 0.5s var(--ease-out-quint) 1;
   }
   @keyframes join-pulse {
     0% {
-      box-shadow: 0 0 0 0 rgb(95 168 166 / 0.5);
+      box-shadow: 0 0 0 0 rgb(159 188 225 / 0.5);
     }
     100% {
-      box-shadow: 0 0 0 16px rgb(95 168 166 / 0);
+      box-shadow: 0 0 0 16px rgb(159 188 225 / 0);
     }
   }
 
@@ -672,10 +654,10 @@ html {
   @keyframes journey-current-pulse {
     0%,
     100% {
-      box-shadow: 0 0 0 0 rgb(95 168 166 / 0.35);
+      box-shadow: 0 0 0 0 rgb(159 188 225 / 0.35);
     }
     50% {
-      box-shadow: 0 0 0 10px rgb(95 168 166 / 0);
+      box-shadow: 0 0 0 10px rgb(159 188 225 / 0);
     }
   }
 
@@ -718,21 +700,30 @@ html {
 
 /* Public header: flat at top of page, glass + elevation once scrolled */
 [data-public-header] {
+  --public-header-height: 3.25rem;
   transition:
     box-shadow var(--duration-element) var(--ease-out-quint),
     background-color var(--duration-element) var(--ease-out-quint),
     border-color var(--duration-element) var(--ease-out-quint),
     backdrop-filter var(--duration-element) var(--ease-out-quint);
 }
+@media (min-width: 768px) {
+  [data-public-header] {
+    --public-header-height: 4rem;
+  }
+}
 [data-public-header][data-scrolled="true"] {
   background-color: var(--glass-bg);
   border-color: transparent;
-  box-shadow: var(--shadow-e2);
+  box-shadow: var(--shadow-e1);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
+  --public-header-height: 3.25rem;
 }
-[data-public-header][data-scrolled="true"] {
-  --public-header-height: 4.5rem;
+@media (min-width: 768px) {
+  [data-public-header][data-scrolled="true"] {
+    --public-header-height: 3.5rem;
+  }
 }
 
 [data-patient-header] {

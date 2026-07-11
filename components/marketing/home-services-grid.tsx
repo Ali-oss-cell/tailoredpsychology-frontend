@@ -18,10 +18,10 @@ export function HomeServicesGrid({ title, description, items }: HomeServicesGrid
   const [featured, ...rest] = items
 
   return (
-    <PageSection id="services" className="scroll-mt-24">
-      <PageContainer className="space-y-10">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div className="max-w-2xl space-y-3">
+    <PageSection id="services" className="scroll-mt-24 py-10 md:py-14 lg:py-16">
+      <PageContainer className="space-y-6 md:space-y-8">
+        <div className="flex flex-wrap items-end justify-between gap-3 md:gap-4">
+          <div className="max-w-2xl space-y-2 md:space-y-3">
             <h2 className="marketing-h2 text-balance">{title}</h2>
             <p className="marketing-body text-muted-foreground">{description}</p>
           </div>
@@ -31,16 +31,18 @@ export function HomeServicesGrid({ title, description, items }: HomeServicesGrid
             </Link>
           </Button>
         </div>
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 md:grid-cols-2 xl:grid-cols-3 xl:gap-4">
           {featured ? (
-            <article className="marketing-card interactive-lift group relative flex min-h-[16rem] flex-col justify-end overflow-hidden p-7 md:row-span-2 md:min-h-[26rem] xl:col-span-1">
+            <article className="marketing-card group relative flex flex-col justify-end overflow-hidden p-4 sm:p-5 xl:col-span-1 xl:row-span-2 xl:min-h-0">
               <div
                 aria-hidden
                 className="from-primary/12 pointer-events-none absolute inset-0 bg-gradient-to-br via-transparent to-transparent"
               />
-              <div className="relative space-y-3">
+              <div className="relative space-y-2">
                 <h3 className="marketing-h3 text-balance">{featured.title}</h3>
-                <p className="marketing-small max-w-sm leading-relaxed">{featured.description}</p>
+                <p className="marketing-small line-clamp-3 max-w-sm leading-snug xl:line-clamp-4">
+                  {featured.description}
+                </p>
                 <Link
                   href={`/conditions/${featured.slug}`}
                   className="text-primary-strong inline-flex items-center gap-2 text-sm font-semibold underline-offset-2 group-hover:underline"
@@ -56,14 +58,21 @@ export function HomeServicesGrid({ title, description, items }: HomeServicesGrid
               <article
                 key={service.slug}
                 className={cn(
-                  "interactive-lift flex h-full flex-col rounded-2xl p-6 shadow-e1",
+                  "flex h-full flex-col rounded-2xl p-4 sm:p-5 shadow-e1",
                   isAccent
                     ? "bg-primary-strong text-primary-foreground xl:col-span-2"
                     : "marketing-card",
                 )}
               >
-                <h3 className={cn("marketing-h3 mb-2", isAccent && "text-primary-foreground")}>{service.title}</h3>
-                <p className={cn("marketing-small mb-5 flex-1", isAccent && "text-primary-foreground/85")}>
+                <h3 className={cn("marketing-h3 mb-1.5 text-balance", isAccent && "text-primary-foreground")}>
+                  {service.title}
+                </h3>
+                <p
+                  className={cn(
+                    "marketing-small mb-3 flex-1 line-clamp-2 leading-snug sm:line-clamp-3",
+                    isAccent && "text-primary-foreground/85",
+                  )}
+                >
                   {service.description}
                 </p>
                 <Link

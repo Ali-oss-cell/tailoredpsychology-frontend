@@ -52,12 +52,6 @@ export type HomeTestimonial = {
   context: string
 }
 
-export type HomeHeroStat = {
-  value: string
-  label: string
-  disclaimer?: string
-}
-
 export type HomePageContent = {
   hero: {
     badge: string
@@ -70,7 +64,6 @@ export type HomePageContent = {
     secondaryAction: { href: string; label: string }
     tertiaryAction: { href: string; label: string }
     trustIndicators: HomeTrustIndicator[]
-    floatingStats: HomeHeroStat[]
   }
   trustBar: HomeTrustBarItem[]
   certificationBadges: HomeCertificationBadge[]
@@ -131,7 +124,7 @@ const featuredConditionSlugs = [
 export const homepageContent: HomePageContent = {
   hero: {
     badge: "Available Australia wide",
-    title: "Find the right psychologist for",
+    title: "Find the right psychologist",
     titleAccent: "your journey",
     description:
       "Answer a few quick questions — about 2 minutes — and we will suggest psychologists who fit your state, goals, and preferences. Warm, evidence-based care when you are ready to book.",
@@ -147,23 +140,6 @@ export const homepageContent: HomePageContent = {
       { label: "Secure telehealth", icon: "telehealth" },
       { label: "Australia wide", icon: "australia" },
       { label: "Privacy first", icon: "privacy" },
-    ],
-    floatingStats: [
-      {
-        value: "~2 min",
-        label: "Matching quiz",
-        disclaimer: "Typical completion time",
-      },
-      {
-        value: "15+",
-        label: "Clinical psychologists",
-        disclaimer: "Illustrative practice snapshot",
-      },
-      {
-        value: "100%",
-        label: "Confidential care",
-        disclaimer: "Privacy-first by design",
-      },
     ],
   },
   trustBar: [

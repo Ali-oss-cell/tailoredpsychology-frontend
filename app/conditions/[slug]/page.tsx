@@ -5,7 +5,6 @@ import { PublicFooter } from "@/components/layout/public-footer"
 import { PublicHeader } from "@/components/layout/public-header"
 import { PublicPageEnter } from "@/components/layout/public-page-enter"
 import { PublicMarketingAmbient } from "@/components/marketing/public-marketing-ambient"
-import { ScrollReveal } from "@/components/marketing/scroll-reveal"
 import { PublicCtaLink } from "@/components/public/public-cta-link"
 import { getConditionBySlug } from "@/content/conditions"
 import { cn } from "@/lib/utils"
@@ -39,10 +38,9 @@ export default async function ConditionPage({ params }: ConditionPageProps) {
             <p className="text-muted-foreground text-base leading-relaxed">{content.summary}</p>
           </section>
 
-          <ScrollReveal>
-            <section
+          <section
               className={cn(
-                "interactive-lift rounded-2xl border border-border/70 bg-card p-5 shadow-e1 md:p-6",
+                "rounded-2xl border border-border/70 bg-card p-5 shadow-e1 md:p-6",
               )}
             >
               <h2 className="text-lg font-semibold">When to seek support</h2>
@@ -52,10 +50,8 @@ export default async function ConditionPage({ params }: ConditionPageProps) {
                 ))}
               </ul>
             </section>
-          </ScrollReveal>
 
-          <ScrollReveal delayMs={40}>
-            <section className="interactive-lift rounded-2xl border border-border/70 bg-card p-5 shadow-e1 md:p-6">
+            <section className="rounded-2xl border border-border/70 bg-card p-5 shadow-e1 md:p-6">
               <h2 className="text-lg font-semibold">How Tailored Psychology supports this pathway</h2>
               <ul className="mt-2 list-disc space-y-2 pl-5 text-sm text-muted-foreground">
                 {content.tailoredApproach.map((item) => (
@@ -63,10 +59,8 @@ export default async function ConditionPage({ params }: ConditionPageProps) {
                 ))}
               </ul>
             </section>
-          </ScrollReveal>
 
-          <ScrollReveal delayMs={60}>
-            <section className="interactive-lift rounded-2xl border border-primary/20 bg-primary/[0.04] p-5 shadow-e1 md:p-6">
+            <section className="rounded-2xl border border-primary/20 bg-primary/[0.04] p-5 shadow-e1 md:p-6">
               <h2 className="text-lg font-semibold">Next step</h2>
               <p className="mt-2 text-sm text-muted-foreground">{content.nextStep}</p>
               <div className="mt-4 flex flex-wrap gap-3">
@@ -86,7 +80,6 @@ export default async function ConditionPage({ params }: ConditionPageProps) {
                 />
               </div>
             </section>
-          </ScrollReveal>
         </PublicPageEnter>
       </main>
       <PublicFooter />

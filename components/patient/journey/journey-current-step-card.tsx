@@ -134,7 +134,7 @@ export function JourneyCurrentStepCard({
 
   if (!step && !nextSession) {
     return (
-      <Card className="dashboard-card interactive-lift min-h-[13rem] rounded-2xl shadow-e2">
+      <Card className="dashboard-card min-h-[13rem] rounded-2xl shadow-e2">
         <CardContent className="space-y-4 p-6">
           <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">Current step</p>
           <div data-tutorial="patient.dashboard.hero-book">
@@ -158,7 +158,7 @@ export function JourneyCurrentStepCard({
 
   return (
     <Card
-      className="dashboard-card interactive-lift overflow-hidden rounded-2xl border-primary/30 shadow-e2"
+      className="dashboard-card overflow-hidden rounded-2xl border-primary/30 shadow-e2"
       data-tutorial="patient.dashboard.current-step"
     >
       <CardContent className="p-0">
@@ -210,7 +210,7 @@ export function JourneyCurrentStepCard({
                     asChild
                     size="lg"
                     className={cn(
-                      "press h-12 min-w-[11rem] rounded-xl px-6 text-base shadow-primary-glow",
+                      "press min-w-[11rem] shadow-primary-glow",
                       nextSession.window.status === "open" && "join-live-pulse",
                     )}
                   >

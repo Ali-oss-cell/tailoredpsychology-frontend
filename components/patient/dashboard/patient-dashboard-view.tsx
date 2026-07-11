@@ -3,6 +3,7 @@
 import { BillingSnapshotCard } from "@/components/patient/dashboard/billing-snapshot-card"
 import { DashboardSummaryCards } from "@/components/patient/dashboard/dashboard-summary-cards"
 import { DashboardWelcomeSection } from "@/components/patient/dashboard/dashboard-welcome-section"
+import { FirstTimeDashboardHero } from "@/components/patient/dashboard/first-time-dashboard-hero"
 import { MoodCheckinCard } from "@/components/patient/dashboard/mood-checkin-card"
 import { QuickActionsCard } from "@/components/patient/dashboard/quick-actions-card"
 import { ResourceRecommendationsCard } from "@/components/patient/dashboard/resource-recommendations-card"
@@ -63,17 +64,21 @@ export function PatientDashboardView() {
         portalMode={portalContext.mode}
       />
 
-      <DashboardSummaryCards
-        careProgress={
-          journeyQuery.isSuccess && journeyTotal > 0
-            ? { done: journeyDone, total: journeyTotal, pct: journeyPct }
-            : null
-        }
-        unreadMessages={notificationsQuery.isSuccess ? notificationsQuery.data : null}
-        documentCount={patientDashboardContent.resources.length}
-        billingStatus={billingStatus}
-        loading={loading || journeyQuery.isLoading}
-      />
+      <FirstTimeDashboardHero loading={loading} />
+
+      {!portalContext.isFirstTime ? (
+        <DashboardSummaryCards
+          careProgress={
+            journeyQuery.isSuccess && journeyTotal > 0
+              ? { done: journeyDone, total: journeyTotal, pct: journeyPct }
+              : null
+          }
+          unreadMessages={notificationsQuery.isSuccess ? notificationsQuery.data : null}
+          documentCount={patientDashboardContent.resources.length}
+          billingStatus={billingStatus}
+          loading={loading || journeyQuery.isLoading}
+        />
+      ) : null}
 
       {portalContext.isFirstTime ? <PatientTutorialOnboardingCta /> : null}
       {portalContext.isFirstTime ? <PatientTelehealth101Cta /> : null}

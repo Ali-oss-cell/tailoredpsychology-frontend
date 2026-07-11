@@ -46,7 +46,7 @@ export default function HomePage() {
             clinicians={homepageFeaturedClinicians}
           />
         </ScrollSection>
-        <ScrollSection variant="split">
+        <ScrollSection variant="rise">
           <WhyChooseUsSection {...homepageContent.whyChooseUs} />
         </ScrollSection>
         <ScrollSection variant="cards">

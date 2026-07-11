@@ -9,7 +9,7 @@ import { isNavLinkActive, isNavMegaActive } from "@/content/public-nav"
 import { cn } from "@/lib/utils"
 
 const triggerBase =
-  "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1 rounded-xl px-3.5 py-2 text-sm font-medium outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+  "inline-flex min-h-9 shrink-0 items-center justify-center gap-1 rounded-4xl px-3 py-1.5 text-sm font-medium outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 
 type PublicNavMegaMenuProps = {
   menu: PublicNavMegaMenu
@@ -73,7 +73,7 @@ export function PublicNavMegaMenuDropdown({ menu, pathname }: PublicNavMegaMenuP
           id={panelId}
           role="region"
           aria-label={`${menu.label} menu`}
-          className="border-border/70 bg-card absolute start-0 top-[calc(100%+0.35rem)] z-50 w-[min(100vw-2rem,22rem)] rounded-2xl border p-2 shadow-e3 sm:w-[min(100vw-2rem,26rem)]"
+          className="border-border/60 bg-card absolute start-0 top-[calc(100%+0.25rem)] z-50 w-[min(100vw-2rem,22rem)] rounded-2xl border p-1.5 shadow-e2 transition-[box-shadow,opacity] duration-200 sm:w-[min(100vw-2rem,24rem)]"
         >
           {menu.description ? (
             <p className="text-muted-foreground px-3 py-2 text-xs leading-relaxed">{menu.description}</p>
@@ -86,7 +86,7 @@ export function PublicNavMegaMenuDropdown({ menu, pathname }: PublicNavMegaMenuP
                   <Link
                     href={item.href}
                     className={cn(
-                      "hover:bg-muted/60 block rounded-xl px-3 py-2.5 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
+                      "hover:bg-muted/60 block rounded-4xl px-3 py-2 outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-ring",
                       itemActive && "bg-primary/8 ring-1 ring-primary/10",
                     )}
                     aria-current={itemActive ? "page" : undefined}
@@ -106,7 +106,7 @@ export function PublicNavMegaMenuDropdown({ menu, pathname }: PublicNavMegaMenuP
           <div className="border-border/60 mt-2 border-t px-3 pt-2">
             <Link
               href={menu.href}
-              className="text-primary hover:text-primary/80 inline-flex min-h-11 items-center text-sm font-medium transition-colors"
+              className="text-primary hover:text-primary/80 inline-flex min-h-9 items-center text-sm font-medium transition-colors duration-200"
               onClick={() => setOpen(false)}
             >
               View all {menu.label.toLowerCase()} →

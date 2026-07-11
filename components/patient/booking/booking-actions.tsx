@@ -26,7 +26,8 @@ export function BookingActions({
       <Button
         type="button"
         variant="outline"
-        className="min-h-11 min-w-[5.5rem] rounded-xl"
+        size="lg"
+        className="min-w-[5.5rem]"
         onClick={onBack}
         disabled={isFirstStep || isSubmitting}
       >
@@ -34,7 +35,8 @@ export function BookingActions({
       </Button>
       <Button
         type="button"
-        className="min-h-11 min-w-[5.5rem] rounded-xl text-base font-semibold"
+        size="lg"
+        className="min-w-[5.5rem] font-semibold"
         onClick={onNext}
         disabled={isSubmitting}
       >

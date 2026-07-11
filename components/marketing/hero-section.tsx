@@ -1,6 +1,5 @@
 import Link from "next/link"
 import Image from "next/image"
-import type { CSSProperties } from "react"
 import {
   Certificate,
   GlobeHemisphereWest,
@@ -13,8 +12,7 @@ import { PageContainer } from "@/components/layout/page-container"
 import { PageSection } from "@/components/layout/page-section"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import type { HomeHeroStat, HomeTrustIndicator } from "@/content/homepage"
-import { cn } from "@/lib/utils"
+import type { HomeTrustIndicator } from "@/content/homepage"
 
 type HeroAction = {
   href: string
@@ -30,7 +28,6 @@ type HeroSectionProps = {
   secondaryAction: HeroAction
   tertiaryAction: HeroAction
   trustIndicators: HomeTrustIndicator[]
-  floatingStats: HomeHeroStat[]
   imageAlt: string
   imageSrc?: string
 }
@@ -43,29 +40,6 @@ const trustIconMap = {
   privacy: Lock,
 } as const
 
-function HeroTitle({ title, titleAccent }: { title: string; titleAccent: string }) {
-  const words = `${title} `.split(/\s+/).filter(Boolean)
-  return (
-    <h1 className="marketing-h1 text-balance">
-      {words.map((word, index) => (
-        <span
-          key={`${word}-${index}`}
-          className="hero-word"
-          style={{ "--word-index": index } as CSSProperties}
-        >
-          {word}{" "}
-        </span>
-      ))}
-      <span
-        className="hero-word text-primary"
-        style={{ "--word-index": words.length } as CSSProperties}
-      >
-        {titleAccent}
-      </span>
-    </h1>
-  )
-}
-
 export function HeroSection({
   badge,
   title,
@@ -75,7 +49,6 @@ export function HeroSection({
   secondaryAction,
   tertiaryAction,
   trustIndicators,
-  floatingStats,
   imageAlt,
   imageSrc,
 }: HeroSectionProps) {
@@ -94,7 +67,11 @@ export function HeroSection({
           >
             {badge}
           </Badge>
-          <HeroTitle title={title} titleAccent={titleAccent} />
+          <h1 className="marketing-h1 text-balance">
+            {title}
+            <br />
+            for <span className="text-primary">{titleAccent}</span>
+          </h1>
           <p data-hero-enter className="marketing-body text-muted-foreground max-w-xl text-balance">
             {description}
           </p>
@@ -149,34 +126,6 @@ export function HeroSection({
               </div>
             )}
           </div>
-          {floatingStats.length > 0 ? (
-            <div
-              className="pointer-events-none absolute inset-0 hidden md:block"
-              aria-hidden
-            >
-              {floatingStats.map((stat, index) => (
-                <div
-                  key={stat.label}
-                  className={cn(
-                    "marketing-card absolute max-w-[11rem] px-4 py-3",
-                    index === 0 && "-left-4 top-8 lg:-left-8",
-                    index === 1 && "-right-2 bottom-24 lg:-right-6",
-                    index === 2 && "bottom-4 left-8 lg:left-4",
-                  )}
-                >
-                  <p className="text-primary font-heading text-xl font-semibold tabular-nums">
-                    {stat.value}
-                  </p>
-                  <p className="text-sm font-medium leading-snug">{stat.label}</p>
-                  {stat.disclaimer ? (
-                    <p className="text-muted-foreground mt-0.5 text-[0.65rem] leading-tight">
-                      {stat.disclaimer}
-                    </p>
-                  ) : null}
-                </div>
-              ))}
-            </div>
-          ) : null}
         </div>
       </PageContainer>
     </PageSection>

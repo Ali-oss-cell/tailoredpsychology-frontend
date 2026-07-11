@@ -76,7 +76,7 @@ export function DashboardWelcomeSection({
 
       <div
         className={cn(
-          "dashboard-card interactive-lift shrink-0 rounded-2xl border border-border/50 bg-card p-5 shadow-e1",
+          "dashboard-card shrink-0 rounded-2xl border border-border/50 bg-card p-5 shadow-e1",
           "w-full lg:w-[17.5rem]",
         )}
         aria-label="Next appointment"

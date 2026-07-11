@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Geist_Mono, Noto_Sans, Inter } from "next/font/google"
+import { Gabriola, Geist_Mono, Noto_Sans } from "next/font/google"
 
 import "./globals.css"
 import { QueryClientProviderWrapper } from "@/components/providers/query-client-provider"
@@ -8,9 +8,13 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 import { DEFAULT_DESCRIPTION, SITE_NAME } from "@/src/lib/site-metadata"
 
-const interHeading = Inter({subsets:['latin'],variable:'--font-heading'});
+const gabriolaHeading = Gabriola({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-heading",
+})
 
-const notoSans = Noto_Sans({subsets:['latin'],variable:'--font-sans'})
+const notoSans = Noto_Sans({ subsets: ["latin"], variable: "--font-sans" })
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
@@ -45,7 +49,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", notoSans.variable, interHeading.variable)}
+      className={cn("antialiased", fontMono.variable, "font-sans", notoSans.variable, gabriolaHeading.variable)}
     >
       <body suppressHydrationWarning>
         <ThemeProvider>

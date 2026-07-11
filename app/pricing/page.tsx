@@ -27,13 +27,14 @@ export default function PricingPage() {
         <PublicMarketingAmbient />
         <PublicPageEnter className="relative z-[1]">
           <PageHero {...pricingHero} />
-          <ScrollReveal>
           <PageSection>
             <PageContainer className="space-y-8">
-              <div className="flex flex-wrap items-end justify-between gap-3">
-                <h2 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">Session fees</h2>
-                <p className="text-muted-foreground text-xs">Last updated: {publicPricing.updatedAt}</p>
-              </div>
+              <ScrollReveal>
+                <div className="flex flex-wrap items-end justify-between gap-3">
+                  <h2 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">Session fees</h2>
+                  <p className="text-muted-foreground text-xs">Last updated: {publicPricing.updatedAt}</p>
+                </div>
+              </ScrollReveal>
               <div className="grid gap-4 md:grid-cols-3">
                 {publicPricing.items.map((item) => (
                   <article
@@ -56,16 +57,16 @@ export default function PricingPage() {
               </div>
             </PageContainer>
           </PageSection>
-          </ScrollReveal>
-          <ScrollReveal delayMs={40}>
           <PageSection muted className="bg-surface-2/55 dark:bg-surface-2/45">
             <PageContainer className="space-y-8">
-              <div className="max-w-2xl space-y-2">
-                <h2 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">Medicare gap examples</h2>
-                <p className="text-muted-foreground text-sm leading-relaxed md:text-base">
-                  Three illustrative scenarios—your gap depends on your clinician, plan, and Services Australia rules.
-                </p>
-              </div>
+              <ScrollReveal delayMs={40}>
+                <div className="max-w-2xl space-y-2">
+                  <h2 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">Medicare gap examples</h2>
+                  <p className="text-muted-foreground text-sm leading-relaxed md:text-base">
+                    Three illustrative scenarios—your gap depends on your clinician, plan, and Services Australia rules.
+                  </p>
+                </div>
+              </ScrollReveal>
               <div className="grid gap-4 md:grid-cols-3">
                 {publicPricing.gapExamples.map((example) => (
                   <article
@@ -101,16 +102,11 @@ export default function PricingPage() {
               <p className="text-muted-foreground text-xs leading-relaxed">{publicPricing.assumptions}</p>
             </PageContainer>
           </PageSection>
-          </ScrollReveal>
-          <ScrollReveal delayMs={60}>
           <PricingRelatedStrip />
-          </ScrollReveal>
           <ScrollReveal>
           <CtaStrip {...pricingCta} />
           </ScrollReveal>
-          <ScrollReveal delayMs={40}>
           <FaqSection title={pricingFaq.title} items={pricingFaq.items} />
-          </ScrollReveal>
         </PublicPageEnter>
       </main>
       <PublicFooter />

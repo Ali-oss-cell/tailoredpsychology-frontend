@@ -38,7 +38,7 @@ export function BillingSnapshotCard({
   onRetry,
 }: BillingSnapshotCardProps) {
   return (
-    <Card className="dashboard-card interactive-lift rounded-2xl shadow-e1">
+    <Card className="dashboard-card rounded-2xl shadow-e1">
       <CardHeader className="flex flex-row items-center justify-between pb-3">
         <CardSectionHeading level={3}>Billing</CardSectionHeading>
         <Link

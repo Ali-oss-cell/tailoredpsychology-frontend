@@ -71,7 +71,7 @@ export function DashboardSummaryCard({
   )
 
   const classNames = cn(
-    "dashboard-card interactive-lift flex flex-col gap-4 rounded-dashboard-card border border-border/50 bg-card p-6 shadow-e1",
+    "dashboard-card flex flex-col gap-4 rounded-dashboard-card border border-border/50 bg-card p-6 shadow-e1",
     "focus-visible:ring-ring outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
     className,
   )

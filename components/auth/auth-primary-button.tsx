@@ -5,10 +5,11 @@ import { cn } from "@/lib/utils"
 
 type AuthPrimaryButtonProps = React.ComponentProps<typeof Button>
 
-export function AuthPrimaryButton({ className, ...props }: AuthPrimaryButtonProps) {
+export function AuthPrimaryButton({ className, size = "xl", ...props }: AuthPrimaryButtonProps) {
   return (
     <Button
-      className={cn("h-12 w-full rounded-xl text-base font-semibold", className)}
+      size={size}
+      className={cn("w-full font-semibold", className)}
       {...props}
     />
   )
