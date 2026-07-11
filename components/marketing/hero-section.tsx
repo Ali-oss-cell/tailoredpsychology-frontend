@@ -55,7 +55,7 @@ export function HeroSection({
   return (
     <PageSection
       data-scroll-hero
-      className="relative overflow-hidden bg-marketing-canvas py-16 md:py-24 lg:py-28"
+      className="relative overflow-hidden bg-marketing-canvas pt-8 pb-16 md:pt-10 md:pb-24 lg:pt-12 lg:pb-28"
     >
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/[0.04] via-transparent to-transparent" />
       <PageContainer className="relative grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
