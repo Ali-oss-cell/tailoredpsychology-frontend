@@ -46,43 +46,42 @@ describe("JourneyRail", () => {
     mockedGetTimeline.mockResolvedValue({ patientId: "user_patient_001", steps: baseSteps })
   })
 
-  it("renders all visible milestones and hides pending no-show branch", async () => {
+  it("shows compact journey status and hides timeline until expanded", async () => {
     renderWithQueryClient(<JourneyRail />)
+
+    expect(await screen.findByText(/Step 3 of 7 · Requested/i)).toBeInTheDocument()
+    expect(screen.queryByRole("tab")).not.toBeInTheDocument()
+    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument()
+  })
+
+  it("expands all visible milestones and hides pending no-show branch", async () => {
+    renderWithQueryClient(<JourneyRail />)
+
+    fireEvent.click(await screen.findByRole("button", { name: /View all steps/i }))
 
     const tabs = await screen.findAllByRole("tab")
     expect(tabs).toHaveLength(7)
     expect(screen.queryByText("Session missed")).not.toBeInTheDocument()
   })
 
-  it("shows journey summary progress and motivation copy", async () => {
-    renderWithQueryClient(<JourneyRail />)
-
-    expect(await screen.findByRole("progressbar")).toBeInTheDocument()
-    expect(screen.getByText(/29% complete/i)).toBeInTheDocument()
-    expect(screen.getByText(/2 of 7 steps/i)).toBeInTheDocument()
-    expect(screen.getByText(/Everything is on track/i)).toBeInTheDocument()
-  })
-
-  it("shows upcoming milestones and quick actions", async () => {
+  it("shows journey help actions without the coming next card", async () => {
     renderWithQueryClient(<JourneyRail showInvoiceAction />)
 
-    await screen.findByRole("progressbar")
-    expect(screen.getAllByText("Appointment confirmed").length).toBeGreaterThan(0)
-    expect(screen.getByText("Coming next")).toBeInTheDocument()
-    expect(screen.getByText("Need help?")).toBeInTheDocument()
-    expect(screen.getByRole("link", { name: /Contact clinic/i })).toHaveAttribute("href", "/contact")
+    expect(await screen.findByRole("link", { name: /Contact clinic/i })).toHaveAttribute("href", "/contact")
+    expect(screen.queryByText("Coming next")).not.toBeInTheDocument()
     expect(screen.getByRole("link", { name: /Download invoice/i })).toHaveAttribute("href", "/patient/invoices")
   })
 
   it("shows expandable recorded detail when selecting a done step", async () => {
     renderWithQueryClient(<JourneyRail />)
 
+    fireEvent.click(await screen.findByRole("button", { name: /View all steps/i }))
     fireEvent.click(await screen.findByRole("tab", { name: /Intake complete/i }))
     fireEvent.click(screen.getByRole("button", { name: /Intake complete/i }))
     expect(screen.getByRole("link", { name: "View details" })).toHaveAttribute("href", "/patient/book-appointment")
   })
 
-  it("renders the consolidated current step card with session CTAs", async () => {
+  it("renders the current step card with session CTAs for returning users", async () => {
     const start = new Date(Date.now() + 2 * 60 * 60 * 1000)
     const end = new Date(start.getTime() + 50 * 60 * 1000)
 
@@ -106,7 +105,7 @@ describe("JourneyRail", () => {
       />,
     )
 
-    expect(await screen.findByText("Current step")).toBeInTheDocument()
+    expect(await screen.findByText("Upcoming session")).toBeInTheDocument()
     expect(screen.getByRole("link", { name: /View appointment/i })).toHaveAttribute("href", "/patient/appointments")
     expect(screen.getByRole("button", { name: /Add to calendar/i })).toBeInTheDocument()
   })

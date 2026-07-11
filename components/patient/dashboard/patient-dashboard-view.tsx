@@ -11,7 +11,14 @@ import { PatientTelehealth101Cta } from "@/components/tutorials/patient-teleheal
 import { PatientTutorialOnboardingCta } from "@/components/tutorials/patient-tutorial-onboarding-cta"
 import { Card, CardContent } from "@/components/ui/card"
 import { patientDashboardContent } from "@/content/patient-dashboard"
-import { isJourneyComplete, visibleSteps } from "@/src/patient/journey/step-guide"
+import type { PatientNextSession } from "@/src/patient/dashboard/api"
+import { isJoinImminent } from "@/src/patient/dashboard/join-cta"
+import {
+  currentPendingStep,
+  isJourneyComplete,
+  resolveJourneyCta,
+  visibleSteps,
+} from "@/src/patient/journey/step-guide"
 import { usePatientDashboard } from "@/src/patient/queries/use-patient-dashboard"
 import { usePatientJourney } from "@/src/patient/queries/use-patient-journey"
 import { useNotificationUnreadCount } from "@/src/patient/queries/use-notification-unread-count"
@@ -27,6 +34,25 @@ function billingStatusLabel(unpaidCount: number, latestStatus: string | undefine
   if (latestStatus?.toLowerCase() === "paid") return "Up to date"
   if (latestStatus) return latestStatus
   return "Up to date"
+}
+
+function hasPrimaryDashboardAction(input: {
+  isFirstTime: boolean
+  nextSession: PatientNextSession | null
+  pendingStep: ReturnType<typeof currentPendingStep>
+}): boolean {
+  const { isFirstTime, nextSession, pendingStep } = input
+  if (isFirstTime) return true
+  if (
+    nextSession &&
+    (nextSession.status === "in_progress" ||
+      nextSession.window.status === "open" ||
+      isJoinImminent(nextSession))
+  ) {
+    return true
+  }
+  if (pendingStep && resolveJourneyCta(pendingStep, { nextSession })) return true
+  return false
 }
 
 export function PatientDashboardView() {
@@ -45,47 +71,37 @@ export function PatientDashboardView() {
 
   const firstName = firstNameOf(snapshot?.user.displayName)
   const journeySteps = visibleSteps(journeyQuery.data?.steps ?? [])
+  const pendingStep = currentPendingStep(journeySteps)
   const journeyDone = portalContext.journeyProgress?.done ?? 0
   const journeyTotal = portalContext.journeyProgress?.total ?? journeySteps.length
   const journeyPct = portalContext.journeyProgress?.pct ?? 0
   const hideJourneyRail = journeyQuery.isSuccess && isJourneyComplete(journeyQuery.data?.steps ?? [])
+  const nextSession = snapshot?.nextSession ?? null
+
+  const showPrimaryAction = hasPrimaryDashboardAction({
+    isFirstTime: portalContext.isFirstTime,
+    nextSession,
+    pendingStep,
+  })
 
   const billingStatus = snapshot
     ? billingStatusLabel(snapshot.billing.unpaidCount, snapshot.billing.latestInvoice?.status)
     : null
 
   return (
-    <section className="space-y-8 pb-4" data-tutorial="patient.page.dashboard">
+    <section className="space-y-6 pb-4" data-tutorial="patient.page.dashboard">
       <DashboardWelcomeSection
         firstName={firstName}
         loading={loading}
-        nextSession={snapshot?.nextSession ?? null}
         portalMode={portalContext.mode}
       />
 
       <FirstTimeDashboardHero loading={loading} />
 
-      {!portalContext.isFirstTime ? (
-        <DashboardSummaryCards
-          careProgress={
-            journeyQuery.isSuccess && journeyTotal > 0
-              ? { done: journeyDone, total: journeyTotal, pct: journeyPct }
-              : null
-          }
-          unreadMessages={notificationsQuery.isSuccess ? notificationsQuery.data : null}
-          documentCount={patientDashboardContent.resources.length}
-          billingStatus={billingStatus}
-          loading={loading || journeyQuery.isLoading}
-        />
-      ) : null}
-
-      {portalContext.isFirstTime ? <PatientTutorialOnboardingCta /> : null}
-      {portalContext.isFirstTime ? <PatientTelehealth101Cta /> : null}
-
       {!hideJourneyRail ? (
         <div className="dashboard-section">
           <JourneyRail
-            nextSession={snapshot?.nextSession ?? null}
+            nextSession={nextSession}
             sessionLoading={loading}
             sessionError={error}
             onSessionRetry={handleRetry}
@@ -106,6 +122,23 @@ export function PatientDashboardView() {
       <div className="dashboard-section">
         <QuickActionsCard actions={patientDashboardContent.quickActions} />
       </div>
+
+      {!portalContext.isFirstTime && !showPrimaryAction ? (
+        <DashboardSummaryCards
+          careProgress={
+            journeyQuery.isSuccess && journeyTotal > 0
+              ? { done: journeyDone, total: journeyTotal, pct: journeyPct }
+              : null
+          }
+          unreadMessages={notificationsQuery.isSuccess ? notificationsQuery.data : null}
+          documentCount={patientDashboardContent.resources.length}
+          billingStatus={billingStatus}
+          loading={loading || journeyQuery.isLoading}
+        />
+      ) : null}
+
+      {portalContext.isFirstTime ? <PatientTutorialOnboardingCta /> : null}
+      {portalContext.isFirstTime ? <PatientTelehealth101Cta /> : null}
 
       <div className="dashboard-section grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <ResourceRecommendationsCard items={patientDashboardContent.resources} />

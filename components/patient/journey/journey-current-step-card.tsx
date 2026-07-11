@@ -1,10 +1,8 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
 import {
   CalendarPlus,
-  Lightbulb,
   MapPin,
   Microphone,
   VideoCamera,
@@ -56,34 +54,41 @@ function useCountdownLabel(startIso: string | undefined): string | null {
   return `Join in ${hours}h ${minutes}m`
 }
 
-function sessionAwareTitle(step: PatientJourneyStep | null, session: PatientNextSession | null): string {
-  if (session?.status === "in_progress") return "Session started"
-  if (session && (session.window.status === "open" || isJoinImminent(session))) return "Session ready"
+function sessionStatusTitle(session: PatientNextSession | null): string {
+  if (session?.status === "in_progress") return "Session in progress"
+  if (session && (session.window.status === "open" || isJoinImminent(session))) return "Your session is ready"
   if (session) return "Upcoming session"
-  if (step) return step.label
   return "Ready when you are"
 }
 
-function reassuranceCopy(step: PatientJourneyStep | null, session: PatientNextSession | null): string {
-  if (session && (!step || step.key === "booking_confirmed" || step.key === "session_started")) {
-    if (session.status === "in_progress" || session.window.status === "open") {
-      return "Your telehealth visit is ready."
+function stepTitle(step: PatientJourneyStep | null, session: PatientNextSession | null): string {
+  if (session) {
+    if (session.status === "in_progress" || session.window.status === "open" || isJoinImminent(session)) {
+      return sessionStatusTitle(session)
     }
-    return "Your appointment is locked in."
+    return "Upcoming session"
   }
-  const guide = step ? guideFor(step.key) : null
-  return guide?.meaning ?? "We'll guide you through each step."
+  if (step) return guideFor(step.key)?.timelineLabel ?? step.label
+  return "Ready when you are"
 }
 
-function whatToDoHint(step: PatientJourneyStep | null, session: PatientNextSession | null): string {
-  const guide = guideFor(step?.key ?? "session_started")
-  if (session && (session.status === "in_progress" || session.window.status === "open" || isJoinImminent(session))) {
-    return guide?.whenPending ?? "Join from the dashboard when your session window opens."
+function statusLine(step: PatientJourneyStep | null, session: PatientNextSession | null): string {
+  if (session) {
+    if (session.status === "in_progress" || session.window.status === "open") {
+      return "Join your telehealth visit when you're ready."
+    }
+    const date = formatDateAu(session.scheduledStartAt)
+    const time = formatTimeAu(session.scheduledStartAt)
+    return `${date} at ${time} · ${session.clinicianName} · Telehealth`
   }
-  if (step?.status === "pending") {
-    return guide?.whenPending ?? "Complete earlier steps when you are ready."
-  }
-  return guide?.whenDone ?? "This milestone is recorded."
+  const guide = step ? guideFor(step.key) : null
+  if (step?.status === "pending") return guide?.whenPending ?? "Complete this step when you're ready."
+  return guide?.whenDone ?? "We'll guide you through each step."
+}
+
+function isSessionHero(session: PatientNextSession | null): boolean {
+  if (!session) return false
+  return session.status === "in_progress" || session.window.status === "open" || isJoinImminent(session)
 }
 
 export function JourneyCurrentStepCard({
@@ -97,25 +102,17 @@ export function JourneyCurrentStepCard({
   const [showManage, setShowManage] = useState(false)
   const countdown = useCountdownLabel(nextSession?.scheduledStartAt)
   const joinOpen = Boolean(nextSession && (nextSession.window.status === "open" || isJoinImminent(nextSession)))
+  const hero = isSessionHero(nextSession)
   const cta =
-    step?.status === "pending" && step
-      ? resolveJourneyCta(step, { pathname, nextSession })
-      : null
+    step?.status === "pending" && step ? resolveJourneyCta(step, { pathname, nextSession }) : null
 
   if (loading) {
     return (
-      <Card
-        className="dashboard-card min-h-[13rem] rounded-2xl shadow-e2"
-        aria-busy="true"
-        aria-label="Loading your next session"
-      >
-        <CardContent className="space-y-5 p-6">
+      <Card className="dashboard-card rounded-2xl shadow-e1" aria-busy="true" aria-label="Loading your next step">
+        <CardContent className="space-y-4 p-6">
           <Skeleton className="skeleton-shimmer h-4 w-28" />
-          <div className="space-y-2">
-            <Skeleton className="skeleton-shimmer h-8 w-64" />
-            <Skeleton className="skeleton-shimmer h-5 w-44" />
-          </div>
-          <Skeleton className="skeleton-shimmer h-12 w-44 rounded-xl" />
+          <Skeleton className="skeleton-shimmer h-8 w-64" />
+          <Skeleton className="skeleton-shimmer h-11 w-40 rounded-xl" />
         </CardContent>
       </Card>
     )
@@ -123,9 +120,8 @@ export function JourneyCurrentStepCard({
 
   if (error) {
     return (
-      <Card className="dashboard-card min-h-[13rem] rounded-2xl shadow-e2">
+      <Card className="dashboard-card rounded-2xl shadow-e1">
         <CardContent className="space-y-4 p-6">
-          <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">Current step</p>
           <DashboardStateBlock variant="error" message={error} onRetry={onRetry} />
         </CardContent>
       </Card>
@@ -134,147 +130,117 @@ export function JourneyCurrentStepCard({
 
   if (!step && !nextSession) {
     return (
-      <Card className="dashboard-card min-h-[13rem] rounded-2xl shadow-e2">
-        <CardContent className="space-y-4 p-6">
-          <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">Current step</p>
-          <div data-tutorial="patient.dashboard.hero-book">
-            <EmptyState
-              className="items-start border-none bg-transparent px-0 py-0 text-left"
-              title="Ready when you are"
-              description="You have no upcoming sessions. Book your next visit whenever it feels right."
-              icon={<CalendarPlus size={24} weight="duotone" />}
-              action={<EmptyStateAction href="/patient/book-appointment" label="Book appointment" />}
-            />
-          </div>
+      <Card className="dashboard-card rounded-2xl shadow-e1">
+        <CardContent className="p-6" data-tutorial="patient.dashboard.hero-book">
+          <EmptyState
+            className="items-start border-none bg-transparent px-0 py-0 text-left"
+            title="Ready when you are"
+            description="You have no upcoming sessions. Book your next visit whenever it feels right."
+            icon={<CalendarPlus size={24} weight="duotone" />}
+            action={<EmptyStateAction href="/patient/book-appointment" label="Book appointment" />}
+          />
         </CardContent>
       </Card>
     )
   }
 
-  const title = sessionAwareTitle(step, nextSession)
-  const showSessionBlock = Boolean(
-    nextSession && (!step || step.key === "booking_confirmed" || step.key === "session_started"),
-  )
+  const title = stepTitle(step, nextSession)
+  const status = statusLine(step, nextSession)
 
   return (
     <Card
-      className="dashboard-card overflow-hidden rounded-2xl border-primary/30 shadow-e2"
+      className={cn(
+        "dashboard-card overflow-hidden rounded-2xl shadow-e1",
+        hero && "border-primary/30 bg-gradient-to-br from-primary/[0.08] via-card to-card",
+      )}
       data-tutorial="patient.dashboard.current-step"
     >
-      <CardContent className="p-0">
-        <div className="grid gap-6 p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-8 lg:p-8">
-          <div className="min-w-0 space-y-4">
-            <div className="space-y-2">
-              <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">Current step</p>
-              <h2 className="font-heading text-2xl font-semibold tracking-tight">{title}</h2>
-              <p className="text-muted-foreground text-sm leading-relaxed md:text-base">
-                {reassuranceCopy(step, nextSession)}
-              </p>
-            </div>
+      <CardContent className="space-y-5 p-6 md:p-8">
+        <div className="space-y-2">
+          <h2 className="font-heading text-xl font-semibold tracking-tight md:text-2xl">{title}</h2>
+          <p className="text-muted-foreground text-sm leading-relaxed md:text-base">{status}</p>
+          {countdown && !hero ? <p className="text-primary text-sm font-medium">{countdown}</p> : null}
+          {hero && countdown ? <p className="text-primary text-sm font-medium">{countdown}</p> : null}
+        </div>
 
-            {showSessionBlock && nextSession ? (
-              <div className="bg-muted/40 space-y-3 rounded-xl border border-border/50 p-4">
-                <p className="text-foreground text-sm font-medium">Next action</p>
-                <div className="text-foreground space-y-0.5 text-sm">
-                  <p className="font-medium tabular-nums">{formatDateAu(nextSession.scheduledStartAt)}</p>
-                  <p className="tabular-nums">
-                    {formatTimeAu(nextSession.scheduledStartAt)} – {formatTimeAu(nextSession.scheduledEndAt)}
-                  </p>
-                  <p>{nextSession.clinicianName}</p>
-                  <p className="text-muted-foreground inline-flex items-center gap-1.5">
-                    <MapPin size={14} aria-hidden />
-                    Telehealth
-                  </p>
-                  {countdown ? <p className="text-primary font-medium">{countdown}</p> : null}
-                </div>
-              </div>
-            ) : null}
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center" data-tutorial="patient.dashboard.join-session">
+          {joinOpen && nextSession ? (
+            <Button
+              asChild
+              size="lg"
+              className={cn(
+                "press w-full sm:w-auto",
+                nextSession.window.status === "open" && "join-live-pulse shadow-primary-glow",
+              )}
+              data-tutorial="patient.dashboard.hero-join"
+            >
+              <Link href={joinSessionHref(nextSession.appointmentId)}>
+                <VideoCamera size={20} />
+                Join session
+              </Link>
+            </Button>
+          ) : null}
 
-            <div className="bg-muted/40 flex gap-3 rounded-xl border border-border/50 p-3">
-              <Lightbulb className="text-primary mt-0.5 shrink-0" size={18} weight="duotone" aria-hidden />
-              <div className="min-w-0 space-y-0.5">
-                <p className="text-foreground text-sm font-medium">What to do</p>
-                <p className="text-muted-foreground text-sm leading-relaxed">{whatToDoHint(step, nextSession)}</p>
-              </div>
-            </div>
-          </div>
+          {hero && nextSession && !joinOpen ? (
+            <Button asChild size="lg" variant="outline" className="press w-full sm:w-auto">
+              <Link href="/patient/video-setup" data-tutorial="patient.dashboard.video-setup-link">
+                <Microphone size={20} />
+                Test camera &amp; mic
+              </Link>
+            </Button>
+          ) : null}
 
-          <div className="flex flex-col items-center gap-4 lg:items-end">
-            <div className="relative hidden h-32 w-40 sm:block" aria-hidden>
-              <Image src="/assets/telehealth-session.svg" alt="" fill className="object-contain" />
-            </div>
-            <div className="flex w-full flex-col gap-2 sm:w-auto" data-tutorial="patient.dashboard.join-session">
-              {joinOpen && nextSession ? (
-                <div data-tutorial="patient.dashboard.hero-join">
-                  <Button
-                    asChild
-                    size="lg"
-                    className={cn(
-                      "press min-w-[11rem] shadow-primary-glow",
-                      nextSession.window.status === "open" && "join-live-pulse",
-                    )}
-                  >
-                    <Link href={joinSessionHref(nextSession.appointmentId)}>
-                      <VideoCamera size={20} />
-                      Join session
-                    </Link>
-                  </Button>
-                </div>
-              ) : null}
+          {!joinOpen && !hero && cta ? (
+            <Button asChild size="lg" className="press w-full sm:w-auto">
+              <Link href={cta.href}>{cta.label}</Link>
+            </Button>
+          ) : null}
 
-              {nextSession ? (
-                <>
-                  <Button asChild variant="outline" size="sm" className="press w-full sm:w-auto">
-                    <Link href="/patient/appointments">View appointment</Link>
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="press w-full sm:w-auto"
-                    onClick={() => downloadAppointmentIcs(nextSession)}
-                  >
-                    <CalendarPlus size={16} />
-                    Add to calendar
-                  </Button>
-                </>
-              ) : cta ? (
-                <Button asChild size="sm" className="press w-full sm:w-auto">
-                  <Link href={cta.href}>{cta.label}</Link>
+          {nextSession ? (
+            <div className="flex flex-wrap gap-2">
+              {!hero ? (
+                <Button asChild variant="outline" size="sm" className="press">
+                  <Link href="/patient/video-setup" data-tutorial="patient.dashboard.video-setup-link">
+                    <Microphone size={16} />
+                    Test camera &amp; mic
+                  </Link>
                 </Button>
               ) : null}
-
-              {nextSession ? (
-                <div className="flex flex-wrap gap-2 pt-1">
-                  <Button asChild variant="outline" size="sm" className="press">
-                    <Link href="/patient/video-setup" data-tutorial="patient.dashboard.video-setup-link">
-                      <Microphone size={16} />
-                      Test camera &amp; mic
-                    </Link>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="press"
-                    aria-expanded={showManage}
-                    onClick={() => setShowManage((open) => !open)}
-                  >
-                    {showManage ? "Close manage" : "Manage"}
-                  </Button>
-                </div>
-              ) : null}
-
-              {nextSession && !joinOpen ? (
-                <p className="text-muted-foreground text-center text-xs lg:text-right">
-                  Join opens 15 minutes before your session starts.
-                </p>
-              ) : null}
+              <Button asChild variant="outline" size="sm" className="press">
+                <Link href="/patient/appointments">View appointment</Link>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="press"
+                onClick={() => downloadAppointmentIcs(nextSession)}
+              >
+                <CalendarPlus size={16} />
+                Add to calendar
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="press"
+                aria-expanded={showManage}
+                onClick={() => setShowManage((open) => !open)}
+              >
+                {showManage ? "Close manage" : "Manage"}
+              </Button>
             </div>
-          </div>
+          ) : null}
+
+          {nextSession && !joinOpen && !hero ? (
+            <p className="text-muted-foreground w-full text-xs">
+              <MapPin size={12} className="mr-1 inline" aria-hidden />
+              Join opens 15 minutes before your session starts.
+            </p>
+          ) : null}
         </div>
 
         {showManage && nextSession ? (
-          <div className="border-border/60 border-t px-6 pb-6 lg:px-8">
+          <div className="border-border/60 border-t pt-5">
             <AppointmentManagePanel appointmentId={nextSession.appointmentId} />
           </div>
         ) : null}

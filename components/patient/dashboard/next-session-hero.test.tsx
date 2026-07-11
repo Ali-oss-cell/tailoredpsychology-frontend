@@ -102,7 +102,7 @@ describe("NextSessionHero", () => {
   it("shows a skeleton while loading", () => {
     renderWithQueryClient(<NextSessionHero session={null} loading />)
 
-    expect(screen.getByLabelText("Loading your next session")).toBeInTheDocument()
+    expect(screen.getByLabelText("Loading your next step")).toBeInTheDocument()
   })
 
   it("shows an error state with retry", () => {

@@ -16,9 +16,8 @@ import * as React from "react"
 
 import { JourneyCurrentStepCard } from "@/components/patient/journey/journey-current-step-card"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import type { PatientNextSession } from "@/src/patient/dashboard/api"
@@ -26,19 +25,14 @@ import type { PatientJourneyStep } from "@/src/patient/journey/api"
 import {
   contiguousDoneBoundary,
   currentPendingStep,
-  deriveHeadline,
-  deriveMotivationCopy,
   detailLinkForStep,
   displayStepStatus,
-  estimatedNextMilestoneLine,
   formatStepTimestamp,
   guideFor,
-  resolveJourneyCta,
   stepVisualState,
   timelineLabelFor,
   formatTimelineDate,
   formatTimelineTime,
-  upcomingMilestones,
   visibleSteps,
 } from "@/src/patient/journey/step-guide"
 import { usePatientJourney } from "@/src/patient/queries/use-patient-journey"
@@ -54,14 +48,11 @@ type JourneyRailProps = {
 
 function nodeStateClasses(state: ReturnType<typeof stepVisualState>, active: boolean, isCurrent: boolean): string {
   if (state === "done") {
-    return cn(
-      "h-10 w-10 border-success/50 bg-success/10 text-success",
-      active && "scale-105",
-    )
+    return cn("h-10 w-10 border-success/50 bg-success/10 text-success", active && "scale-105")
   }
   if (state === "current" || isCurrent) {
     return cn(
-      "journey-current-pulse border-primary bg-primary text-primary-foreground shadow-primary-glow h-14 w-14",
+      "border-primary bg-primary text-primary-foreground shadow-primary-glow h-14 w-14",
       active && "scale-105",
     )
   }
@@ -89,36 +80,33 @@ function JourneyQuickActions({ showInvoiceAction }: { showInvoiceAction: boolean
   ]
 
   return (
-    <div className="space-y-3" data-tutorial="patient.dashboard.quick-actions">
-      <p className="text-foreground text-sm font-medium">Need help?</p>
-      <div className="flex flex-wrap gap-2">
-        {actions.map((action) => {
-          const Icon = action.icon
-          if ("event" in action) {
-            return (
-              <Button
-                key={action.label}
-                type="button"
-                variant="outline"
-                size="sm"
-                className="press gap-1.5"
-                onClick={() => window.dispatchEvent(new CustomEvent(action.event))}
-              >
-                <Icon size={16} />
-                {action.label}
-              </Button>
-            )
-          }
+    <div className="border-border/60 flex flex-wrap gap-2 border-t pt-4" data-tutorial="patient.dashboard.quick-actions">
+      {actions.map((action) => {
+        const Icon = action.icon
+        if ("event" in action) {
           return (
-            <Button key={action.label} asChild variant="outline" size="sm" className="press gap-1.5">
-              <Link href={action.href}>
-                <Icon size={16} />
-                {action.label}
-              </Link>
+            <Button
+              key={action.label}
+              type="button"
+              variant="outline"
+              size="sm"
+              className="press gap-1.5"
+              onClick={() => window.dispatchEvent(new CustomEvent(action.event))}
+            >
+              <Icon size={16} />
+              {action.label}
             </Button>
           )
-        })}
-      </div>
+        }
+        return (
+          <Button key={action.label} asChild variant="outline" size="sm" className="press gap-1.5">
+            <Link href={action.href}>
+              <Icon size={16} />
+              {action.label}
+            </Link>
+          </Button>
+        )
+      })}
     </div>
   )
 }
@@ -165,8 +153,22 @@ function CompletedStepDetail({
   )
 }
 
+function compactStatusLine(
+  steps: PatientJourneyStep[],
+  nextPending: PatientJourneyStep | undefined,
+): string {
+  const doneCount = contiguousDoneBoundary(steps)
+  const total = steps.length
+  const currentIndex = nextPending ? steps.findIndex((step) => step.key === nextPending.key) : doneCount
+  const stepNumber = Math.min(currentIndex + 1, total)
+  const label = nextPending
+    ? guideFor(nextPending.key)?.shortLabel ?? nextPending.label
+    : "Complete"
+  return `Step ${stepNumber} of ${total} · ${label}`
+}
+
 /**
- * Action-oriented care journey — timeline, current step, upcoming milestones, and quick actions.
+ * Action-oriented care journey — current step first, full timeline optional.
  */
 export function JourneyRail({
   nextSession = null,
@@ -175,7 +177,6 @@ export function JourneyRail({
   onSessionRetry,
   showInvoiceAction = false,
 }: JourneyRailProps) {
-  const pathname = usePathname()
   const portalContext = usePatientPortalContext()
   const journeyQuery = usePatientJourney()
 
@@ -191,19 +192,11 @@ export function JourneyRail({
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null)
   const [expandedDoneKey, setExpandedDoneKey] = React.useState<string | null>(null)
   const [timelineExpanded, setTimelineExpanded] = React.useState(false)
-  const compact = portalContext.isFirstTime
+  const showCurrentStepCard = !portalContext.isFirstTime
   const activeIndex = selectedIndex ?? defaultIndex
   const nodeRefs = React.useRef<(HTMLButtonElement | null)[]>([])
 
   const currentStep = steps[Math.min(activeIndex, Math.max(steps.length - 1, 0))]
-  const motivation = deriveMotivationCopy(steps, portalContext.mode)
-  const upcoming = upcomingMilestones(steps)
-  const milestoneLine = estimatedNextMilestoneLine(steps, nextSession)
-  const ctaContext = React.useMemo(() => ({ pathname, nextSession }), [pathname, nextSession])
-  const currentCta =
-    currentStep && displayStepStatus(currentStep, steps) === "pending"
-      ? resolveJourneyCta(currentStep, ctaContext)
-      : null
 
   const handleKeyDown = (event: React.KeyboardEvent, index: number) => {
     let nextIndex: number | null = null
@@ -217,74 +210,48 @@ export function JourneyRail({
     nodeRefs.current[nextIndex]?.focus()
   }
 
-  const { title: summaryTitle, pct } = deriveHeadline(steps)
-  const doneCount = contiguousDoneBoundary(steps)
-
   return (
-    <div className="space-y-6" data-tutorial="patient.journey.rail">
-      <Card
-        id="care-journey"
-        className="dashboard-card overflow-hidden rounded-2xl shadow-e1"
-      >
-        <CardHeader className="border-border/60 space-y-4 border-b bg-muted/15 pb-5">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-            <div className="space-y-1">
-              <h2 className="font-heading text-2xl font-semibold tracking-tight">Your care journey</h2>
-              <CardDescription className="text-muted-foreground max-w-2xl text-sm leading-relaxed">
-                See where you are, what happens next, and what to do now.
-              </CardDescription>
-            </div>
-            <div className="text-muted-foreground flex items-center gap-1.5 text-xs sm:text-sm">
-              <MapTrifold className="text-primary shrink-0" size={18} aria-hidden />
-              <span className="tabular-nums font-medium">
-                {journeyQuery.isSuccess ? `${pct}% complete` : "—"} · {doneCount} of {steps.length || "—"} steps
-              </span>
-            </div>
-          </div>
+    <div className="space-y-4" data-tutorial="patient.journey.rail">
+      {showCurrentStepCard ? (
+        <JourneyCurrentStepCard
+          step={nextPending ?? currentStep ?? null}
+          nextSession={nextSession}
+          loading={sessionLoading || journeyQuery.isLoading}
+          error={sessionError}
+          onRetry={onSessionRetry}
+        />
+      ) : null}
 
-          {journeyQuery.isSuccess && steps.length > 0 ? (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-3 text-sm">
-                <p className="text-foreground font-medium">{summaryTitle}</p>
-                <p className="text-muted-foreground tabular-nums text-xs">{pct}%</p>
-              </div>
-              <div
-                className="bg-muted h-2 w-full overflow-hidden rounded-full"
-                role="progressbar"
-                aria-valuenow={pct}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-label="Care journey progress"
-              >
-                <div
-                  className="from-primary to-primary/70 h-full rounded-full bg-gradient-to-r transition-[width] duration-500 ease-out"
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-              {milestoneLine ? (
-                <p className="text-muted-foreground text-xs leading-relaxed md:text-sm">{milestoneLine}</p>
-              ) : null}
-              {!compact ? (
-                <div className="bg-primary/5 border-primary/15 rounded-xl border px-4 py-3">
-                  <p className="text-foreground text-sm font-medium">{motivation.title}</p>
-                  <p className="text-muted-foreground mt-0.5 text-sm leading-relaxed">{motivation.body}</p>
-                </div>
+      <Card id="care-journey" className="dashboard-card overflow-hidden rounded-2xl shadow-e1">
+        <CardHeader className="border-border/60 space-y-3 border-b bg-muted/15 pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="space-y-1">
+              <h2 className="font-heading text-lg font-semibold tracking-tight">Your care journey</h2>
+              {journeyQuery.isSuccess && steps.length > 0 ? (
+                <p className="text-muted-foreground text-sm">{compactStatusLine(steps, nextPending)}</p>
               ) : null}
             </div>
-          ) : null}
+            {journeyQuery.isSuccess && steps.length > 0 ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                aria-expanded={timelineExpanded}
+                onClick={() => setTimelineExpanded((open) => !open)}
+              >
+                {timelineExpanded ? "Hide steps" : "View all steps"}
+                {timelineExpanded ? <CaretUp size={14} aria-hidden /> : <CaretDown size={14} aria-hidden />}
+              </Button>
+            ) : null}
+          </div>
         </CardHeader>
 
-        <CardContent className="space-y-5 pt-5">
+        <CardContent className="space-y-4 pt-4">
           {journeyQuery.isLoading ? (
-            <div className="space-y-4" aria-busy="true" aria-label="Loading journey">
-              <div className="flex gap-4 overflow-hidden">
-                {Array.from({ length: 6 }).map((_, index) => (
-                  <div key={index} className="flex shrink-0 flex-col items-center gap-2">
-                    <Skeleton className="skeleton-shimmer h-10 w-10 rounded-full" />
-                    <Skeleton className="skeleton-shimmer h-3 w-14" />
-                  </div>
-                ))}
-              </div>
+            <div className="space-y-3" aria-busy="true" aria-label="Loading journey">
+              <Skeleton className="skeleton-shimmer h-4 w-48" />
+              <Skeleton className="skeleton-shimmer h-10 w-full" />
             </div>
           ) : null}
 
@@ -300,28 +267,7 @@ export function JourneyRail({
             <DashboardStateBlock variant="empty" message="No journey data yet." />
           ) : null}
 
-          {journeyQuery.isSuccess && steps.length > 0 ? (
-            <>
-              {compact && !timelineExpanded ? (
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <p className="text-muted-foreground text-sm">
-                    {nextPending
-                      ? `Current: ${guideFor(nextPending.key)?.timelineLabel ?? nextPending.label}`
-                      : summaryTitle}
-                  </p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="gap-1.5"
-                    onClick={() => setTimelineExpanded(true)}
-                  >
-                    View full journey
-                    <CaretDown size={14} aria-hidden />
-                  </Button>
-                </div>
-              ) : null}
-              {(!compact || timelineExpanded) ? (
+          {journeyQuery.isSuccess && steps.length > 0 && timelineExpanded ? (
             <div
               role="tablist"
               aria-label="Journey milestones"
@@ -344,7 +290,7 @@ export function JourneyRail({
                       <div
                         aria-hidden
                         className={cn(
-                          "mt-7 h-0.5 min-w-4 flex-1 rounded-full transition-colors duration-500",
+                          "mt-7 h-0.5 min-w-4 flex-1 rounded-full",
                           connectorFilled ? "bg-success/60" : "bg-border",
                         )}
                       />
@@ -368,7 +314,7 @@ export function JourneyRail({
                     >
                       <span
                         className={cn(
-                          "flex items-center justify-center rounded-full border-2 transition-all duration-250",
+                          "flex items-center justify-center rounded-full border-2",
                           nodeStateClasses(visualState, active, isCurrent),
                         )}
                       >
@@ -400,11 +346,9 @@ export function JourneyRail({
                 )
               })}
             </div>
-              ) : null}
-            </>
           ) : null}
 
-          {journeyQuery.isSuccess && currentStep && displayStepStatus(currentStep, steps) === "done" ? (
+          {journeyQuery.isSuccess && timelineExpanded && currentStep && displayStepStatus(currentStep, steps) === "done" ? (
             <CompletedStepDetail
               step={currentStep}
               expanded={expandedDoneKey === currentStep.key}
@@ -414,74 +358,9 @@ export function JourneyRail({
             />
           ) : null}
 
-          {journeyQuery.isSuccess &&
-          currentStep &&
-          displayStepStatus(currentStep, steps) === "pending" &&
-          nextPending?.key === currentStep.key ? (
-            <div
-              id="journey-step-detail"
-              role="tabpanel"
-              aria-labelledby={`journey-node-${currentStep.key}`}
-              className="space-y-3"
-            >
-              <div className="flex flex-wrap items-center gap-3">
-                <Badge variant="default">In progress</Badge>
-                {currentCta ? (
-                  <Button asChild size="sm" className="press">
-                    <Link href={currentCta.href}>{currentCta.label}</Link>
-                  </Button>
-                ) : null}
-              </div>
-              {guideFor(currentStep.key)?.whenPending ? (
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  {guideFor(currentStep.key)?.whenPending}
-                </p>
-              ) : null}
-            </div>
+          {journeyQuery.isSuccess && steps.length > 0 ? (
+            <JourneyQuickActions showInvoiceAction={showInvoiceAction} />
           ) : null}
-        </CardContent>
-      </Card>
-
-      {!compact ? (
-        <JourneyCurrentStepCard
-          step={nextPending ?? currentStep ?? null}
-          nextSession={nextSession}
-          loading={sessionLoading}
-          error={sessionError}
-          onRetry={onSessionRetry}
-        />
-      ) : null}
-
-      <Card className="dashboard-card rounded-2xl shadow-e1">
-        <CardHeader className="pb-3">
-          <h3 className="font-heading text-lg font-semibold">Coming next</h3>
-          <CardDescription className="text-sm">
-            {upcoming.length > 0
-              ? "Upcoming milestones after your current step."
-              : "Your session will appear here after booking."}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {upcoming.length === 0 ? (
-            <p className="text-muted-foreground text-sm">Nothing to do right now.</p>
-          ) : (
-            upcoming.map((step) => {
-              const guide = guideFor(step.key)
-              return (
-                <div
-                  key={step.key}
-                  className="border-border/70 flex items-start justify-between gap-3 rounded-xl border bg-card p-3"
-                >
-                  <div className="min-w-0">
-                    <p className="text-foreground text-sm font-medium">{guide?.timelineLabel ?? step.label}</p>
-                    <p className="text-muted-foreground text-xs">{guide?.upcomingHint ?? "After earlier steps"}</p>
-                  </div>
-                  <Badge variant="secondary">Upcoming</Badge>
-                </div>
-              )
-            })
-          )}
-          <JourneyQuickActions showInvoiceAction={showInvoiceAction} />
         </CardContent>
       </Card>
     </div>
