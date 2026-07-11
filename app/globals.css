@@ -389,7 +389,7 @@
 
   /* Marketing / landing page typography */
   .marketing-h1 {
-    font-family: var(--font-heading), Gabriola, "Times New Roman", serif;
+    font-family: var(--font-heading), "Cormorant Garamond", "Times New Roman", serif;
     font-size: clamp(2.5rem, 4.5vw + 1rem, 4rem);
     font-weight: 700;
     line-height: 1.08;
@@ -397,7 +397,7 @@
   }
 
   .marketing-h2 {
-    font-family: var(--font-heading), Gabriola, "Times New Roman", serif;
+    font-family: var(--font-heading), "Cormorant Garamond", "Times New Roman", serif;
     font-size: clamp(1.875rem, 2.5vw + 0.75rem, 2.5rem);
     font-weight: 600;
     line-height: 1.15;
@@ -405,7 +405,7 @@
   }
 
   .marketing-h3 {
-    font-family: var(--font-heading), Gabriola, "Times New Roman", serif;
+    font-family: var(--font-heading), "Cormorant Garamond", "Times New Roman", serif;
     font-size: clamp(1.25rem, 1.5vw + 0.5rem, 1.75rem);
     font-weight: 600;
     line-height: 1.25;

@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Gabriola, Geist_Mono, Noto_Sans } from "next/font/google"
+import { Cormorant_Garamond, Geist_Mono, Noto_Sans } from "next/font/google"
 
 import "./globals.css"
 import { QueryClientProviderWrapper } from "@/components/providers/query-client-provider"
@@ -8,9 +8,10 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 import { DEFAULT_DESCRIPTION, SITE_NAME } from "@/src/lib/site-metadata"
 
-const gabriolaHeading = Gabriola({
+// Gabriola is a Microsoft font, not in Google Fonts — Cormorant Garamond is the closest supported display serif.
+const headingFont = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "600", "700"],
   variable: "--font-heading",
 })
 
@@ -49,7 +50,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", notoSans.variable, gabriolaHeading.variable)}
+      className={cn("antialiased", fontMono.variable, "font-sans", notoSans.variable, headingFont.variable)}
     >
       <body suppressHydrationWarning>
         <ThemeProvider>
