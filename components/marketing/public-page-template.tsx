@@ -29,7 +29,7 @@ export function PublicPageTemplate({
   return (
     <div className="min-h-screen bg-background">
       <PublicHeader />
-      <main className="relative overflow-x-hidden">
+      <main className="relative overflow-x-clip">
         <PublicMarketingAmbient />
         <PublicPageEnter className="relative z-[1]">
         <PageHero eyebrow={eyebrow} title={title} description={description} />

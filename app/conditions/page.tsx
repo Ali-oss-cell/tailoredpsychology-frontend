@@ -13,7 +13,7 @@ export default function ConditionsIndexPage() {
   return (
     <div className="min-h-screen bg-background">
       <PublicHeader />
-      <main className="relative overflow-x-hidden">
+      <main className="relative overflow-x-clip">
         <PublicMarketingAmbient />
         <PublicPageEnter className="relative z-[1] mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 py-12 md:px-6">
         <section className="space-y-3">

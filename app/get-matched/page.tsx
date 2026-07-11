@@ -38,7 +38,7 @@ export default function GetMatchedPage() {
   return (
     <div className="min-h-screen bg-background">
       <PublicHeader />
-      <main className="relative overflow-x-hidden">
+      <main className="relative overflow-x-clip">
         <PublicMarketingAmbient />
         <PublicPageEnter className="relative z-[1]">
         <ScrollReveal>
