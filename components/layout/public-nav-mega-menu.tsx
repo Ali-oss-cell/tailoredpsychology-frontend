@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { CaretDown } from "@phosphor-icons/react"
+import { CaretDown, CaretUp } from "@phosphor-icons/react"
 import * as React from "react"
 
 import type { PublicNavMegaMenu } from "@/content/public-nav"
@@ -62,11 +62,21 @@ export function PublicNavMegaMenuDropdown({ menu, pathname }: PublicNavMegaMenuP
         onClick={() => setOpen((prev) => !prev)}
       >
         {menu.label}
-        <CaretDown
-          size={14}
-          aria-hidden
-          className={cn("transition-transform duration-200", open && "rotate-180")}
-        />
+        {open ? (
+          <CaretUp
+            size={14}
+            aria-hidden
+            data-testid={`nav-mega-chevron-${menu.id}-open`}
+            className="shrink-0 transition-transform duration-200"
+          />
+        ) : (
+          <CaretDown
+            size={14}
+            aria-hidden
+            data-testid={`nav-mega-chevron-${menu.id}-closed`}
+            className="shrink-0 transition-transform duration-200"
+          />
+        )}
       </button>
       {open ? (
         <div
