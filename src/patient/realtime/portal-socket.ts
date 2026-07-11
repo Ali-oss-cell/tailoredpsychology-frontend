@@ -2,7 +2,13 @@
 
 import { io, type Socket } from "socket.io-client"
 
+import { isTransientNetworkError } from "@/src/lib/network-error"
 import { ensureBackendAccessToken } from "@/src/patient/booking/api"
+import {
+  attachResilientSocketHandlers,
+  bindSocketVisibilityPause,
+  RESILIENT_SOCKET_OPTIONS,
+} from "@/src/session/resilient-socket"
 import { getSocketBaseUrl } from "@/src/session/socket-base-url"
 
 export type PortalInvalidateScope = "billing" | "journey" | "all"
@@ -17,15 +23,7 @@ export type PortalEventHandlers = {
   onAppointmentUpdated?: (payload: PortalAppointmentUpdated) => void
   onDashboardInvalidate?: (scope: PortalInvalidateScope) => void
   onError?: (message: string) => void
-}
-
-const SOCKET_OPTIONS = {
-  path: "/socket.io",
-  transports: ["polling", "websocket"] as ("polling" | "websocket")[],
-  upgrade: true,
-  reconnection: true,
-  reconnectionAttempts: 8,
-  timeout: 25_000,
+  onConnectionChange?: (connected: boolean) => void
 }
 
 function waitForConnect(socket: Socket, timeoutMs: number): Promise<void> {
@@ -42,9 +40,9 @@ function waitForConnect(socket: Socket, timeoutMs: number): Promise<void> {
       cleanup()
       resolve()
     }
-    const onConnectError = () => {
+    const onConnectError = (error: Error) => {
       cleanup()
-      reject(new Error("Portal socket connect failed"))
+      reject(error ?? new Error("Portal socket connect failed"))
     }
     const cleanup = () => {
       window.clearTimeout(timer)
@@ -59,15 +57,23 @@ function waitForConnect(socket: Socket, timeoutMs: number): Promise<void> {
 /** Singleton portal socket for patient dashboard live updates. */
 export class PortalSocketClient {
   private socket: Socket | null = null
+  private detachHandlers: (() => void) | null = null
+  private detachVisibility: (() => void) | null = null
 
   async connect(handlers: PortalEventHandlers): Promise<void> {
     if (this.socket?.connected) return
 
     const token = await ensureBackendAccessToken()
     this.socket = io(`${getSocketBaseUrl()}/portal`, {
-      ...SOCKET_OPTIONS,
+      ...RESILIENT_SOCKET_OPTIONS,
       auth: { token: `Bearer ${token}` },
     })
+
+    this.detachHandlers = attachResilientSocketHandlers(this.socket, "portal")
+    this.detachVisibility = bindSocketVisibilityPause(this.socket)
+
+    this.socket.on("connect", () => handlers.onConnectionChange?.(true))
+    this.socket.on("disconnect", () => handlers.onConnectionChange?.(false))
 
     this.socket.on("appointment.updated", (payload: PortalAppointmentUpdated) => {
       handlers.onAppointmentUpdated?.(payload)
@@ -79,14 +85,26 @@ export class PortalSocketClient {
       handlers.onError?.(payload?.message ?? "Portal socket error")
     })
 
-    await waitForConnect(this.socket, SOCKET_OPTIONS.timeout)
-    const ack = (await this.socket.emitWithAck("portal:subscribe", {})) as { ok: boolean; error?: string }
-    if (!ack.ok) {
-      throw new Error(ack.error ?? "Portal subscribe failed")
+    try {
+      await waitForConnect(this.socket, RESILIENT_SOCKET_OPTIONS.timeout)
+      const ack = (await this.socket.emitWithAck("portal:subscribe", {})) as { ok: boolean; error?: string }
+      if (!ack.ok) {
+        throw new Error(ack.error ?? "Portal subscribe failed")
+      }
+      handlers.onConnectionChange?.(true)
+    } catch (error) {
+      if (!isTransientNetworkError(error) && process.env.NODE_ENV === "development") {
+        console.warn("[socket:portal] initial connect failed:", error)
+      }
+      throw error
     }
   }
 
   disconnect(): void {
+    this.detachHandlers?.()
+    this.detachHandlers = null
+    this.detachVisibility?.()
+    this.detachVisibility = null
     this.socket?.disconnect()
     this.socket = null
   }

@@ -13,6 +13,7 @@ import { isJourneyComplete, visibleSteps } from "@/src/patient/journey/step-guid
 import { usePatientDashboard } from "@/src/patient/queries/use-patient-dashboard"
 import { usePatientJourney } from "@/src/patient/queries/use-patient-journey"
 import { useNotificationUnreadCount } from "@/src/patient/queries/use-notification-unread-count"
+import { usePatientPortalContext } from "@/src/patient/use-patient-portal-context"
 
 function firstNameOf(displayName: string | undefined): string | null {
   const first = displayName?.trim().split(/\s+/)[0]
@@ -30,6 +31,7 @@ export function PatientDashboardView() {
   const dashboardQuery = usePatientDashboard()
   const journeyQuery = usePatientJourney()
   const notificationsQuery = useNotificationUnreadCount()
+  const portalContext = usePatientPortalContext()
 
   const loading = dashboardQuery.isLoading
   const error = dashboardQuery.isError ? "Could not load your dashboard." : null
@@ -41,9 +43,9 @@ export function PatientDashboardView() {
 
   const firstName = firstNameOf(snapshot?.user.displayName)
   const journeySteps = visibleSteps(journeyQuery.data?.steps ?? [])
-  const journeyDone = journeySteps.filter((step) => step.status === "done").length
-  const journeyTotal = journeySteps.length
-  const journeyPct = journeyTotal === 0 ? 0 : Math.round((journeyDone / journeyTotal) * 100)
+  const journeyDone = portalContext.journeyProgress?.done ?? 0
+  const journeyTotal = portalContext.journeyProgress?.total ?? journeySteps.length
+  const journeyPct = portalContext.journeyProgress?.pct ?? 0
   const hideJourneyRail = journeyQuery.isSuccess && isJourneyComplete(journeyQuery.data?.steps ?? [])
 
   const billingStatus = snapshot
@@ -56,6 +58,7 @@ export function PatientDashboardView() {
         firstName={firstName}
         loading={loading}
         nextSession={snapshot?.nextSession ?? null}
+        portalMode={portalContext.mode}
       />
 
       <DashboardSummaryCards
@@ -70,8 +73,8 @@ export function PatientDashboardView() {
         loading={loading || journeyQuery.isLoading}
       />
 
-      <PatientTutorialOnboardingCta />
-      <PatientTelehealth101Cta />
+      {portalContext.isFirstTime ? <PatientTutorialOnboardingCta /> : null}
+      {portalContext.isFirstTime ? <PatientTelehealth101Cta /> : null}
 
       {!hideJourneyRail ? (
         <div className="dashboard-section">

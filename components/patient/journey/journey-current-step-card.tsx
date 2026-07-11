@@ -9,6 +9,7 @@ import {
   Microphone,
   VideoCamera,
 } from "@phosphor-icons/react/dist/ssr"
+import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 
 import { AppointmentManagePanel } from "@/components/patient/appointments/appointment-manage-panel"
@@ -22,7 +23,7 @@ import { formatDateAu, formatTimeAu } from "@/src/lib/format-au"
 import type { PatientNextSession } from "@/src/patient/dashboard/api"
 import { isJoinImminent } from "@/src/patient/dashboard/join-cta"
 import { downloadAppointmentIcs } from "@/src/patient/journey/calendar-ics"
-import { ctaForStep, guideFor } from "@/src/patient/journey/step-guide"
+import { guideFor, resolveJourneyCta } from "@/src/patient/journey/step-guide"
 import type { PatientJourneyStep } from "@/src/patient/journey/api"
 import { joinSessionHref } from "@/src/session/join-session"
 
@@ -92,10 +93,14 @@ export function JourneyCurrentStepCard({
   error = null,
   onRetry,
 }: JourneyCurrentStepCardProps) {
+  const pathname = usePathname()
   const [showManage, setShowManage] = useState(false)
   const countdown = useCountdownLabel(nextSession?.scheduledStartAt)
   const joinOpen = Boolean(nextSession && (nextSession.window.status === "open" || isJoinImminent(nextSession)))
-  const cta = step?.status === "pending" && step ? ctaForStep(step) : null
+  const cta =
+    step?.status === "pending" && step
+      ? resolveJourneyCta(step, { pathname, nextSession })
+      : null
 
   if (loading) {
     return (

@@ -7,11 +7,13 @@ import { ArrowRight, CalendarBlank } from "@phosphor-icons/react/dist/ssr"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import type { PatientNextSession } from "@/src/patient/dashboard/api"
+import type { PatientPortalMode } from "@/src/patient/journey/step-guide"
 
 type DashboardWelcomeSectionProps = {
   firstName: string | null
   loading?: boolean
   nextSession: PatientNextSession | null
+  portalMode?: PatientPortalMode
 }
 
 function timeAwareGreeting(): string {
@@ -37,9 +39,16 @@ export function DashboardWelcomeSection({
   firstName,
   loading = false,
   nextSession,
+  portalMode = "first-time",
 }: DashboardWelcomeSectionProps) {
   const greeting = timeAwareGreeting()
   const name = firstName ?? "there"
+  const subtitle =
+    portalMode === "first-time"
+      ? "Let's get started — we'll guide you through intake, booking, and your first session."
+      : nextSession
+        ? "Here's what's next in your care and your upcoming session."
+        : "Here's your health journey overview and quick actions."
 
   return (
     <header className="dashboard-section flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -59,7 +68,7 @@ export function DashboardWelcomeSection({
               {greeting}, {name} 👋
             </h1>
             <p className="text-muted-foreground max-w-2xl text-sm leading-relaxed md:text-base">
-              Here&apos;s your health journey overview and what&apos;s next.
+              {subtitle}
             </p>
           </>
         )}

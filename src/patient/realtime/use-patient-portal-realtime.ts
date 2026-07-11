@@ -9,8 +9,8 @@ import {
   invalidatePatientDashboard,
   invalidatePatientInvoices,
 } from "@/src/patient/queries/invalidate"
-import { PortalSocketClient, type PortalInvalidateScope } from "@/src/patient/realtime/portal-socket"
 import { usePatientId } from "@/src/patient/queries/use-current-user"
+import { PortalSocketClient, type PortalInvalidateScope } from "@/src/patient/realtime/portal-socket"
 
 /**
  * Keeps dashboard + journey queries fresh via the /portal socket namespace.
@@ -62,6 +62,10 @@ export function usePatientPortalRealtime(): void {
       .connect({
         onDashboardInvalidate: invalidateForScope,
         onAppointmentUpdated: () => invalidateForScope("all"),
+        onConnectionChange: (connected) => {
+          if (connected) stopPolling()
+          else startPolling()
+        },
       })
       .then(() => stopPolling())
       .catch(() => startPolling())

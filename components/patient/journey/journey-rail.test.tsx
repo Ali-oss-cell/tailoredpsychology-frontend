@@ -8,6 +8,19 @@ jest.mock("@/src/patient/queries/use-current-user", () => ({
   usePatientId: () => "user_patient_001",
 }))
 
+jest.mock("@/src/patient/use-patient-portal-context", () => ({
+  usePatientPortalContext: () => ({
+    mode: "returning",
+    isFirstTime: false,
+    isReturning: true,
+    loading: false,
+    hasUpcomingSession: false,
+    hasPastSessions: false,
+    currentStepKey: "booking_requested",
+    journeyProgress: { done: 2, total: 7, pct: 29 },
+  }),
+}))
+
 jest.mock("@/src/patient/journey/api", () => ({
   getPatientJourneyTimeline: jest.fn(),
 }))

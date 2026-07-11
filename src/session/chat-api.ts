@@ -10,6 +10,11 @@ import {
   type ChatMessageResponse,
   type ChatWindowResponse,
 } from "@/src/patient/booking/api"
+import {
+  attachResilientSocketHandlers,
+  bindSocketVisibilityPause,
+  RESILIENT_SOCKET_OPTIONS,
+} from "@/src/session/resilient-socket"
 import { getSocketBaseUrl } from "@/src/session/socket-base-url"
 
 type PresenceEvent = {
@@ -40,14 +45,7 @@ type ChatEventHandlers = {
   onError?: (message: string) => void
 }
 
-const SOCKET_OPTIONS = {
-  path: "/socket.io",
-  transports: ["polling", "websocket"] as ("polling" | "websocket")[],
-  upgrade: true,
-  reconnection: true,
-  reconnectionAttempts: 8,
-  timeout: 25_000,
-}
+const SOCKET_OPTIONS = RESILIENT_SOCKET_OPTIONS
 
 function waitForStableConnect(socket: Socket, timeoutMs: number): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -89,6 +87,8 @@ function waitForStableConnect(socket: Socket, timeoutMs: number): Promise<void> 
 
 export class SessionChatClient {
   private socket: Socket | null = null
+  private detachHandlers: (() => void) | null = null
+  private detachVisibility: (() => void) | null = null
 
   async connect(): Promise<void> {
     if (this.socket?.connected) {
@@ -102,10 +102,16 @@ export class SessionChatClient {
       forceNew: true,
       auth: { token: `Bearer ${token}` },
     })
+    this.detachHandlers = attachResilientSocketHandlers(this.socket, "chat")
+    this.detachVisibility = bindSocketVisibilityPause(this.socket)
     await waitForStableConnect(this.socket, SOCKET_OPTIONS.timeout)
   }
 
   disconnect(): void {
+    this.detachHandlers?.()
+    this.detachHandlers = null
+    this.detachVisibility?.()
+    this.detachVisibility = null
     this.socket?.disconnect()
     this.socket = null
   }

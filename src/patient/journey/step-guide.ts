@@ -11,8 +11,10 @@ import {
 } from "@phosphor-icons/react/dist/ssr"
 
 import type { PatientNextSession } from "@/src/patient/dashboard/api"
+import { isJoinImminent } from "@/src/patient/dashboard/join-cta"
 import type { PatientJourneyStep } from "@/src/patient/journey/api"
 import { formatDateAu, formatDateTimeAu, formatTimeAu } from "@/src/lib/format-au"
+import { joinSessionHref } from "@/src/session/join-session"
 
 export const STEP_ORDER = [
   "intake_started",
@@ -133,11 +135,18 @@ export function visibleSteps(steps: PatientJourneyStep[]): PatientJourneyStep[] 
   return sortSteps(steps).filter((step) => step.key !== "session_no_show" || step.status === "done")
 }
 
+export function currentPendingStep(steps: PatientJourneyStep[]): PatientJourneyStep | undefined {
+  const visible = visibleSteps(steps)
+  const boundary = contiguousDoneBoundary(visible)
+  return visible[boundary]
+}
+
 export function deriveHeadline(sorted: PatientJourneyStep[]): { title: string; subtitle: string; pct: number } {
-  const done = sorted.filter((step) => step.status === "done").length
-  const total = sorted.length
+  const visible = visibleSteps(sorted)
+  const done = contiguousDoneBoundary(visible)
+  const total = visible.length
   const pct = total === 0 ? 0 : Math.round((done / total) * 100)
-  const next = sorted.find((step) => step.status === "pending")
+  const next = currentPendingStep(sorted)
   if (!next) {
     return {
       title: "All milestones recorded so far",
@@ -153,25 +162,68 @@ export function deriveHeadline(sorted: PatientJourneyStep[]): { title: string; s
   }
 }
 
-export function ctaForStep(step: PatientJourneyStep): { label: string; href: string } | null {
+export type JourneyCta = { label: string; href: string }
+
+export type JourneyCtaContext = {
+  pathname?: string
+  nextSession?: PatientNextSession | null
+}
+
+export type PatientPortalMode = "first-time" | "returning"
+
+function canJoinSession(session: PatientNextSession | null | undefined): boolean {
+  if (!session) return false
+  return session.status === "in_progress" || session.window.status === "open" || isJoinImminent(session)
+}
+
+function isOnDashboard(pathname?: string): boolean {
+  return pathname === "/patient/dashboard" || pathname?.startsWith("/patient/dashboard/") === true
+}
+
+export function ctaForStep(step: PatientJourneyStep, ctx: JourneyCtaContext = {}): JourneyCta | null {
   if (step.status !== "pending") return null
   const key = normalizeKey(step.key)
   if (!key) return null
+
+  const { pathname, nextSession } = ctx
+  const joinOpen = canJoinSession(nextSession)
+
   switch (key) {
     case "intake_started":
     case "intake_submitted":
-      return { label: "Open booking intake", href: "/patient/book-appointment" }
+      return { label: "Continue intake", href: "/patient/book-appointment" }
     case "booking_requested":
+      return { label: "Book appointment", href: "/patient/book-appointment" }
     case "booking_confirmed":
-      return { label: "View appointments", href: "/patient/appointments" }
+      if (joinOpen && nextSession) {
+        return { label: "Join session", href: joinSessionHref(nextSession.appointmentId) }
+      }
+      return { label: "View appointment", href: "/patient/appointments" }
     case "session_started":
+      if (joinOpen && nextSession) {
+        return { label: "Join session", href: joinSessionHref(nextSession.appointmentId) }
+      }
+      if (nextSession) {
+        return { label: "View appointment", href: "/patient/appointments" }
+      }
+      return { label: "Test camera & mic", href: "/patient/video-setup" }
     case "session_completed":
-      return { label: "Go to dashboard", href: "/patient/dashboard" }
+      return { label: "View billing", href: "/patient/invoices" }
+    case "invoice_downloaded":
+      return { label: "View billing", href: "/patient/invoices" }
     case "session_no_show":
-      return { label: "Contact clinic", href: "/patient/dashboard" }
+      return { label: "Contact clinic", href: "/contact" }
     default:
       return null
   }
+}
+
+/** Hide dashboard self-links when the user is already on the dashboard. */
+export function resolveJourneyCta(step: PatientJourneyStep, ctx: JourneyCtaContext = {}): JourneyCta | null {
+  const cta = ctaForStep(step, ctx)
+  if (!cta) return null
+  if (isOnDashboard(ctx.pathname) && cta.href === "/patient/dashboard") return null
+  return cta
 }
 
 export function formatWhen(iso: string | undefined): string {
@@ -193,11 +245,38 @@ export function isJourneyComplete(steps: PatientJourneyStep[]): boolean {
   return visible.length > 0 && visible.every((step) => step.status === "done")
 }
 
-export function stepVisualState(step: PatientJourneyStep, isCurrent: boolean): JourneyStepVisualState {
-  if (step.key === "session_no_show" && step.status === "done") return "problem"
-  if (step.status === "done") return "done"
+/** Only treat steps as done up to the first gap — avoids out-of-order API data (e.g. invoice before session). */
+export function contiguousDoneBoundary(sorted: PatientJourneyStep[]): number {
+  let boundary = 0
+  for (const step of sorted) {
+    if (step.status !== "done") break
+    boundary += 1
+  }
+  return boundary
+}
+
+export function displayStepStatus(
+  step: PatientJourneyStep,
+  sorted: PatientJourneyStep[],
+): PatientJourneyStep["status"] {
+  const index = sorted.findIndex((entry) => entry.key === step.key)
+  if (index === -1) return step.status
+  const boundary = contiguousDoneBoundary(sorted)
+  if (index < boundary) return "done"
+  if (index === boundary) return "pending"
+  return "pending"
+}
+
+export function stepVisualState(
+  step: PatientJourneyStep,
+  isCurrent: boolean,
+  sorted?: PatientJourneyStep[],
+): JourneyStepVisualState {
+  const status = sorted ? displayStepStatus(step, sorted) : step.status
+  if (step.key === "session_no_show" && status === "done") return "problem"
+  if (status === "done") return "done"
   if (isCurrent) return "current"
-  if (step.key === "booking_requested" && step.status === "pending") return "waiting"
+  if (step.key === "booking_requested" && status === "pending" && isCurrent) return "waiting"
   return "upcoming"
 }
 
@@ -257,12 +336,15 @@ export function formatTimelineTime(
 
 export function upcomingMilestones(steps: PatientJourneyStep[]): PatientJourneyStep[] {
   const visible = visibleSteps(steps)
-  const currentIndex = visible.findIndex((step) => step.status === "pending")
-  if (currentIndex === -1) return []
+  const currentIndex = contiguousDoneBoundary(visible)
+  if (currentIndex === -1 || currentIndex >= visible.length) return []
   return visible.slice(currentIndex + 1)
 }
 
-export function deriveMotivationCopy(steps: PatientJourneyStep[]): { title: string; body: string } {
+export function deriveMotivationCopy(
+  steps: PatientJourneyStep[],
+  mode: PatientPortalMode = "first-time",
+): { title: string; body: string } {
   const visible = visibleSteps(steps)
   const pendingCount = visible.filter((step) => step.status === "pending").length
 
@@ -270,6 +352,13 @@ export function deriveMotivationCopy(steps: PatientJourneyStep[]): { title: stri
     return {
       title: "Everything is on track.",
       body: "All milestones are recorded. New bookings or sessions will update your journey.",
+    }
+  }
+
+  if (mode === "first-time") {
+    return {
+      title: "Let's get started.",
+      body: "Complete each step below — we'll guide you through intake, booking, and your first session.",
     }
   }
 
@@ -307,7 +396,7 @@ export function estimatedNextMilestoneLine(
   steps: PatientJourneyStep[],
   nextSession?: PatientNextSession | null,
 ): string | null {
-  const next = visibleSteps(steps).find((step) => step.status === "pending")
+  const next = currentPendingStep(steps)
   if (!next) return null
 
   if (

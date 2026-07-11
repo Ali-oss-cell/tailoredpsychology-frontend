@@ -11,9 +11,9 @@ export const patientQueryKeys = {
 
 export const patientQueryStaleTime = {
   currentUser: 5 * 60_000,
-  dashboard: 30_000,
+  dashboard: 60_000,
   appointments: 60_000,
   invoices: 2 * 60_000,
   appointmentSessionDetails: 60_000,
-  journey: 30_000,
+  journey: 60_000,
 } as const

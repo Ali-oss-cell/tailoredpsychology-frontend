@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import {
   CalendarPlus,
   CaretDown,
@@ -23,13 +24,16 @@ import { cn } from "@/lib/utils"
 import type { PatientNextSession } from "@/src/patient/dashboard/api"
 import type { PatientJourneyStep } from "@/src/patient/journey/api"
 import {
-  ctaForStep,
+  contiguousDoneBoundary,
+  currentPendingStep,
   deriveHeadline,
   deriveMotivationCopy,
   detailLinkForStep,
+  displayStepStatus,
   estimatedNextMilestoneLine,
   formatStepTimestamp,
   guideFor,
+  resolveJourneyCta,
   stepVisualState,
   timelineLabelFor,
   formatTimelineDate,
@@ -38,6 +42,7 @@ import {
   visibleSteps,
 } from "@/src/patient/journey/step-guide"
 import { usePatientJourney } from "@/src/patient/queries/use-patient-journey"
+import { usePatientPortalContext } from "@/src/patient/use-patient-portal-context"
 
 type JourneyRailProps = {
   nextSession?: PatientNextSession | null
@@ -170,6 +175,8 @@ export function JourneyRail({
   onSessionRetry,
   showInvoiceAction = false,
 }: JourneyRailProps) {
+  const pathname = usePathname()
+  const portalContext = usePatientPortalContext()
   const journeyQuery = usePatientJourney()
 
   const steps = React.useMemo(
@@ -177,7 +184,8 @@ export function JourneyRail({
     [journeyQuery.data],
   )
 
-  const firstPendingIndex = steps.findIndex((step) => step.status === "pending")
+  const nextPending = currentPendingStep(steps)
+  const firstPendingIndex = nextPending ? steps.findIndex((step) => step.key === nextPending.key) : -1
   const defaultIndex = firstPendingIndex === -1 ? Math.max(steps.length - 1, 0) : firstPendingIndex
 
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null)
@@ -185,11 +193,15 @@ export function JourneyRail({
   const activeIndex = selectedIndex ?? defaultIndex
   const nodeRefs = React.useRef<(HTMLButtonElement | null)[]>([])
 
-  const nextPending = steps.find((step) => step.status === "pending")
   const currentStep = steps[Math.min(activeIndex, Math.max(steps.length - 1, 0))]
-  const motivation = deriveMotivationCopy(steps)
+  const motivation = deriveMotivationCopy(steps, portalContext.mode)
   const upcoming = upcomingMilestones(steps)
   const milestoneLine = estimatedNextMilestoneLine(steps, nextSession)
+  const ctaContext = React.useMemo(() => ({ pathname, nextSession }), [pathname, nextSession])
+  const currentCta =
+    currentStep && displayStepStatus(currentStep, steps) === "pending"
+      ? resolveJourneyCta(currentStep, ctaContext)
+      : null
 
   const handleKeyDown = (event: React.KeyboardEvent, index: number) => {
     let nextIndex: number | null = null
@@ -204,7 +216,7 @@ export function JourneyRail({
   }
 
   const { title: summaryTitle, pct } = deriveHeadline(steps)
-  const doneCount = steps.filter((step) => step.status === "done").length
+  const doneCount = contiguousDoneBoundary(steps)
 
   return (
     <div className="space-y-6" data-tutorial="patient.journey.rail">
@@ -293,10 +305,11 @@ export function JourneyRail({
               {steps.map((step, index) => {
                 const isCurrent = nextPending?.key === step.key
                 const active = index === activeIndex
-                const visualState = stepVisualState(step, isCurrent)
+                const visualState = stepVisualState(step, isCurrent, steps)
+                const displayStatus = displayStepStatus(step, steps)
                 const nodeGuide = guideFor(step.key)
                 const NodeIcon = nodeGuide?.icon ?? MapTrifold
-                const connectorFilled = index > 0 && steps[index - 1].status === "done"
+                const connectorFilled = index > 0 && displayStepStatus(steps[index - 1], steps) === "done"
                 const dateLabel = formatTimelineDate(step, isCurrent, nextSession)
                 const timeLabel = formatTimelineTime(step, isCurrent, nextSession)
 
@@ -334,7 +347,7 @@ export function JourneyRail({
                           nodeStateClasses(visualState, active, isCurrent),
                         )}
                       >
-                        {step.status === "done" ? (
+                        {displayStatus === "done" ? (
                           <Check size={isCurrent ? 20 : 18} weight="bold" aria-hidden />
                         ) : (
                           <NodeIcon size={isCurrent ? 22 : 18} weight={isCurrent ? "fill" : "duotone"} aria-hidden />
@@ -355,7 +368,7 @@ export function JourneyRail({
                         <span className="text-muted-foreground text-[10px] leading-tight tabular-nums">{timeLabel}</span>
                       ) : null}
                       <span className="sr-only">
-                        {step.status === "done" ? "completed" : isCurrent ? "current step" : "upcoming"}
+                        {displayStatus === "done" ? "completed" : isCurrent ? "current step" : "upcoming"}
                       </span>
                     </button>
                   </React.Fragment>
@@ -364,7 +377,7 @@ export function JourneyRail({
             </div>
           ) : null}
 
-          {journeyQuery.isSuccess && currentStep && currentStep.status === "done" ? (
+          {journeyQuery.isSuccess && currentStep && displayStepStatus(currentStep, steps) === "done" ? (
             <CompletedStepDetail
               step={currentStep}
               expanded={expandedDoneKey === currentStep.key}
@@ -374,21 +387,29 @@ export function JourneyRail({
             />
           ) : null}
 
-          {journeyQuery.isSuccess && currentStep && currentStep.status === "pending" ? (
+          {journeyQuery.isSuccess &&
+          currentStep &&
+          displayStepStatus(currentStep, steps) === "pending" &&
+          nextPending?.key === currentStep.key ? (
             <div
               id="journey-step-detail"
               role="tabpanel"
               aria-labelledby={`journey-node-${currentStep.key}`}
-              className="animate-in fade-in slide-in-from-bottom-2 space-y-2 duration-300"
+              className="animate-in fade-in slide-in-from-bottom-2 space-y-3 duration-300"
             >
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-3">
                 <Badge variant="default">In progress</Badge>
-                {ctaForStep(currentStep) ? (
-                  <Button asChild variant="link" size="sm" className="h-auto px-0">
-                    <Link href={ctaForStep(currentStep)!.href}>{ctaForStep(currentStep)!.label}</Link>
+                {currentCta ? (
+                  <Button asChild size="sm" className="press">
+                    <Link href={currentCta.href}>{currentCta.label}</Link>
                   </Button>
                 ) : null}
               </div>
+              {guideFor(currentStep.key)?.whenPending ? (
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {guideFor(currentStep.key)?.whenPending}
+                </p>
+              ) : null}
             </div>
           ) : null}
         </CardContent>
