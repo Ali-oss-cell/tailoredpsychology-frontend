@@ -46,6 +46,7 @@ export function mergeBookingDraftFromSources(
     ...draft,
     ...intake,
     bookingMeta: { ...draft.bookingMeta, ...(intake.bookingMeta ?? {}) },
+    wizardMeta: { ...draft.wizardMeta, ...(intake.wizardMeta ?? {}) },
     scheduleSelection: { ...draft.scheduleSelection, ...(intake.scheduleSelection ?? {}) },
     patientIdentity: {
       ...draft.patientIdentity,

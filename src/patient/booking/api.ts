@@ -353,6 +353,22 @@ export async function getBookingRequestStatus(bookingRequestId: string): Promise
   return (await response.json()) as BookingRequestStatusResponse
 }
 
+export async function getActivePatientBookingRequest(): Promise<BookingRequestStatusResponse | null> {
+  const url = buildApiUrl("booking-requests/mine/active")
+  const response = await fetch(url.toString(), {
+    method: "GET",
+    headers: await getAuthHeaders(),
+    cache: "no-store",
+  })
+
+  if (response.status === 404) {
+    return null
+  }
+
+  await assertApiOk(response, "We could not load your active booking request.")
+  return (await response.json()) as BookingRequestStatusResponse
+}
+
 export type BookingCheckoutResponse = {
   checkoutUrl: string
   checkoutSessionId: string

@@ -15,6 +15,7 @@ import {
   commitIntakeDraft,
   createBookingCheckout,
   createBookingRequest,
+  getActivePatientBookingRequest,
   getClinicianAvailability,
   getLatestIntakeDraft,
   saveIntakeDraftDelta,
@@ -35,6 +36,7 @@ import {
   type BookingFieldErrors,
 } from "@/src/patient/booking/booking-validation"
 import { mergeBookingDraftFromSources } from "@/src/patient/booking/merge-booking-draft"
+import { inferBookingResumeStep, type IntakeProgressContext } from "@/src/patient/booking/intake-draft-progress"
 import type { BookingRequestDraft, BookingStepId } from "@/src/patient/booking/types"
 import { usePatientBookingEligibility } from "@/src/patient/booking/use-patient-booking-eligibility"
 import { useWizardDraft } from "@/src/patient/booking/use-wizard-draft"
@@ -50,6 +52,25 @@ const STATIC_CLINICIAN_BY_ID = Object.fromEntries(clinicians.map((c) => [c.id, c
   string,
   (typeof clinicians)[number]
 >
+
+function resolveResumeStep(
+  visible: Array<{ id: BookingStepId }>,
+  preferred: BookingStepId,
+): BookingStepId {
+  if (visible.some((step) => step.id === preferred)) {
+    return preferred
+  }
+  return visible[0]?.id ?? "reason"
+}
+
+function activeBookingProgressContext(
+  booking: BookingRequestStatusResponse | null,
+): IntakeProgressContext | undefined {
+  if (!booking) return undefined
+  if (booking.state === "pending_payment") return { paymentPending: true }
+  if (booking.state === "payment_abandoned") return { paymentAbandoned: true }
+  return undefined
+}
 
 function parsePersistedDraft(raw: string | null): BookingRequestDraft | null {
   if (!raw) return null
@@ -107,6 +128,7 @@ export function useBookingWizard() {
   const [draftVersion, setDraftVersion] = React.useState(0)
   const [remoteSyncState, setRemoteSyncState] = React.useState<"idle" | "syncing" | "saved" | "conflict" | "error">("idle")
   const [hasRemoteHydrated, setHasRemoteHydrated] = React.useState(false)
+  const [hasRestoredStep, setHasRestoredStep] = React.useState(false)
   const [intakePatientId, setIntakePatientId] = React.useState<string | null>(null)
   const saveTimeoutRef = React.useRef<number | null>(null)
   const draftVersionRef = React.useRef(0)
@@ -115,18 +137,32 @@ export function useBookingWizard() {
   const hydrateRemoteDraft = React.useCallback(async () => {
     if (intakePatientId === null) return
     try {
-      const [latest, user] = await Promise.all([
+      const [latest, user, activeBooking] = await Promise.all([
         getLatestIntakeDraft(intakePatientId),
         getCurrentUser().catch(() => null),
+        getActivePatientBookingRequest().catch(() => null),
       ])
       const matchQuiz = loadMatchQuizDraft()
       const intakePartial =
         latest.data && Object.keys(latest.data).length > 0
           ? (latest.data as Partial<BookingRequestDraft>)
           : undefined
-      setDraft((current) => mergeBookingDraftFromSources(current, { intake: intakePartial, user, matchQuiz }))
+      const pendingBookingRequestId =
+        intakePartial?.wizardMeta?.pendingBookingRequestId ?? activeBooking?.bookingRequestId
+      const mergedIntake: Partial<BookingRequestDraft> | undefined = intakePartial
+        ? {
+            ...intakePartial,
+            wizardMeta: {
+              ...(intakePartial.wizardMeta ?? {}),
+              pendingBookingRequestId,
+            },
+          }
+        : pendingBookingRequestId
+          ? { wizardMeta: { pendingBookingRequestId } }
+          : undefined
+      setDraft((current) => mergeBookingDraftFromSources(current, { intake: mergedIntake, user, matchQuiz }))
       setDraftVersion(latest.draftVersion)
-      const hydrated = mergeBookingDraftFromSources(initialBookingDraft, { intake: intakePartial, user, matchQuiz })
+      const hydrated = mergeBookingDraftFromSources(initialBookingDraft, { intake: mergedIntake, user, matchQuiz })
       lastSyncedSnapshotRef.current = JSON.stringify({
         ...hydrated,
         referralFile: { ...hydrated.referralFile, file: null },
@@ -253,6 +289,66 @@ export function useBookingWizard() {
       isCancelled = true
     }
   }, [intakePatientId, hydrateRemoteDraft])
+
+  React.useEffect(() => {
+    if (!hasRemoteHydrated || hasRestoredStep || bookingEligibility.loading) return
+
+    const resumePayment = searchParams.get("resumePayment")?.trim()
+    const stepParam = searchParams.get("step") as BookingStepId | null
+    const progressContext = activeBookingProgressContext(
+      resumePayment || draft.wizardMeta?.pendingBookingRequestId
+        ? {
+            bookingRequestId: resumePayment || draft.wizardMeta?.pendingBookingRequestId || "",
+            state: "pending_payment",
+            lastUpdated: "",
+            nextAction: "",
+            clinicianId: draft.scheduleSelection.selectedClinicianId,
+            slotId: draft.scheduleSelection.selectedSlotId,
+            appointmentDate: draft.scheduleSelection.selectedDate,
+          }
+        : null,
+    )
+
+    let nextStep = inferBookingResumeStep(draft, progressContext)
+    if (resumePayment) {
+      nextStep = "review"
+      setDraft((current) => ({
+        ...current,
+        wizardMeta: {
+          ...current.wizardMeta,
+          activeStep: "review",
+          pendingBookingRequestId: resumePayment,
+        },
+      }))
+    } else if (stepParam) {
+      nextStep = stepParam
+    }
+
+    setActiveStep(resolveResumeStep(visibleSteps, nextStep))
+    setHasRestoredStep(true)
+  }, [
+    bookingEligibility.loading,
+    draft,
+    hasRemoteHydrated,
+    hasRestoredStep,
+    searchParams,
+    setDraft,
+    visibleSteps,
+  ])
+
+  React.useEffect(() => {
+    if (!hasRemoteHydrated || activeStep === "submitted") return
+    setDraft((current) => {
+      if (current.wizardMeta?.activeStep === activeStep) return current
+      return {
+        ...current,
+        wizardMeta: {
+          ...current.wizardMeta,
+          activeStep,
+        },
+      }
+    })
+  }, [activeStep, hasRemoteHydrated, setDraft])
 
   React.useEffect(() => {
     const id = searchParams.get("clinician")
@@ -409,6 +505,14 @@ export function useBookingWizard() {
       setIsSubmitting(true)
       const submit = async () => {
         try {
+          const pendingBookingRequestId = draft.wizardMeta?.pendingBookingRequestId?.trim()
+          if (pendingBookingRequestId) {
+            const checkout = await createBookingCheckout(pendingBookingRequestId)
+            clearDraft()
+            window.location.assign(checkout.checkoutUrl)
+            return
+          }
+
           if (!selectedSlot || !draft.scheduleSelection.selectedDate) {
             throw new Error("Please choose a valid schedule slot before submitting.")
           }
@@ -427,6 +531,17 @@ export function useBookingWizard() {
             idempotencyKey: `frontend_intake_submitted:${created.bookingRequestId}`,
           })
           await commitIntakeDraft(intakePatientId ?? DEMO_PATIENT_ID)
+          await saveIntakeDraftDelta({
+            patientId: intakePatientId ?? DEMO_PATIENT_ID,
+            baseVersion: draftVersionRef.current,
+            delta: {
+              wizardMeta: {
+                ...draft.wizardMeta,
+                activeStep: "review",
+                pendingBookingRequestId: created.bookingRequestId,
+              },
+            } as unknown as Record<string, unknown>,
+          })
           const checkout = await createBookingCheckout(created.bookingRequestId)
           clearDraft()
           window.location.assign(checkout.checkoutUrl)

@@ -173,6 +173,7 @@ export const initialBookingDraft: BookingRequestDraft = {
     bookingType: "initial",
     changesSinceLastVisit: "no",
   },
+  wizardMeta: {},
   scheduleSelection: {
     selectedClinicianId: "",
     selectedDate: "",

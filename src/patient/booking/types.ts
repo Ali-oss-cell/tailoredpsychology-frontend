@@ -41,11 +41,19 @@ export type ReferralFileDraft = {
   notes: string
 }
 
+export type BookingWizardMeta = {
+  /** Last wizard step the patient reached (persisted in intake draft). */
+  activeStep?: Exclude<BookingStepId, "submitted">
+  /** Booking request awaiting payment after review submit. */
+  pendingBookingRequestId?: string
+}
+
 export type BookingRequestDraft = {
   bookingMeta: {
     bookingType: BookingType
     changesSinceLastVisit: "yes" | "no"
   }
+  wizardMeta?: BookingWizardMeta
   scheduleSelection: {
     selectedClinicianId: string
     selectedDate: string

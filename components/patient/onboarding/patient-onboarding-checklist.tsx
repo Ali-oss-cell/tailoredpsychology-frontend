@@ -22,8 +22,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { getCurrentUser } from "@/src/auth/current-user"
-import { getLatestIntakeDraft } from "@/src/patient/booking/api"
-import { computeIntakeDraftPercent } from "@/src/patient/booking/intake-draft-progress"
+import { getActivePatientBookingRequest, getLatestIntakeDraft } from "@/src/patient/booking/api"
+import { buildIntakeProgressSnapshot } from "@/src/patient/booking/intake-draft-progress"
+import type { BookingRequestDraft } from "@/src/patient/booking/types"
 
 const steps = [
   {
@@ -65,6 +66,7 @@ export function PatientOnboardingChecklist() {
   const [displayName, setDisplayName] = React.useState<string>("")
   const [error, setError] = React.useState<string | null>(null)
   const [intakePercent, setIntakePercent] = React.useState<number | null>(null)
+  const [intakeResumeHref, setIntakeResumeHref] = React.useState("/patient/book-appointment")
 
   const refreshStatus = React.useCallback(async () => {
     setError(null)
@@ -75,13 +77,35 @@ export function PatientOnboardingChecklist() {
       setDisplayName(user.displayName)
       if (user.role === "patient" && !user.accountSetupComplete) {
         try {
-          const latest = await getLatestIntakeDraft(user.id)
-          setIntakePercent(computeIntakeDraftPercent(latest.data as Parameters<typeof computeIntakeDraftPercent>[0]))
+          const [latest, activeBooking] = await Promise.all([
+            getLatestIntakeDraft(user.id),
+            getActivePatientBookingRequest().catch(() => null),
+          ])
+          const draft = latest.data as Partial<BookingRequestDraft>
+          const progressContext =
+            activeBooking?.state === "pending_payment"
+              ? { paymentPending: true }
+              : activeBooking?.state === "payment_abandoned"
+                ? { paymentAbandoned: true }
+                : undefined
+          const mergedDraft: Partial<BookingRequestDraft> = {
+            ...draft,
+            wizardMeta: {
+              ...(draft.wizardMeta ?? {}),
+              pendingBookingRequestId:
+                draft.wizardMeta?.pendingBookingRequestId ?? activeBooking?.bookingRequestId,
+            },
+          }
+          const snapshot = buildIntakeProgressSnapshot(mergedDraft, progressContext)
+          setIntakePercent(snapshot.percent)
+          setIntakeResumeHref(snapshot.resumeHref)
         } catch {
           setIntakePercent(null)
+          setIntakeResumeHref("/patient/book-appointment")
         }
       } else {
         setIntakePercent(null)
+        setIntakeResumeHref("/patient/book-appointment")
       }
       window.dispatchEvent(new Event("clink:current-user-invalidated"))
     } catch {
@@ -162,7 +186,7 @@ export function PatientOnboardingChecklist() {
               </Button>
             ) : (
               <Button asChild className="gap-2 shadow-sm">
-                <Link href="/patient/book-appointment">
+                <Link href={intakeResumeHref}>
                   {complete === false ? "Continue intake" : "Start booking"}
                   <ArrowRight size={16} weight="bold" aria-hidden />
                 </Link>
