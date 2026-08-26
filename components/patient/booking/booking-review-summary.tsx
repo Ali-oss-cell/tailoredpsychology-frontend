@@ -64,7 +64,7 @@ export function BookingReviewSummary({
           {bookingTypeLabels[draft.bookingMeta.bookingType]} ·{" "}
           {slotDate ? formatDateAu(`${slotDate}T12:00:00`) : "Date not selected"} ·{" "}
           {slotTimeLabel || "Time not selected"} ·{" "}
-          {australianEasternTimezoneLabel(`${slotDate || new Date().toISOString()}T12:00:00`)}
+          {australianEasternTimezoneLabel(slotDate ? `${slotDate}T12:00:00` : new Date())}
         </p>
         <p className="text-muted-foreground mt-3 text-xs">
           Confirm details below, then continue to secure payment.
