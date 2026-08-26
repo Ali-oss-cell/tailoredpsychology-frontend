@@ -10,6 +10,7 @@ import { JourneyRail } from "@/components/patient/journey/journey-rail"
 import { PatientTelehealth101Cta } from "@/components/tutorials/patient-telehealth-101-cta"
 import { PatientTutorialOnboardingCta } from "@/components/tutorials/patient-tutorial-onboarding-cta"
 import { patientDashboardContent } from "@/content/patient-dashboard"
+import { invoiceStatusLabel, normalizeInvoiceStatus } from "@/src/patient/billing/invoice-status"
 import { isJourneyComplete, visibleSteps } from "@/src/patient/journey/step-guide"
 import { usePatientDashboard } from "@/src/patient/queries/use-patient-dashboard"
 import { usePatientJourney } from "@/src/patient/queries/use-patient-journey"
@@ -23,9 +24,9 @@ function firstNameOf(displayName: string | undefined): string | null {
 
 function billingStatusLabel(unpaidCount: number, latestStatus: string | undefined): string {
   if (unpaidCount > 0) return `${unpaidCount} to pay`
-  if (latestStatus?.toLowerCase() === "paid") return "Up to date"
-  if (latestStatus) return latestStatus
-  return "Up to date"
+  if (!latestStatus) return "Up to date"
+  if (normalizeInvoiceStatus(latestStatus) === "paid") return "Up to date"
+  return invoiceStatusLabel(latestStatus)
 }
 
 export function PatientDashboardView() {

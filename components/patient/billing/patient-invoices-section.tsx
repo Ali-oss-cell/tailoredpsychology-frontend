@@ -15,25 +15,25 @@ import {
   formatInvoiceIssuedDate,
   formatInvoiceReferenceLabel,
 } from "@/src/patient/billing/format-invoice-id"
+import { invoiceStatusLabel, normalizeInvoiceStatus } from "@/src/patient/billing/invoice-status"
 import { usePatientInvoices } from "@/src/patient/queries/use-patient-invoices"
 
 const INVOICE_ROW_GRID =
   "min-w-[34rem] grid-cols-[minmax(5.5rem,1fr)_5.5rem_4.5rem_minmax(0,1.15fr)_auto] items-center gap-x-4 gap-y-2"
 
 function InvoiceStatusBadge({ status }: { status: string }) {
-  const normalized = status.toLowerCase()
+  const kind = normalizeInvoiceStatus(status)
   return (
     <span
       className={cn(
-        "pill w-fit capitalize",
-        normalized === "paid" && "pill-success",
-        normalized === "pending" && "pill-warning",
-        normalized === "overdue" && "pill-destructive font-semibold",
-        normalized === "failed" && "pill-destructive font-semibold",
-        !["paid", "pending", "overdue", "failed"].includes(normalized) && "pill-neutral",
+        "pill w-fit",
+        kind === "paid" && "pill-success",
+        kind === "pending" && "pill-warning",
+        (kind === "overdue" || kind === "failed") && "pill-destructive font-semibold",
+        kind === "unknown" && "pill-neutral",
       )}
     >
-      {status}
+      {invoiceStatusLabel(status)}
     </span>
   )
 }

@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import type { InvoiceSummary } from "@/src/patient/billing/api"
+import { invoiceStatusLabel, normalizeInvoiceStatus } from "@/src/patient/billing/invoice-status"
 
 type BillingSnapshotCardProps = {
   latestInvoice: InvoiceSummary | null
@@ -20,10 +21,11 @@ type BillingSnapshotCardProps = {
 }
 
 function invoiceStatusChip(status: string): string {
-  const normalized = status.trim().toLowerCase()
-  if (normalized === "paid") return "bg-success/10 text-success border-success/25"
-  if (normalized === "overdue" || normalized === "failed") return "bg-destructive/10 text-destructive border-destructive/25"
-  return "bg-warning/10 text-warning border-warning/25"
+  const kind = normalizeInvoiceStatus(status)
+  if (kind === "paid") return "bg-success/10 text-success border-success/25"
+  if (kind === "overdue" || kind === "failed") return "bg-destructive/10 text-destructive border-destructive/25"
+  if (kind === "pending") return "bg-warning/10 text-warning border-warning/25"
+  return "bg-muted text-muted-foreground border-border"
 }
 
 /**
@@ -78,7 +80,7 @@ export function BillingSnapshotCard({
                   invoiceStatusChip(latestInvoice.status),
                 )}
               >
-                {latestInvoice.status}
+                {invoiceStatusLabel(latestInvoice.status)}
               </span>
             </div>
             <p className="text-muted-foreground text-xs">Latest invoice · issued {latestInvoice.issuedDate}</p>

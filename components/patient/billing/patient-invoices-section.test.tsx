@@ -37,7 +37,7 @@ describe("PatientInvoicesSection", () => {
         invoiceId: "inv_br_9649694c84e64999b1f2d17678deeb44",
         issuedDate: "1 June 2026",
         amountLabel: "$220.00",
-        status: "Paid",
+        status: "pending",
       },
     ])
     mockedDownload.mockResolvedValue({
@@ -60,7 +60,8 @@ describe("PatientInvoicesSection", () => {
     expect(screen.getByText("Invoice · 1 June 2026")).toBeInTheDocument()
     expect(screen.getByTitle("inv_br_9649694c84e64999b1f2d17678deeb44")).toBeInTheDocument()
     expect(screen.getAllByText("$220.00")).toHaveLength(2)
-    expect(screen.getAllByText("Paid")).toHaveLength(2)
+    expect(screen.getByText("Paid")).toBeInTheDocument()
+    expect(screen.getByText("Pending")).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole("button", { name: /Download Invoice · INV-1042/i }))
     await waitFor(() => expect(mockedDownload).toHaveBeenCalledWith("INV-1042"))
