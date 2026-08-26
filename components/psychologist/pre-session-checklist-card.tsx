@@ -4,6 +4,12 @@ import * as React from "react"
 import Link from "next/link"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { formatDateTimeAu } from "@/src/lib/format-au"
+import {
+  formatIntakeStateLabel,
+  formatReadinessStatusLabel,
+  formatReferralStatusLabel,
+} from "@/src/psychologist/labels"
 import type { PsychologistWorkspaceItem } from "@/src/psychologist/workspace/api"
 import { joinSessionHref } from "@/src/session/join-session"
 
@@ -103,7 +109,7 @@ export function PreSessionChecklistCard({ items, psychologistId, patientId }: Pr
             {upcoming.map((item) => (
               <li key={item.appointmentId} className="rounded-md border border-border/60 p-2">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="font-medium">{new Date(item.startsAt).toLocaleString()}</span>
+                  <span className="font-medium">{formatDateTimeAu(item.startsAt)}</span>
                   <Link
                     href={joinSessionHref(item.appointmentId)}
                     className="text-primary text-xs underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
@@ -112,8 +118,8 @@ export function PreSessionChecklistCard({ items, psychologistId, patientId }: Pr
                   </Link>
                 </div>
                 <p className="text-muted-foreground mt-1 text-xs">
-                  Readiness: {item.readinessStatus} · Referral: {item.referralStatus.replace(/_/g, " ")} · Intake:{" "}
-                  {item.intakeState.replace(/_/g, " ")}
+                  Readiness: {formatReadinessStatusLabel(item.readinessStatus)} · Referral:{" "}
+                  {formatReferralStatusLabel(item.referralStatus)} · Intake: {formatIntakeStateLabel(item.intakeState)}
                 </p>
                 {item.actions.length > 0 ? (
                   <ul className="mt-2 space-y-1.5 border-t border-border/40 pt-2">

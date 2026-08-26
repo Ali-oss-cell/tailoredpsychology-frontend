@@ -9,9 +9,18 @@ import { EmptyState } from "@/components/shared/empty-state"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { getCurrentUser } from "@/src/auth/current-user"
+import { formatDateTimeAu, formatTimeAu } from "@/src/lib/format-au"
+import {
+  formatReadinessStatusLabel,
+  formatReferralStatusLabel,
+  formatWorkspaceRiskLabel,
+} from "@/src/psychologist/labels"
+import { resolvePatientDisplayNames, patientDisplayName } from "@/src/psychologist/resolve-patient-display-names"
 import { formatRelativeTimestamp } from "@/src/shared/relative-time"
 import { getPsychologistWorkspace, type PsychologistWorkspaceItem } from "@/src/psychologist/workspace/api"
 import { joinSessionHref } from "@/src/session/join-session"
+
+type WorkspaceRow = PsychologistWorkspaceItem & { patientDisplayName: string }
 
 export function PreSessionWorkspaceCard() {
   const [readinessFilter, setReadinessFilter] = React.useState<"all" | "ready" | "attention" | "unknown">("all")
@@ -21,7 +30,7 @@ export function PreSessionWorkspaceCard() {
 
   const workspaceQuery = useQuery({
     queryKey: ["psychologist-workspace", readinessFilter, staleOnly, sortBy],
-    queryFn: async () => {
+    queryFn: async (): Promise<WorkspaceRow[]> => {
       const user = await getCurrentUser()
       const workspace = await getPsychologistWorkspace(user.id, {
         readinessStatus: readinessFilter === "all" ? undefined : readinessFilter,
@@ -29,7 +38,14 @@ export function PreSessionWorkspaceCard() {
         sortBy,
         sortOrder: "asc",
       })
-      return workspace.items
+      const names = await resolvePatientDisplayNames(
+        user.id,
+        workspace.items.map((item) => item.patientId),
+      )
+      return workspace.items.map((item) => ({
+        ...item,
+        patientDisplayName: patientDisplayName(names, item.patientId),
+      }))
     },
     refetchInterval: () =>
       typeof document !== "undefined" && document.visibilityState === "visible" ? 90_000 : false,
@@ -57,7 +73,7 @@ export function PreSessionWorkspaceCard() {
   const prepCount = items.filter((item) => item.actions.length > 0).length
   const displayedItems = prepOnly ? items.filter((item) => item.actions.length > 0) : items
   const lastRefreshedLabel = lastRefreshedAt
-    ? new Date(lastRefreshedAt).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit", second: "2-digit" })
+    ? formatTimeAu(new Date(lastRefreshedAt), { second: "2-digit" })
     : null
 
   return (
@@ -88,7 +104,7 @@ export function PreSessionWorkspaceCard() {
             }
           >
             <option value="all">All readiness</option>
-            <option value="attention">Attention</option>
+            <option value="attention">Needs attention</option>
             <option value="unknown">Unknown</option>
             <option value="ready">Ready</option>
           </select>
@@ -135,17 +151,19 @@ export function PreSessionWorkspaceCard() {
             {displayedItems.map((item) => (
               <article key={item.appointmentId} className="rounded-md border border-border/60 p-3 text-xs">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="font-medium">{item.patientId}</p>
-                  <span className={readinessBadgeClass(item.readinessStatus)}>{item.readinessStatus}</span>
+                  <p className="font-medium">{item.patientDisplayName}</p>
+                  <span className={readinessBadgeClass(item.readinessStatus)}>
+                    {formatReadinessStatusLabel(item.readinessStatus)}
+                  </span>
                 </div>
-                <p className="text-muted-foreground">{new Date(item.startsAt).toLocaleString()}</p>
+                <p className="text-muted-foreground">{formatDateTimeAu(item.startsAt)}</p>
                 {item.readinessUpdatedAt ? (
-                  <p className="text-muted-foreground" title={new Date(item.readinessUpdatedAt).toLocaleString()}>
+                  <p className="text-muted-foreground" title={formatDateTimeAu(item.readinessUpdatedAt)}>
                     Last checked: {formatRelativeTimestamp(item.readinessUpdatedAt)}
                   </p>
                 ) : null}
-                <p>Risk: {item.risk}</p>
-                <p>Referral: {item.referralStatus}</p>
+                <p>Risk: {formatWorkspaceRiskLabel(item.risk)}</p>
+                <p>Referral: {formatReferralStatusLabel(item.referralStatus)}</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   <Button asChild size="sm" variant="outline" className="h-7 px-2 text-[11px]">
                     <Link href={`/psychologist/patients/${encodeURIComponent(item.patientId)}`}>Open patient</Link>

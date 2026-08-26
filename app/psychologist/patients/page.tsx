@@ -79,7 +79,7 @@ export default function PsychologistPatientsPage() {
                 </div>
               </div>
               <p className="text-sm">{patient.nextSession}</p>
-              <p className="text-muted-foreground text-sm capitalize">{patient.status}</p>
+              <p className="text-muted-foreground text-sm">{patient.status}</p>
               <Button asChild size="sm" variant="outline" className="justify-self-start md:justify-self-end">
                 <Link href={`/psychologist/patients/${patient.id}`}>Open profile</Link>
               </Button>

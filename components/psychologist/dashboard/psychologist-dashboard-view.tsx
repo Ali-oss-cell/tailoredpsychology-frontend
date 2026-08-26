@@ -16,14 +16,14 @@ import { PortalMetricTile } from "@/components/shared/portal-list-row"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { psychologistDashboardContent } from "@/content/psychologist-dashboard"
 import { usePsychologistDashboard } from "@/src/psychologist/queries/use-psychologist-dashboard"
+import { useHasMounted } from "@/src/shared/use-client-now"
 
 function firstNameOf(displayName: string | undefined): string | null {
   const first = displayName?.trim().split(/\s+/)[0]
   return first && first.length > 0 ? first : null
 }
 
-function timeAwareGreeting(): string {
-  const hour = new Date().getHours()
+function timeAwareGreeting(hour: number): string {
   if (hour < 12) return "Good morning"
   if (hour < 17) return "Good afternoon"
   return "Good evening"
@@ -31,11 +31,12 @@ function timeAwareGreeting(): string {
 
 export function PsychologistDashboardView() {
   const dashboardQuery = usePsychologistDashboard()
+  const mounted = useHasMounted()
   const loading = dashboardQuery.isLoading
   const error = dashboardQuery.isError ? "Could not load your dashboard." : null
   const snapshot = dashboardQuery.data
   const firstName = firstNameOf(snapshot?.user.displayName)
-  const greeting = timeAwareGreeting()
+  const greeting = mounted ? timeAwareGreeting(new Date().getHours()) : "Welcome"
   const title = loading
     ? "Loading dashboard…"
     : firstName
@@ -64,6 +65,7 @@ export function PsychologistDashboardView() {
       <div className="dashboard-section">
         <NextClinicianSessionHero
           session={snapshot?.nextSession ?? null}
+          patientNamesById={snapshot?.patientNamesById}
           loading={loading}
           error={error}
           onRetry={handleRetry}
@@ -83,7 +85,13 @@ export function PsychologistDashboardView() {
           </CardContent>
         </Card>
         <OpsBentoCard items={psychologistDashboardContent.operations} />
-        <TodayScheduleCard entries={snapshot?.todaySchedule} loading={loading} error={error} onRetry={handleRetry} />
+        <TodayScheduleCard
+          entries={snapshot?.todaySchedule}
+          patientNamesById={snapshot?.patientNamesById}
+          loading={loading}
+          error={error}
+          onRetry={handleRetry}
+        />
         <NotesQueueCard
           pendingCount={snapshot?.notes.pendingCount}
           signedCount={snapshot?.notes.signedCount}

@@ -1,4 +1,11 @@
-import { formatAud, formatDateAu, formatDateTimeAu, formatSessionRangeAu, formatTimeAu } from "@/src/lib/format-au"
+import {
+  formatAud,
+  formatDateAu,
+  formatDateTimeAu,
+  formatSessionRangeAu,
+  formatTimeAu,
+  formatWeekdayDateAu,
+} from "@/src/lib/format-au"
 
 describe("format-au", () => {
   const sample = new Date("2026-07-10T14:30:00+10:00")
@@ -16,6 +23,11 @@ describe("format-au", () => {
   it("formats date-time in en-AU", () => {
     expect(formatDateTimeAu(sample)).toMatch(/10 July 2026/)
     expect(formatDateTimeAu(sample)).toMatch(/30/)
+  })
+
+  it("formats weekday-long dates in en-AU", () => {
+    expect(formatWeekdayDateAu(sample)).toMatch(/July/)
+    expect(formatWeekdayDateAu(sample)).toMatch(/2026/)
   })
 
   it("formats AUD currency", () => {

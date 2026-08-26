@@ -1,30 +1,13 @@
 import { formatDateTimeAu } from "@/src/lib/format-au"
+import { resolvePatientDisplayNames } from "@/src/psychologist/resolve-patient-display-names"
 import { getPsychologistSessions } from "@/src/sessions/api"
 
-import { getPsychologistPatientContext, getPsychologistWorkspace } from "./workspace/api"
+import { getPsychologistWorkspace } from "./workspace/api"
 
 export type NoteSessionChoice = {
   patientId: string
   sessionId: string
   label: string
-}
-
-async function resolvePatientDisplayNames(
-  psychologistId: string,
-  patientIds: string[],
-): Promise<Map<string, string>> {
-  const unique = [...new Set(patientIds)]
-  const entries = await Promise.all(
-    unique.map(async (patientId) => {
-      try {
-        const ctx = await getPsychologistPatientContext(psychologistId, patientId)
-        return [patientId, ctx.patientDisplayName.trim() || patientId] as const
-      } catch {
-        return [patientId, patientId] as const
-      }
-    }),
-  )
-  return new Map(entries)
 }
 
 /** Prefer pre-session workspace rows (upcoming caseload); otherwise fall back to all clinician sessions. */

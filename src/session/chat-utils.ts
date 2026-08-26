@@ -24,7 +24,7 @@ export function formatRelativeChatTime(iso: string, nowMs = Date.now()): string 
   if (days === 1) return "Yesterday"
   if (days < 7) return `${days}d ago`
 
-  return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric" })
+  return new Date(iso).toLocaleDateString("en-AU", { day: "numeric", month: "short" })
 }
 
 export function initialsFromName(name: string): string {

@@ -7,11 +7,16 @@ import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { PortalListRow } from "@/components/shared/portal-list-row"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { formatTimeAu } from "@/src/lib/format-au"
+import { formatSessionStatusLabel } from "@/src/psychologist/labels"
+import { patientDisplayName } from "@/src/psychologist/resolve-patient-display-names"
 import { joinSessionHref } from "@/src/session/join-session"
 import type { SessionSummary } from "@/src/sessions/api"
+import { useClientNow } from "@/src/shared/use-client-now"
 
 type TodayScheduleCardProps = {
   entries?: SessionSummary[]
+  patientNamesById?: Record<string, string>
   loading?: boolean
   error?: string | null
   onRetry?: () => void
@@ -31,10 +36,19 @@ function isJoinable(entry: SessionSummary, nowMs: number): boolean {
   return minutesToStart >= 0 && minutesToStart <= JOIN_IMMINENT_MINUTES
 }
 
-export function TodayScheduleCard({ entries = [], loading = false, error = null, onRetry }: TodayScheduleCardProps) {
-  const nowMs = Date.now()
+export function TodayScheduleCard({
+  entries = [],
+  patientNamesById,
+  loading = false,
+  error = null,
+  onRetry,
+}: TodayScheduleCardProps) {
+  const nowMs = useClientNow(30_000)
   const nextUpId =
-    entries.find((entry) => new Date(entry.scheduledStartAt).getTime() > nowMs)?.sessionId ?? entries[0]?.sessionId
+    nowMs == null
+      ? entries[0]?.sessionId
+      : (entries.find((entry) => new Date(entry.scheduledStartAt).getTime() > nowMs)?.sessionId ??
+        entries[0]?.sessionId)
 
   return (
     <Card className="dashboard-card interactive-lift md:col-span-7 rounded-2xl shadow-e1">
@@ -52,7 +66,7 @@ export function TodayScheduleCard({ entries = [], loading = false, error = null,
           !error &&
           entries.map((entry) => {
             const isNextUp = entry.sessionId === nextUpId
-            const joinable = isJoinable(entry, nowMs)
+            const joinable = nowMs != null && isJoinable(entry, nowMs)
             return (
               <PortalListRow
                 key={entry.sessionId}
@@ -60,15 +74,10 @@ export function TodayScheduleCard({ entries = [], loading = false, error = null,
                 className="md:grid-cols-[minmax(0,1fr)_auto_auto]"
               >
                 <div>
-                  <p className="text-sm font-medium">{entry.patientId}</p>
-                  <p className="text-muted-foreground text-xs capitalize">{entry.status.replace(/_/g, " ")}</p>
+                  <p className="text-sm font-medium">{patientDisplayName(patientNamesById, entry.patientId)}</p>
+                  <p className="text-muted-foreground text-xs">{formatSessionStatusLabel(entry.status)}</p>
                 </div>
-                <p className="text-sm tabular-nums md:text-right">
-                  {new Date(entry.scheduledStartAt).toLocaleTimeString(undefined, {
-                    hour: "numeric",
-                    minute: "2-digit",
-                  })}
-                </p>
+                <p className="text-sm tabular-nums md:text-right">{formatTimeAu(entry.scheduledStartAt)}</p>
                 {joinable ? (
                   <Button asChild size="sm" className="press md:justify-self-end">
                     <Link href={joinSessionHref(entry.sessionId)}>

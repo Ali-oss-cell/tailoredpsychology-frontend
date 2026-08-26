@@ -41,6 +41,21 @@ export function formatDateTimeAu(value: string | Date): string {
   return toDate(value).toLocaleString(LOCALE, { dateStyle: "medium", timeStyle: "short" })
 }
 
+/** e.g. Friday, 10 July 2026 */
+export function formatWeekdayDateAu(value: string | Date): string {
+  return toDate(value).toLocaleDateString(LOCALE, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  })
+}
+
+/** e.g. Fri */
+export function formatWeekdayShortAu(value: string | Date): string {
+  return toDate(value).toLocaleDateString(LOCALE, { weekday: "short" })
+}
+
 export function formatAud(value: number): string {
   return new Intl.NumberFormat(LOCALE, { style: "currency", currency: "AUD" }).format(value)
 }

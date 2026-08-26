@@ -2,6 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query"
 
+import { formatDateTimeAu } from "@/src/lib/format-au"
+import { formatClinicalRiskLabel } from "@/src/psychologist/labels"
 import { psychologistQueryKeys, psychologistQueryStaleTime } from "@/src/psychologist/queries/keys"
 import { getPsychologistPatientContext, getPsychologistWorkspace } from "@/src/psychologist/workspace/api"
 import { getPsychologistSessions } from "@/src/sessions/api"
@@ -43,9 +45,9 @@ async function loadCaseload(psychologistId: string): Promise<PsychologistCaseloa
     return {
       id: patientId,
       name: context?.patientDisplayName ?? patientId,
-      nextSession: nextItem ? new Date(nextItem.startsAt).toLocaleString() : "No upcoming sessions",
+      nextSession: nextItem ? formatDateTimeAu(nextItem.startsAt) : "No upcoming sessions",
       nextSessionMs,
-      status: context?.riskLevel ?? "unknown",
+      status: context?.riskLevel ? formatClinicalRiskLabel(context.riskLevel) : "Unknown",
       needsPrep,
       firstVisitLikely,
     }

@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { formatDateTimeAu } from "@/src/lib/format-au"
 import type { PatientIntakeLatest } from "@/src/psychologist/workspace/api"
 
 function section(data: Record<string, unknown>, key: string): Record<string, unknown> | undefined {
@@ -70,7 +71,7 @@ export function PatientIntakeSummaryCard({ intake, loading, error }: PatientInta
         {!loading && !error && intake ? (
           <>
             <p className="text-muted-foreground mb-3 text-xs">
-              Last updated {new Date(intake.updatedAt).toLocaleString()} · Version {intake.draftVersion}
+              Last updated {formatDateTimeAu(intake.updatedAt)} · Version {intake.draftVersion}
               {intake.committed ? " · Committed" : " · In progress"}
             </p>
             {rows.length === 0 ? (

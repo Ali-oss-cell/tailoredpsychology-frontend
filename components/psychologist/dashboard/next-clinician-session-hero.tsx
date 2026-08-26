@@ -2,20 +2,24 @@
 
 import Link from "next/link"
 import { ChalkboardTeacher, User, VideoCamera } from "@phosphor-icons/react/dist/ssr"
-import { useEffect, useState } from "react"
 
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import { formatTimeAu, formatWeekdayDateAu } from "@/src/lib/format-au"
 import type { PsychologistNextSession } from "@/src/psychologist/dashboard/api"
+import { formatSessionStatusLabel } from "@/src/psychologist/labels"
+import { patientDisplayName } from "@/src/psychologist/resolve-patient-display-names"
+import { joinSessionHref } from "@/src/session/join-session"
+import { useClientNow } from "@/src/shared/use-client-now"
 
 const JOIN_IMMINENT_MINUTES = 15
 
 /** True when clinician should see the hero Join CTA (in session or starting within 15 minutes). */
-function isClinicianJoinImminent(row: PsychologistNextSession | null, nowMs = Date.now()): boolean {
-  if (!row) return false
+function isClinicianJoinImminent(row: PsychologistNextSession | null, nowMs: number | null): boolean {
+  if (!row || nowMs == null) return false
   if (row.status === "in_progress") return true
 
   const startMs = new Date(row.scheduledStartAt).getTime()
@@ -27,36 +31,24 @@ function isClinicianJoinImminent(row: PsychologistNextSession | null, nowMs = Da
   const minutesToStart = (startMs - nowMs) / (60 * 1000)
   return minutesToStart >= 0 && minutesToStart <= JOIN_IMMINENT_MINUTES
 }
-import { joinSessionHref } from "@/src/session/join-session"
 
 type NextClinicianSessionHeroProps = {
   session: PsychologistNextSession | null
+  patientNamesById?: Record<string, string>
   loading?: boolean
   error?: string | null
   onRetry?: () => void
 }
 
 function formatSessionSchedule(startIso: string, endIso: string): { dateLabel: string; timeLabel: string } {
-  const start = new Date(startIso)
-  const end = new Date(endIso)
-  const dateLabel = start.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })
-  const timeOpts: Intl.DateTimeFormatOptions = { hour: "numeric", minute: "2-digit" }
   return {
-    dateLabel,
-    timeLabel: `${start.toLocaleTimeString(undefined, timeOpts)} – ${end.toLocaleTimeString(undefined, timeOpts)}`,
+    dateLabel: formatWeekdayDateAu(startIso),
+    timeLabel: `${formatTimeAu(startIso)} – ${formatTimeAu(endIso)}`,
   }
 }
 
-function useCountdownLabel(startIso: string | undefined): string | null {
-  const [nowMs, setNowMs] = useState(() => Date.now())
-
-  useEffect(() => {
-    if (!startIso) return
-    const timer = window.setInterval(() => setNowMs(Date.now()), 30_000)
-    return () => window.clearInterval(timer)
-  }, [startIso])
-
-  if (!startIso) return null
+function countdownLabel(startIso: string | undefined, nowMs: number | null): string | null {
+  if (!startIso || nowMs == null) return null
   const deltaMs = new Date(startIso).getTime() - nowMs
   if (Number.isNaN(deltaMs) || deltaMs > 24 * 60 * 60 * 1000) return null
   if (deltaMs <= 0) return "Starting now"
@@ -76,11 +68,13 @@ function statusChipClasses(status: PsychologistNextSession["status"]): string {
 
 export function NextClinicianSessionHero({
   session,
+  patientNamesById,
   loading = false,
   error = null,
   onRetry,
 }: NextClinicianSessionHeroProps) {
-  const countdown = useCountdownLabel(session?.scheduledStartAt)
+  const nowMs = useClientNow(30_000)
+  const countdown = countdownLabel(session?.scheduledStartAt, nowMs)
 
   if (loading) {
     return (
@@ -112,7 +106,9 @@ export function NextClinicianSessionHero({
           <p className="card-eyebrow">Next session</p>
           <div className="space-y-1">
             <h2 className="font-heading text-2xl font-semibold tracking-tight">No upcoming sessions</h2>
-            <p className="text-muted-foreground max-w-md text-sm">Your schedule is clear. Check the pre-session workspace when new appointments appear.</p>
+            <p className="text-muted-foreground max-w-md text-sm">
+              Your schedule is clear. Check the pre-session workspace when new appointments appear.
+            </p>
           </div>
           <Button asChild variant="outline">
             <Link href="/psychologist/schedule">View schedule</Link>
@@ -123,7 +119,7 @@ export function NextClinicianSessionHero({
   }
 
   const { dateLabel, timeLabel } = formatSessionSchedule(session.scheduledStartAt, session.scheduledEndAt)
-  const joinOpen = session.window.status === "open" || isClinicianJoinImminent(session)
+  const joinOpen = session.window.status === "open" || isClinicianJoinImminent(session, nowMs)
 
   return (
     <Card className="dashboard-card min-h-[12rem] shadow-e2">
@@ -132,11 +128,11 @@ export function NextClinicianSessionHero({
           <p className="card-eyebrow">Next session</p>
           <span
             className={cn(
-              "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize",
+              "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",
               statusChipClasses(session.status),
             )}
           >
-            {session.status.replace(/_/g, " ")}
+            {formatSessionStatusLabel(session.status)}
           </span>
         </div>
 
@@ -148,7 +144,7 @@ export function NextClinicianSessionHero({
           </div>
           <p className="inline-flex items-center gap-2 text-sm font-medium">
             <User size={16} className="text-muted-foreground" />
-            {session.patientId}
+            {patientDisplayName(patientNamesById, session.patientId)}
           </p>
         </div>
 

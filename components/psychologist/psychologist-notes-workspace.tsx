@@ -17,6 +17,11 @@ import { psychologistNotesContent } from "@/content/psychologist-notes"
 import { formatDateTimeAu } from "@/src/lib/format-au"
 import { toast } from "@/src/lib/toast"
 import {
+  formatClinicalRiskLabel,
+  formatNoteStatusLabel,
+  formatReferralStatusLabel,
+} from "@/src/psychologist/labels"
+import {
   createPsychologistNote,
   getPsychologistNote,
   getPsychologistNotes,
@@ -26,6 +31,7 @@ import {
 } from "@/src/psychologist/notes/api"
 import { usePsychologistId } from "@/src/psychologist/queries/use-current-user"
 import { getNoteSessionChoices, type NoteSessionChoice } from "@/src/psychologist/note-session-choices"
+import { resolvePatientDisplayNames, patientDisplayName } from "@/src/psychologist/resolve-patient-display-names"
 import { getPsychologistPatientContext } from "@/src/psychologist/workspace/api"
 import { cn } from "@/lib/utils"
 
@@ -50,6 +56,7 @@ export function PsychologistNotesWorkspace() {
   const [noteRetryNonce, setNoteRetryNonce] = useState(0)
   const [sessionChoices, setSessionChoices] = useState<NoteSessionChoice[]>([])
   const [selectedSessionId, setSelectedSessionId] = useState("")
+  const [patientNamesById, setPatientNamesById] = useState<Record<string, string>>({})
   const [autosaveStatus, setAutosaveStatus] = useState<AutosaveStatus>("idle")
   const [mobileTab, setMobileTab] = useState<MobileNotesTab>("queue")
   const editorScopeRef = useRef<string | null>(null)
@@ -64,6 +71,11 @@ export function PsychologistNotesWorkspace() {
         setNotes(notesData)
         setSessionChoices(choices)
         setSelectedSessionId(choices[0]?.sessionId ?? "")
+        const names = await resolvePatientDisplayNames(
+          psychologistId,
+          notesData.map((note) => note.patientId),
+        )
+        setPatientNamesById(Object.fromEntries(names))
       } catch {
         setError("Could not load notes queue.")
       } finally {
@@ -271,12 +283,19 @@ export function PsychologistNotesWorkspace() {
             {!loading && !error && notes.length === 0 ? (
               <DashboardStateBlock variant="empty" message="No notes yet." />
             ) : null}
-            {notes.map((item) => (
+            {notes.map((item) => {
+              const choice = sessionChoices.find((row) => row.sessionId === item.sessionId)
+              const sessionLabel = choice
+                ? choice.label.includes(" · ")
+                  ? choice.label.slice(choice.label.indexOf(" · ") + 3)
+                  : choice.label
+                : "Session"
+              return (
               <PortalListRow key={item.noteId} className="md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto_auto_auto_auto]">
-                <p className="text-sm font-medium">{item.patientId}</p>
-                <p className="text-muted-foreground text-sm">{item.sessionId}</p>
-                <Badge variant={statusBadgeVariant(item.status)} className="w-fit text-[10px] uppercase">
-                  {item.status.replace(/_/g, " ")}
+                <p className="text-sm font-medium">{patientDisplayName(patientNamesById, item.patientId)}</p>
+                <p className="text-muted-foreground text-sm">{sessionLabel}</p>
+                <Badge variant={statusBadgeVariant(item.status)} className="w-fit text-[10px]">
+                  {formatNoteStatusLabel(item.status)}
                 </Badge>
                 <p className="text-muted-foreground text-sm">{formatDateTimeAu(item.updatedAt)}</p>
                 <Button
@@ -293,7 +312,8 @@ export function PsychologistNotesWorkspace() {
                   {item.status === "signed" ? "Signed" : "Sign"}
                 </Button>
               </PortalListRow>
-            ))}
+              )
+            })}
           </CardContent>
         </Card>
         {selectedNoteId ? (
@@ -303,7 +323,7 @@ export function PsychologistNotesWorkspace() {
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <CardTitle className="text-lg">Note detail</CardTitle>
                 {activeNote ? (
-                  <Badge variant={statusBadgeVariant(activeNote.status)}>{activeNote.status.replace(/_/g, " ")}</Badge>
+                  <Badge variant={statusBadgeVariant(activeNote.status)}>{formatNoteStatusLabel(activeNote.status)}</Badge>
                 ) : null}
               </div>
               <p className="text-muted-foreground text-xs" aria-live="polite">
@@ -355,8 +375,8 @@ export function PsychologistNotesWorkspace() {
               ) : null}
               {selectedContext ? (
                 <div className="border-border/60 bg-muted/30 rounded-lg border p-3 text-xs text-muted-foreground">
-                  patient: {selectedContext.patientDisplayName} · risk: {selectedContext.riskLevel} · referral:{" "}
-                  {selectedContext.referralStatus}
+                  {selectedContext.patientDisplayName} · risk: {formatClinicalRiskLabel(selectedContext.riskLevel)} ·
+                  referral: {formatReferralStatusLabel(selectedContext.referralStatus)}
                 </div>
               ) : null}
             </CardContent>

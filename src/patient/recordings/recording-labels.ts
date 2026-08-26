@@ -13,6 +13,22 @@ export function formatRecordingSessionLabel(
   return `Session · ${dateLabel}`
 }
 
+/** Clinician-facing recording row title (patient name + session time). */
+export function formatClinicianRecordingLabel(
+  recording: SessionVideoItem,
+  patientNamesById?: Record<string, string> | Map<string, string>,
+): string {
+  const dateLabel = formatDateTimeAu(recording.sessionDate)
+  const patientName =
+    patientNamesById instanceof Map
+      ? patientNamesById.get(recording.patientId)
+      : patientNamesById?.[recording.patientId]
+  if (patientName) {
+    return `${patientName} · ${dateLabel}`
+  }
+  return `Session · ${dateLabel}`
+}
+
 export type RecordingPolicyStatus = SessionVideoItem["policyStatus"]
 
 const POLICY_STATUS_LABELS: Record<RecordingPolicyStatus, string> = {

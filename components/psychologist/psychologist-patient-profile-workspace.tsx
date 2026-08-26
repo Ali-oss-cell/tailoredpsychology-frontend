@@ -32,11 +32,26 @@ import {
 } from "@/src/psychologist/exports/api"
 
 import { cn } from "@/lib/utils"
+import { formatDateTimeAu, formatTimeAu } from "@/src/lib/format-au"
+import {
+  formatClinicalRiskLabel,
+  formatReadinessStatusLabel,
+  formatReferralStatusLabel,
+  formatSessionStatusLabel,
+} from "@/src/psychologist/labels"
 
 function riskBadgeClass(level: string | undefined): string {
   if (level === "high") return "border-destructive/30 bg-destructive/10 text-destructive"
   if (level === "medium") return "border-warning/50 bg-warning/10 text-warning-foreground"
   return "border-primary/25 bg-primary/10 text-primary"
+}
+
+function formatReferralSourceLabel(sourceType: string): string {
+  return sourceType.replaceAll("_", " ")
+}
+
+function formatReferralDocStatus(status: string): string {
+  return status.replaceAll("_", " ")
 }
 
 export function PsychologistPatientProfileWorkspace() {
@@ -198,14 +213,16 @@ export function PsychologistPatientProfileWorkspace() {
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-muted-foreground text-xs">Risk</span>
                 <Badge variant="outline" className={cn("capitalize", riskBadgeClass(context?.riskLevel))}>
-                  {context?.riskLevel ?? "unknown"}
+                  {context?.riskLevel ? formatClinicalRiskLabel(context.riskLevel) : "Unknown"}
                 </Badge>
               </div>
               <p>
-                <span className="text-muted-foreground">Referral:</span> {context?.referralStatus?.replace(/_/g, " ") ?? "unknown"}
+                <span className="text-muted-foreground">Referral:</span>{" "}
+                {context?.referralStatus ? formatReferralStatusLabel(context.referralStatus) : "Unknown"}
               </p>
               <p>
-                <span className="text-muted-foreground">Readiness:</span> {context?.readinessStatus ?? "unknown"}
+                <span className="text-muted-foreground">Readiness:</span>{" "}
+                {context?.readinessStatus ? formatReadinessStatusLabel(context.readinessStatus) : "Unknown"}
               </p>
               <p>
                 <span className="text-muted-foreground">Care signals:</span> {context?.careSignals.join(", ") || "none"}
@@ -257,11 +274,12 @@ export function PsychologistPatientProfileWorkspace() {
                         aria-hidden
                       />
                       <div className="rounded border border-border/60 bg-background/50 p-2 pl-3">
-                        <p className="font-medium">{new Date(session.scheduledStartAt).toLocaleString()}</p>
-                        <p className="text-muted-foreground text-xs">status: {session.status.replace(/_/g, " ")}</p>
+                        <p className="font-medium">{formatDateTimeAu(session.scheduledStartAt)}</p>
                         <p className="text-muted-foreground text-xs">
-                          {new Date(session.scheduledStartAt).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })} –{" "}
-                          {new Date(session.scheduledEndAt).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}
+                          Status: {formatSessionStatusLabel(session.status)}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {formatTimeAu(session.scheduledStartAt)} – {formatTimeAu(session.scheduledEndAt)}
                         </p>
                       </div>
                     </div>
@@ -280,13 +298,15 @@ export function PsychologistPatientProfileWorkspace() {
               {referrals.map((referral) => (
                 <PortalListRow key={referral.documentId} className="md:grid-cols-[minmax(0,1fr)_auto]">
                   <div>
-                    <p className="font-medium">{referral.documentId}</p>
-                    <p className="text-muted-foreground text-xs">
-                      {referral.status} · {referral.sourceType}
+                    <p className="font-medium">
+                      {formatReferralSourceLabel(referral.sourceType)} referral
+                    </p>
+                    <p className="text-muted-foreground text-xs capitalize">
+                      {formatReferralDocStatus(referral.status)}
                     </p>
                   </div>
                   <p className="text-muted-foreground text-xs md:text-right">
-                    Due {new Date(referral.dueAt).toLocaleString()}
+                    Due {formatDateTimeAu(referral.dueAt)}
                   </p>
                 </PortalListRow>
               ))}

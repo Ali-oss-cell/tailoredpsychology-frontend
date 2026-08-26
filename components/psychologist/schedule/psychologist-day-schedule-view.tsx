@@ -8,11 +8,14 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DashboardStateBlock } from "@/components/shared/dashboard-state-block"
-import { formatTimeAu } from "@/src/lib/format-au"
+import { formatTimeAu, formatWeekdayDateAu, formatWeekdayShortAu } from "@/src/lib/format-au"
 import { cn } from "@/lib/utils"
+import { formatSessionStatusLabel } from "@/src/psychologist/labels"
+import { patientDisplayName } from "@/src/psychologist/resolve-patient-display-names"
 import { sameLocalDay } from "@/src/psychologist/session-filters"
 import { joinSessionHref } from "@/src/session/join-session"
 import type { SessionSummary } from "@/src/sessions/api"
+import { useClientNow } from "@/src/shared/use-client-now"
 
 const DAY_START_HOUR = 7
 const DAY_END_HOUR = 20
@@ -20,6 +23,7 @@ const HOUR_HEIGHT_PX = 56
 
 type PsychologistDayScheduleViewProps = {
   entries: SessionSummary[]
+  patientNamesById?: Record<string, string>
   selectedDay: Date
   onSelectedDayChange: (day: Date) => void
   loading?: boolean
@@ -43,7 +47,7 @@ function addDays(day: Date, offset: number): Date {
 }
 
 function formatDayKey(day: Date): string {
-  return day.toLocaleDateString("en-AU", { weekday: "short" })
+  return formatWeekdayShortAu(day)
 }
 
 function formatDayNumber(day: Date): string {
@@ -51,12 +55,11 @@ function formatDayNumber(day: Date): string {
 }
 
 function formatSelectedDate(day: Date): string {
-  return day.toLocaleDateString("en-AU", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  })
+  return formatWeekdayDateAu(day)
+}
+
+function dayStableKey(day: Date): string {
+  return `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`
 }
 
 function minutesFromDayStart(date: Date, dayStartHour: number): number {
@@ -99,13 +102,14 @@ function canJoinSession(status: SessionSummary["status"]): boolean {
 
 export function PsychologistDayScheduleView({
   entries,
+  patientNamesById,
   selectedDay,
   onSelectedDayChange,
   loading = false,
   error = null,
   onRetry,
 }: PsychologistDayScheduleViewProps) {
-  const [nowMs, setNowMs] = React.useState(() => Date.now())
+  const nowMs = useClientNow(60_000)
   const weekStart = startOfWeekMonday(selectedDay)
   const weekDays = React.useMemo(() => Array.from({ length: 7 }, (_, index) => addDays(weekStart, index)), [weekStart])
   const hours = React.useMemo(
@@ -113,7 +117,7 @@ export function PsychologistDayScheduleView({
     [],
   )
   const gridHeight = (DAY_END_HOUR - DAY_START_HOUR) * HOUR_HEIGHT_PX
-  const isToday = sameLocalDay(selectedDay, nowMs)
+  const isToday = nowMs != null && sameLocalDay(selectedDay, nowMs)
   const dayStartMs = React.useMemo(() => {
     const day = new Date(selectedDay)
     day.setHours(DAY_START_HOUR, 0, 0, 0)
@@ -125,14 +129,9 @@ export function PsychologistDayScheduleView({
     return day.getTime()
   }, [selectedDay])
   const nowTop =
-    isToday && nowMs >= dayStartMs && nowMs <= dayEndMs
+    isToday && nowMs != null && nowMs >= dayStartMs && nowMs <= dayEndMs
       ? (minutesFromDayStart(new Date(nowMs), DAY_START_HOUR) / 60) * HOUR_HEIGHT_PX
       : null
-
-  React.useEffect(() => {
-    const timer = window.setInterval(() => setNowMs(Date.now()), 60_000)
-    return () => window.clearInterval(timer)
-  }, [])
 
   const sortedEntries = React.useMemo(
     () => [...entries].sort((a, b) => new Date(a.scheduledStartAt).getTime() - new Date(b.scheduledStartAt).getTime()),
@@ -140,8 +139,10 @@ export function PsychologistDayScheduleView({
   )
 
   const nextUpId =
-    sortedEntries.find((entry) => new Date(entry.scheduledStartAt).getTime() > nowMs)?.sessionId ??
-    sortedEntries[0]?.sessionId
+    nowMs == null
+      ? sortedEntries[0]?.sessionId
+      : (sortedEntries.find((entry) => new Date(entry.scheduledStartAt).getTime() > nowMs)?.sessionId ??
+        sortedEntries[0]?.sessionId)
 
   return (
     <div className="space-y-4">
@@ -186,10 +187,10 @@ export function PsychologistDayScheduleView({
           <div className="grid grid-cols-7 gap-2">
             {weekDays.map((day) => {
               const active = sameLocalDay(day, selectedDay)
-              const today = sameLocalDay(day, nowMs)
+              const today = nowMs != null && sameLocalDay(day, nowMs)
               return (
                 <button
-                  key={day.toISOString()}
+                  key={dayStableKey(day)}
                   type="button"
                   onClick={() => onSelectedDayChange(day)}
                   className={cn(
@@ -269,14 +270,16 @@ export function PsychologistDayScheduleView({
                       >
                         <div className="flex h-full flex-col justify-between gap-1">
                           <div className="min-w-0">
-                            <p className="truncate text-sm font-medium">{entry.patientId}</p>
+                            <p className="truncate text-sm font-medium">
+                              {patientDisplayName(patientNamesById, entry.patientId)}
+                            </p>
                             <p className="text-muted-foreground truncate text-[11px] tabular-nums">
                               {formatTimeRange(entry.scheduledStartAt, entry.scheduledEndAt)}
                             </p>
                           </div>
                           <div className="flex flex-wrap items-center gap-1.5">
                             <Badge variant={statusBadgeVariant(entry.status)} className="text-[10px]">
-                              {entry.status.replace(/_/g, " ")}
+                              {formatSessionStatusLabel(entry.status)}
                             </Badge>
                             {isNextUp ? (
                               <Badge variant="default" className="text-[10px]">
@@ -321,13 +324,13 @@ export function PsychologistDayScheduleView({
                 className="bg-muted/30 border-border/50 flex flex-wrap items-center justify-between gap-3 rounded-xl border px-3 py-2"
               >
                 <div>
-                  <p className="text-sm font-medium">{entry.patientId}</p>
+                  <p className="text-sm font-medium">{patientDisplayName(patientNamesById, entry.patientId)}</p>
                   <p className="text-muted-foreground text-xs tabular-nums">
                     {formatTimeRange(entry.scheduledStartAt, entry.scheduledEndAt)}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant={statusBadgeVariant(entry.status)}>{entry.status.replace(/_/g, " ")}</Badge>
+                  <Badge variant={statusBadgeVariant(entry.status)}>{formatSessionStatusLabel(entry.status)}</Badge>
                   <Button asChild size="sm" variant="outline">
                     <Link href={`/psychologist/patients/${encodeURIComponent(entry.patientId)}`}>Open</Link>
                   </Button>
